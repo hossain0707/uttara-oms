@@ -5,7 +5,7 @@ from sqlalchemy.orm import Session
 from .auth import Actor, current_actor
 from .config import settings
 from .database import get_db
-from .routes import approvals, members, organization, reports
+from .routes import access, approvals, members, organization, reports
 
 app = FastAPI(title="Uttara OMS API", version="0.1.0",
               docs_url=None if settings().environment == "production" else "/docs",
@@ -16,6 +16,7 @@ app.add_middleware(CORSMiddleware, allow_origins=settings().allowed_origins,
                    allow_headers=["Authorization", "Content-Type"],
                    expose_headers=["Content-Disposition"])
 
+app.include_router(access.router, prefix="/api/v1")
 app.include_router(members.router, prefix="/api/v1")
 app.include_router(organization.router, prefix="/api/v1")
 app.include_router(approvals.router, prefix="/api/v1")

@@ -100,3 +100,17 @@ class AuditLog(Base):
     target_id: Mapped[str] = mapped_column(String(40), nullable=False)
     detail: Mapped[str] = mapped_column(String(250), default="", nullable=False)
     created_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), default=now, nullable=False)
+
+class AccessRequest(Base):
+    __tablename__ = "access_requests"
+    id: Mapped[uuid.UUID] = mapped_column(Uuid, primary_key=True, default=uid)
+    auth_sub: Mapped[str] = mapped_column(String(128), nullable=False)
+    email: Mapped[str] = mapped_column(String(320), nullable=False)
+    role: Mapped[str] = mapped_column(String(24), nullable=False)
+    scope_node_id: Mapped[uuid.UUID | None] = mapped_column(Uuid, ForeignKey("org_nodes.id"))
+    operation: Mapped[str] = mapped_column(String(16), nullable=False)
+    status: Mapped[str] = mapped_column(String(16), default="PENDING", nullable=False)
+    requested_by: Mapped[uuid.UUID] = mapped_column(Uuid, ForeignKey("app_users.id"), nullable=False)
+    reviewed_by: Mapped[uuid.UUID | None] = mapped_column(Uuid, ForeignKey("app_users.id"))
+    requested_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), default=now, nullable=False)
+    reviewed_at: Mapped[datetime | None] = mapped_column(DateTime(timezone=True))
