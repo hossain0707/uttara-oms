@@ -5,7 +5,7 @@ from sqlalchemy.orm import Session
 from ..auth import Actor, current_actor
 from ..database import get_db
 from ..models import AuditLog, ChangeRequest, MemberEvent, OrgNode
-from ..policies import CATEGORIES, can_approve, require_scope, allowed_nodes
+from ..policies import CATEGORIES, can_approve, require_scope, personal_nodes
 from ..schemas import ChangeDecision, ChangePropose
 from .members import visible
 
@@ -23,7 +23,9 @@ def record(r: ChangeRequest):
 @router.get("")
 def pending(actor: Actor = Depends(current_actor), db: Session = Depends(get_db)):
     from ..models import Member
-    scopes = allowed_nodes(db, actor)
+    scopes = personal_nodes(db, actor)
+    if not scopes:
+        raise HTTPException(403, "Approval queue access denied")
     rows = (db.query(ChangeRequest).join(Member, Member.id == ChangeRequest.member_id)
             .filter(Member.org_node_id.in_(scopes))
             .order_by(ChangeRequest.requested_at.desc()).limit(200).all())

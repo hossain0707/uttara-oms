@@ -7,7 +7,7 @@ from sqlalchemy.orm import Session
 from ..auth import Actor, current_actor
 from ..database import get_db
 from ..models import AuditLog, Member, MemberEvent, OrgNode
-from ..policies import allowed_nodes, require_scope
+from ..policies import personal_nodes, require_scope
 from ..schemas import MemberCreate, MemberRoutineUpdate
 from ..security import decrypt, encrypt, normalize_phone, phone_digest
 
@@ -30,7 +30,10 @@ def visible(db: Session, actor: Actor, member_id: UUID, write=False) -> Member:
     m = db.get(Member, member_id)
     if not m:
         raise HTTPException(404, "Record not found")
-    require_scope(db, actor, m.org_node_id, write=write)
+    if m.org_node_id not in personal_nodes(db, actor):
+        raise HTTPException(403, "Personal record access denied")
+    if write:
+        require_scope(db, actor, m.org_node_id, write=True)
     return m
 
 
@@ -40,9 +43,9 @@ def list_members(q: str | None = Query(default=None, max_length=120),
                  limit: int = Query(default=30, ge=1, le=100),
                  offset: int = Query(default=0, ge=0),
                  actor: Actor = Depends(current_actor), db: Session = Depends(get_db)):
-    scopes = allowed_nodes(db, actor)
+    scopes = personal_nodes(db, actor)
     if not scopes:
-        return {"items": [], "total": 0}
+        raise HTTPException(403, "No personal record access assigned")
     query = db.query(Member).filter(Member.org_node_id.in_(scopes))
     if category:
         if category not in {"RUKON", "WORKER", "ASSOCIATE", "SUPPORTER"}:

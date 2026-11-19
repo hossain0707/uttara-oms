@@ -29,6 +29,7 @@ def context():
         db.commit()
     who = {
         "editor": Actor(uuid.uuid4(), "editor@example.invalid", [("UNIT_EDITOR", unit1.id)], False),
+        "viewer": Actor(uuid.uuid4(), "viewer@example.invalid", [("THANA_VIEWER", None)], False),
         "outsider": Actor(uuid.uuid4(), "outsider@example.invalid", [("UNIT_EDITOR", unit2.id)], False),
         "reviewer": Actor(uuid.uuid4(), "reviewer@example.invalid", [("WARD_ADMIN", ward1.id)], True),
         "admin": Actor(uuid.uuid4(), "admin@example.invalid", [("THANA_ADMIN", None)], True),
@@ -144,3 +145,14 @@ def test_access_grant_requires_second_admin(context):
     assert any(p["auth_sub"] == str(target) and p["roles"][0]["role"] == "UNIT_EDITOR" for p in people)
     holder["actor"] = who["outsider"]
     assert client.get("/api/v1/access/users").status_code == 403
+
+
+
+def test_report_only_role_cannot_read_sensitive_profiles(context):
+    client, holder, who, unit1, unit2 = context
+    member = client.post("/api/v1/members", json=make_body(unit1.id)).json()
+    holder["actor"] = who["viewer"]
+    assert client.get("/api/v1/reports/dashboard").status_code == 200
+    assert client.get("/api/v1/members").status_code == 403
+    assert client.get("/api/v1/members/"+member["id"]).status_code == 403
+    assert client.get("/api/v1/approvals").status_code == 403

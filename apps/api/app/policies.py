@@ -56,3 +56,17 @@ def can_approve(db: Session, actor: Actor, origin: UUID, dest: UUID | None = Non
             if origin in scope and (dest is None or dest in scope):
                 return True
     return False
+
+
+
+def personal_nodes(db: Session, actor: Actor) -> set[UUID]:
+    """PII scopes intentionally exclude THANA_VIEWER, even if another scoped role exists."""
+    if is_thana_admin(actor):
+        return {n[0] for n in db.query(OrgNode.id).all()}
+    result = set()
+    for role, node_id in actor.grants:
+        if role == "WARD_ADMIN" and node_id:
+            result |= descendants(db, node_id)
+        elif role == "UNIT_EDITOR" and node_id:
+            result.add(node_id)
+    return result
