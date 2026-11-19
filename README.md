@@ -55,7 +55,7 @@ flowchart LR
 ### Authorization model: Option A + C
 
 - **Thana Admin**: global scope, structural changes and approvals. Administrator MFA is required by default.
-- **Thana Responsible Officer**: aggregate/member viewing within the Thana; no write permission.
+- **Thana Responsible Officer**: organization-wide aggregate reports only; cannot access personal profiles, search or individual approval queues.
 - **Ward Admin**: read/write within a Ward and its units; approve non-self requests within that Ward.
 - **Unit Responsible Officer**: read/write within assigned Unit; submit requests but cannot approve them.
 - **Sensitive actions**: category/status/unit transfers are pending until approved by another authorized officer. Cross-ward transfers require Thana Admin approval.

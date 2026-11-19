@@ -6,7 +6,7 @@
 
 1. **Default deny:** All business routes require a verified Supabase JWT with expected issuer, audience, asymmetric signature, and authenticated role.
 2. **Independent authorization:** An approved local user record and a scoped grant are mandatory even after Google sign-in.
-3. **Least privilege:** role checks happen on the API, with Thana-wide, Ward-descendant or Unit-only scopes.
+3. **Least privilege:** role checks happen on the API, with Thana-wide aggregate-only viewer access, Ward-descendant or Unit-only personal-data scopes.
 4. **Critical change review:** category transfers, unit transfers and activation-state changes are not written directly. A different qualified reviewer must approve.
 5. **Admin authentication:** MFA level `aal2` is required for Thana Admin sessions by default.
 6. **Sensitive field encryption:** phone and address use Fernet; exact phone uniqueness uses a separate keyed HMAC. Data provider should additionally encrypt disks and backups.

@@ -41,7 +41,7 @@ export default function Home() {
       <div className="panel"><div className="panel-head"><div><h2>Workspace snapshot</h2><span className="subhead">Live server-calculated totals</span></div><ShieldCheck color="#318A67" size={20}/></div>
         <div className="stat-number">{data ? data.total_active.toLocaleString() : "—"}</div><p className="subhead">Total active records within your approved access scope.</p>
         <hr className="subtle-divider"/><p className="hint">Sensitive profile changes are reviewed through the independent approval process. Reports are permission-scoped.</p>
-        <Link href="/members" className="primary-btn" style={{marginTop:12}}>Manage people <ArrowRight size={15}/></Link>
+        <Link href="/reports" className="primary-btn" style={{marginTop:12}}>Open reports <ArrowRight size={15}/></Link>
       </div>
     </div>
     <div className="panel" style={{marginTop:20}}><div className="panel-head"><div><h2>Ward overview</h2><span className="subhead">Active people by ward, restricted to your assigned scope</span></div><GitBranch size={20} color="#318A67"/></div>
