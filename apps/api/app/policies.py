@@ -1,0 +1,58 @@
+from uuid import UUID
+from fastapi import HTTPException
+from sqlalchemy.orm import Session
+from .auth import Actor
+from .models import OrgNode
+
+ROLES = {"THANA_ADMIN", "THANA_VIEWER", "WARD_ADMIN", "UNIT_EDITOR"}
+CATEGORIES = {"RUKON", "WORKER", "ASSOCIATE", "SUPPORTER"}
+STATUSES = {"ACTIVE", "INACTIVE"}
+
+
+def descendants(db: Session, root: UUID) -> set[UUID]:
+    nodes = db.query(OrgNode).all()
+    children: dict[UUID | None, list[UUID]] = {}
+    for n in nodes:
+        children.setdefault(n.parent_id, []).append(n.id)
+    seen, stack = set(), [root]
+    while stack:
+        n = stack.pop()
+        if n in seen:
+            continue
+        seen.add(n)
+        stack.extend(children.get(n, []))
+    return seen
+
+
+def allowed_nodes(db: Session, actor: Actor, *, write: bool = False) -> set[UUID]:
+    nodes = db.query(OrgNode.id).all()
+    all_ids = {n[0] for n in nodes}
+    if any(role == "THANA_ADMIN" for role, _ in actor.grants):
+        return all_ids
+    if not write and any(role == "THANA_VIEWER" for role, _ in actor.grants):
+        return all_ids
+    scoped = set()
+    for role, scope in actor.grants:
+        if scope and role in ({"WARD_ADMIN", "UNIT_EDITOR"} if write else {"WARD_ADMIN", "UNIT_EDITOR"}):
+            scoped |= descendants(db, scope) if role == "WARD_ADMIN" else {scope}
+    return scoped & all_ids
+
+
+def require_scope(db: Session, actor: Actor, node_id: UUID, *, write: bool = False):
+    if node_id not in allowed_nodes(db, actor, write=write):
+        raise HTTPException(403, "Insufficient organizational scope")
+
+
+def is_thana_admin(actor: Actor) -> bool:
+    return any(role == "THANA_ADMIN" for role, _ in actor.grants)
+
+
+def can_approve(db: Session, actor: Actor, origin: UUID, dest: UUID | None = None) -> bool:
+    if is_thana_admin(actor):
+        return True
+    for role, ward in actor.grants:
+        if role == "WARD_ADMIN" and ward:
+            scope = descendants(db, ward)
+            if origin in scope and (dest is None or dest in scope):
+                return True
+    return False
