@@ -5,9 +5,10 @@ from sqlalchemy.orm import Session
 from ..auth import Actor, current_actor
 from ..database import get_db
 from ..models import AuditLog, ChangeRequest, MemberEvent, OrgNode
-from ..policies import CATEGORIES, can_approve, require_scope, personal_nodes
+from ..policies import CATEGORIES, active_unit, lock_organization, can_approve, personal_nodes
 from ..schemas import ChangeDecision, ChangePropose
 from .members import visible
+from ..analytics import record_movement
 
 router = APIRouter(prefix="/approvals", tags=["approvals"])
 
@@ -35,6 +36,7 @@ def pending(actor: Actor = Depends(current_actor), db: Session = Depends(get_db)
 @router.post("/members/{member_id}", status_code=201)
 def propose(member_id: UUID, body: ChangePropose, actor: Actor = Depends(current_actor),
             db: Session = Depends(get_db)):
+    lock_organization(db)
     m = visible(db, actor, member_id, write=True)
     if body.kind == "CATEGORY":
         if body.proposed_value not in CATEGORIES or body.proposed_value == m.category:
@@ -44,7 +46,7 @@ def propose(member_id: UUID, body: ChangePropose, actor: Actor = Depends(current
             destination = db.get(OrgNode, UUID(body.proposed_value))
         except ValueError:
             destination = None
-        if not destination or not destination.active or destination.kind != "UNIT" or destination.id == m.org_node_id:
+        if not destination or not active_unit(db, destination.id) or destination.id == m.org_node_id:
             raise HTTPException(422, "Choose a different active unit")
     elif body.kind == "DEACTIVATE":
         if m.status != "ACTIVE" or body.proposed_value != "INACTIVE":
@@ -72,6 +74,7 @@ def propose(member_id: UUID, body: ChangePropose, actor: Actor = Depends(current
 def decide(request_id: UUID, body: ChangeDecision, actor: Actor = Depends(current_actor),
            db: Session = Depends(get_db)):
     from ..models import Member
+    lock_organization(db)
     r = db.query(ChangeRequest).filter(ChangeRequest.id == request_id).with_for_update().one_or_none()
     if not r:
         raise HTTPException(404, "Request not found")
@@ -86,13 +89,16 @@ def decide(request_id: UUID, body: ChangeDecision, actor: Actor = Depends(curren
     if m.version != r.original_version and body.approve:
         raise HTTPException(409, "Member changed after submission; reject and resubmit")
     if body.approve:
+        prior = (m.org_node_id, m.category, m.status)
+        if r.kind == "REACTIVATE" and not active_unit(db, m.org_node_id):
+            raise HTTPException(409, "Reactivate the unit and its ancestors first")
         if r.kind == "CATEGORY":
             before = m.category
             m.category = r.proposed_value
             after = m.category
         elif r.kind == "TRANSFER":
             target = db.get(OrgNode, destination)
-            if not target or target.kind != "UNIT" or not target.active:
+            if not target or not active_unit(db, destination):
                 raise HTTPException(409, "Destination is no longer active")
             before = str(m.org_node_id)
             m.org_node_id = destination
@@ -102,8 +108,10 @@ def decide(request_id: UUID, body: ChangeDecision, actor: Actor = Depends(curren
             m.status = r.proposed_value
             after = m.status
         m.version += 1
-        db.add(MemberEvent(member_id=m.id, action=r.kind,
-                           before=before, after=after, actor_id=actor.id))
+        event = MemberEvent(member_id=m.id, action=r.kind,
+                            before=before, after=after, actor_id=actor.id)
+        db.add(event); db.flush()
+        record_movement(db, event, prior, (m.org_node_id, m.category, m.status))
     r.status = "APPROVED" if body.approve else "REJECTED"
     r.reviewed_by = actor.id
     r.review_note = body.note

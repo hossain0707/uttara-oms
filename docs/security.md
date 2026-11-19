@@ -23,12 +23,21 @@
 - Restrict export to an explicit business purpose and implement rate limits, anomaly detection, a data-access log and high-risk operation alerts.
 - Provision two independent named administrators using controlled procedures, enable MFA and avoid shared accounts.
 - Enforce HTTPS, HSTS, dedicated private DB connectivity, secret-manager integration and restricted CORS. Avoid log body capture.
-- Implement application-level backup/restore, key rotation (including HMAC), phone recovery rules, and retention/deletion schedules.
+- Implement tested managed backup/restore, key rotation (including HMAC), phone recovery rules, and retention/deletion schedules.
 - Validate Supabase project JWT key type: this API **deliberately rejects HS256**.
 - Validate large-record pagination, concurrent approvals, transfer races and all role boundaries.
 - Replace basic browser session integration with production-hardened SSR/cookie strategy if the threat model requires it.
-- Configure organizational record access logging separately from application mutation logs.
+- Configure access-log retention and monitoring; directory/detail reads are now audited without search values or personal fields.
 
 ## Prohibited use
 
 This platform must not be used to infer people's political preferences, conduct persuasion microtargeting, share lists for campaigning without a lawful basis, or register individuals without a valid privacy basis.
+
+
+## Hardening changes and limits
+
+JWT algorithms are checked before key lookup; the JWKS client caches key sets for five minutes with a five-second fetch timeout, while JWT signature, expiry, issuer, audience and authenticated role remain mandatory. OAuth uses PKCE. The browser has a TOTP enrollment/challenge gate; Supabase recovery/reset remains external. Refresh callbacks defer session calls to avoid auth-lock deadlocks. Session tokens still use Supabase browser storage, so XSS prevention and a tested CSP remain mandatory; no server-cookie migration is claimed.
+
+Strict write schemas reject unknown fields, blank required text and null mandatory patches. Validation responses omit submitted inputs. API responses are no-store and carry nosniff/frame/referrer restrictions. Readiness does not expose database errors or connection strings; production OpenAPI endpoints are disabled. PostgreSQL history triggers and unique indexes are defense in depth, not protection against a privileged database owner. The application is single-Thana; it is not a multi-tenant isolation design.
+
+Dependency scans were used to update Cryptography to 50.0.2 and WeasyPrint to 70.0 and override the vulnerable transitive PostCSS with 8.5.33. See upstream [Cryptography changelog](https://cryptography.io/en/latest/changelog/), [WeasyPrint changelog](https://doc.courtbouillon.org/weasyprint/stable/changelog.html) and [PostCSS advisory](https://github.com/advisories/GHSA-qx2v-qp2m-jg93). Zero known audit findings at a given time is not a penetration test or a future security guarantee.

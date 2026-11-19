@@ -1,4 +1,5 @@
 from dataclasses import dataclass
+from functools import lru_cache
 from uuid import UUID
 import jwt
 from fastapi import Depends, HTTPException, status
@@ -19,11 +20,18 @@ class Actor:
     mfa: bool
 
 
+@lru_cache(maxsize=4)
+def jwks_client(url: str):
+    return jwt.PyJWKClient(url, cache_jwk_set=True, lifespan=300, timeout=5)
+
+
 def jwt_claims(token: str) -> dict:
     config = settings()
     try:
         # Only asymmetric signing keys are accepted. HS256 legacy tokens are rejected.
-        key = jwt.PyJWKClient(config.supabase_jwks_url).get_signing_key_from_jwt(token).key
+        if jwt.get_unverified_header(token).get("alg") not in {"RS256", "ES256"}:
+            raise ValueError("Unsupported signing algorithm")
+        key = jwks_client(config.supabase_jwks_url).get_signing_key_from_jwt(token).key
         claims = jwt.decode(
             token, key, algorithms=["RS256", "ES256"],
             audience=config.jwt_audience, issuer=config.supabase_issuer,

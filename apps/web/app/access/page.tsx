@@ -2,12 +2,13 @@
 import {useEffect,useState,type FormEvent} from "react";
 import {UserCog,ShieldCheck,Plus,CheckCircle2,XCircle} from "lucide-react";
 import Shell from "@/components/Shell";
-import {api,type OrgNode} from "@/lib/api";
+import {api,type OrgNode,type Identity} from "@/lib/api";
 
 type Request={id:string;auth_sub:string;email:string;role:string;scope_node_id:string|null;operation:string;status:string;requested_by:string;requested_at:string;reviewed_at:string|null};
 type User={id:string;auth_sub:string;email:string;active:boolean;roles:{role:string;scope_node_id:string|null}[]};
 const roles=["THANA_ADMIN","THANA_VIEWER","WARD_ADMIN","UNIT_EDITOR"] as const;
 export default function AccessPage(){
+  const [identity,setIdentity]=useState<Identity|null>(null);
   const [requests,setRequests]=useState<Request[]>([]);
   const [users,setUsers]=useState<User[]>([]);
   const [nodes,setNodes]=useState<OrgNode[]>([]);
@@ -19,11 +20,11 @@ export default function AccessPage(){
   const [message,setMessage]=useState("");
   const [busy,setBusy]=useState(false);
   const load=async()=>{try{
-    const [req,people,org]=await Promise.all([
+    const [req,people,org,me]=await Promise.all([
       api<{items:Request[]}>("/access/requests"),
       api<{items:User[]}>("/access/users"),
-      api<{items:OrgNode[]}>("/organization/nodes")]);
-    setRequests(req.items);setUsers(people.items);setNodes(org.items);
+      api<{items:OrgNode[]}>("/organization/nodes"),api<Identity>("/me")]);
+    setIdentity(me);setRequests(req.items);setUsers(people.items);setNodes(org.items);
   }catch(err){setMessage(err instanceof Error?err.message:String(err));}};
   useEffect(()=>{void load();},[]);
   const requiresScope=role==="WARD_ADMIN"||role==="UNIT_EDITOR";
@@ -51,7 +52,7 @@ export default function AccessPage(){
       </div><div className="form-actions"><button className="primary-btn" disabled={busy||(requiresScope&&!scope)}><Plus size={15}/> Submit permission request</button></div></form>
     </div>
     <div className="panel" style={{marginBottom:20,padding:0,overflow:"hidden"}}><div style={{padding:24}}><h2>Pending administrative approvals</h2><p className="subhead">The requesting administrator cannot approve their own request.</p></div>
-      {requests.some(r=>r.status==="PENDING")?<div className="table-wrap"><table className="data-table"><thead><tr><th>User</th><th>Request</th><th>Scope</th><th>Actions</th></tr></thead><tbody>{requests.filter(r=>r.status==="PENDING").map(r=><tr key={r.id}><td><b>{r.email}</b><p className="hint">{r.auth_sub.slice(0,8)}…</p></td><td>{r.operation} {r.role}</td><td>{nodes.find(n=>n.id===r.scope_node_id)?.name||"Thana-wide"}</td><td><button disabled={busy} onClick={()=>void decide(r.id,true)}><CheckCircle2 size={16}/> Approve</button><button disabled={busy} onClick={()=>void decide(r.id,false)}><XCircle size={16}/> Reject</button></td></tr>)}</tbody></table></div>
+      {requests.some(r=>r.status==="PENDING")?<div className="table-wrap"><table className="data-table"><thead><tr><th>User</th><th>Request</th><th>Scope</th><th>Actions</th></tr></thead><tbody>{requests.filter(r=>r.status==="PENDING").map(r=><tr key={r.id}><td><b>{r.email}</b><p className="hint">{r.auth_sub.slice(0,8)}…</p></td><td>{r.operation} {r.role}</td><td>{nodes.find(n=>n.id===r.scope_node_id)?.name||"Thana-wide"}</td><td><button disabled={busy||r.requested_by===identity?.id} onClick={()=>void decide(r.id,true)}><CheckCircle2 size={16}/> Approve</button><button disabled={busy||r.requested_by===identity?.id} onClick={()=>void decide(r.id,false)}><XCircle size={16}/> Reject</button></td></tr>)}</tbody></table></div>
       :<div className="empty"><ShieldCheck size={25}/><strong>No access requests pending</strong><span>New permission requests will require a separate reviewer.</span></div>}
     </div>
     <div className="panel" style={{padding:0,overflow:"hidden"}}><div style={{padding:24}}><h2>Approved account directory</h2><p className="subhead">Registered application accounts and assigned permissions.</p></div>

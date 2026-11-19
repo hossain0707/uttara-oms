@@ -4,6 +4,7 @@ import { usePathname } from "next/navigation";
 import Link from "next/link";
 import { LayoutDashboard, Users, GitBranch, ShieldCheck, FileBarChart2, LogOut, Menu, Network, ShieldAlert, UserCog } from "lucide-react";
 import { api, type Identity } from "@/lib/api";
+import MfaChallenge from "./MfaChallenge";
 import { authClient } from "@/lib/supabase";
 
 const items = [
@@ -24,22 +25,27 @@ export default function Shell({ title, subtitle, children }: {title: string; sub
   const [mobile, setMobile] = useState(false);
   useEffect(() => {
     let active = true;
+    let generation = 0;
     let unsubscribe: (() => void) | undefined;
     try {
       const auth = authClient();
       const check = async (signedIn: boolean) => {
         if (!active) return;
+        const requestGeneration = ++generation;
         setSession(signedIn);
         setIdentity(null);
         if (signedIn) {
-          try { const me = await api<Identity>("/me"); if (active) {setIdentity(me); setIssue("");} }
-          catch (err) {if (active) setIssue(err instanceof Error ? err.message : "Access denied");}
+          try { const me = await api<Identity>("/me"); if (active && requestGeneration === generation) {setIdentity(me); setIssue("");} }
+          catch (err) {if (active && requestGeneration === generation) setIssue(err instanceof Error ? err.message : "Access denied");}
         }
         if (active) setPending(false);
       };
       auth.auth.getSession().then(({data}) => check(!!data.session)).catch(err => {setIssue(String(err)); setPending(false);});
       const {data} = auth.auth.onAuthStateChange((event, current) => {
-        if (event === "SIGNED_IN" || event === "SIGNED_OUT") void check(!!current);
+        if (["SIGNED_IN", "SIGNED_OUT", "MFA_CHALLENGE_VERIFIED", "TOKEN_REFRESHED"].includes(event)) {
+          // Defer calls to auth.getSession until the auth-state callback releases its lock.
+          setTimeout(() => {void check(!!current);}, 0);
+        }
       });
       unsubscribe = () => data.subscription.unsubscribe();
     } catch (err) { setIssue(String(err)); setPending(false); }
@@ -59,9 +65,10 @@ export default function Shell({ title, subtitle, children }: {title: string; sub
   if (pending) return <div className="center-screen"><div className="loading-logo"><Network size={30}/></div><p>Verifying secure session…</p></div>;
   if (!identity) return <div className="center-screen"><div className="auth-card">
     <div className="auth-brand"><span className="brand-icon"><Network size={25}/></span><span>Uttara <b>OMS</b></span></div>
-    <h1>{session ? "Access needs approval" : "Organized. Secure. Connected."}</h1>
-    <p>{session ? "Your Google identity is signed in, but it is not approved for this workspace. Contact your authorized administrator." : "A private organizational management workspace. Only explicitly approved accounts can view records."}</p>
+    <h1>{session ? (issue==="Administrator MFA required"?"Administrator verification":"Access needs approval") : "Organized. Secure. Connected."}</h1>
+    <p>{session ? (issue==="Administrator MFA required"?"Your account is signed in. Complete authenticator verification to continue.":"Your Google identity is signed in, but it is not approved for this workspace. Contact your authorized administrator.") : "A private organizational management workspace. Only explicitly approved accounts can view records."}</p>
     {issue && <div className="alert"><ShieldAlert size={17}/>{issue}</div>}
+    {session&&issue==="Administrator MFA required"&&<MfaChallenge/>}
     <button className="primary-btn wide" onClick={session ? signOut : signIn}>{session ? "Sign out" : "Continue with Google"}</button>
     <span className="quiet">Sensitive information · Authorized access only</span>
   </div></div>;

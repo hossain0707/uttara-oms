@@ -2,18 +2,19 @@
 from datetime import datetime, timezone
 from uuid import UUID
 from fastapi import APIRouter, Depends, HTTPException
-from pydantic import BaseModel, Field, field_validator
+from pydantic import BaseModel, ConfigDict, Field, field_validator
 from sqlalchemy.orm import Session
 from sqlalchemy.exc import IntegrityError
 from ..auth import Actor, current_actor
 from ..database import get_db
 from ..models import AccessRequest, AppUser, AuditLog, OrgNode, RoleGrant
-from ..policies import ROLES, is_thana_admin
+from ..policies import ROLES, is_thana_admin, lock_organization
 
 router = APIRouter(prefix="/access", tags=["access control"])
 
 
 class GrantRequest(BaseModel):
+    model_config = ConfigDict(extra="forbid", str_strip_whitespace=True)
     auth_sub: UUID
     email: str = Field(min_length=3, max_length=320)
     role: str
@@ -43,6 +44,7 @@ class GrantRequest(BaseModel):
 
 
 class AccessDecision(BaseModel):
+    model_config = ConfigDict(extra="forbid")
     approve: bool
 
 
@@ -86,6 +88,7 @@ def requests(actor: Actor = Depends(current_actor), db: Session = Depends(get_db
 def request_access(data: GrantRequest, actor: Actor = Depends(current_actor),
                    db: Session = Depends(get_db)):
     require_admin(actor)
+    lock_organization(db)
     global_role = data.role in {"THANA_ADMIN", "THANA_VIEWER"}
     if global_role and data.scope_node_id is not None:
         raise HTTPException(422, "Thana-level roles must not have a scope")
@@ -100,6 +103,7 @@ def request_access(data: GrantRequest, actor: Actor = Depends(current_actor),
         AccessRequest.role == data.role,
         AccessRequest.operation == data.operation,
         AccessRequest.status == "PENDING",
+        AccessRequest.scope_node_id == data.scope_node_id,
     ).first()
     if duplicate and duplicate.scope_node_id == data.scope_node_id:
         raise HTTPException(409, "Equivalent change already pending")
@@ -117,6 +121,7 @@ def request_access(data: GrantRequest, actor: Actor = Depends(current_actor),
 def decide_access(request_id: UUID, body: AccessDecision,
                   actor: Actor = Depends(current_actor), db: Session = Depends(get_db)):
     require_admin(actor)
+    lock_organization(db)
     row = db.query(AccessRequest).filter(AccessRequest.id == request_id).with_for_update().one_or_none()
     if not row:
         raise HTTPException(404, "Request not found")
@@ -127,6 +132,11 @@ def decide_access(request_id: UUID, body: AccessDecision,
     if body.approve:
         user = db.query(AppUser).filter(AppUser.auth_sub == row.auth_sub).with_for_update().one_or_none()
         if row.operation == "GRANT":
+            if row.role in {"WARD_ADMIN", "UNIT_EDITOR"}:
+                scope = db.get(OrgNode, row.scope_node_id)
+                expected = "WARD" if row.role == "WARD_ADMIN" else "UNIT"
+                if not scope or not scope.active or scope.kind != expected:
+                    raise HTTPException(409, "Requested scope is no longer active")
             if user is None:
                 user = AppUser(auth_sub=row.auth_sub, email=row.email, active=True)
                 db.add(user); db.flush()
@@ -149,7 +159,8 @@ def decide_access(request_id: UUID, body: AccessDecision,
             if not grant:
                 raise HTTPException(404, "Target role not found")
             if row.role == "THANA_ADMIN":
-                remaining = db.query(RoleGrant).filter(RoleGrant.role == "THANA_ADMIN").count()
+                remaining = (db.query(RoleGrant.user_id).join(AppUser, AppUser.id == RoleGrant.user_id)
+                             .filter(RoleGrant.role == "THANA_ADMIN", AppUser.active.is_(True)).distinct().count())
                 if remaining <= 2:
                     raise HTTPException(409, "Maintain two administrators for independent approvals")
             db.delete(grant)

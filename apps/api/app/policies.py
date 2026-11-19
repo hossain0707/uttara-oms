@@ -70,3 +70,25 @@ def personal_nodes(db: Session, actor: Actor) -> set[UUID]:
         elif role == "UNIT_EDITOR" and node_id:
             result.add(node_id)
     return result
+
+
+def lock_organization(db: Session):
+    """Serialize structural/membership writes against root; acquired before entity locks."""
+    return (db.query(OrgNode).filter(OrgNode.kind == "THANA")
+            .order_by(OrgNode.id).with_for_update().all())
+
+
+def active_unit(db: Session, node_id: UUID) -> bool:
+    node = db.get(OrgNode, node_id)
+    if node is None or node.kind != "UNIT":
+        return False
+    seen = set()
+    for kind in ("UNIT", "WARD", "THANA"):
+        if node is None or node.kind != kind or not node.active or node.id in seen:
+            return False
+        seen.add(node.id)
+        parent = node.parent_id
+        if kind == "THANA":
+            return parent is None
+        node = db.get(OrgNode, parent) if parent else None
+    return False

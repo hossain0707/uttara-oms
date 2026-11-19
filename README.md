@@ -27,11 +27,11 @@ The repository is intentionally **application source only**. It must never conta
 
 | Domain | Capabilities |
 | --- | --- |
-| Dashboard | Current active counts by category; monthly increases/decreases; unit totals |
+| Dashboard | Historical active counts by category, ward and unit; date filters, comparison periods and monthly movements |
 | Member records | Individual records; lookup by name, member ID and exact normalized phone; duplicate phone detection |
-| Hierarchy | Editable Thana, Ward and Unit structure; initial 12 ward placeholders |
+| Hierarchy | Editable names and activation for Thana, Ward and Unit; stable codes; initial 12 ward placeholders |
 | Sensitive changes | Category, unit transfer, activation/deactivation require a submitted request and a separate approver |
-| Security | Supabase Google SSO, backend JWT verification, explicit local user approval, scoped role grants, admin MFA enforcement |
+| Security | Supabase Google SSO, backend JWT verification, explicit local user approval, scoped role grants, admin TOTP enrollment/challenge and MFA enforcement |
 | Data protection | Fernet encryption for phones/addresses, keyed HMAC phone deduplication, recorded consent attestation, no personal data in system logs |
 | Audit | Append-only application audit/event entries; optimistic version checking for member edits |
 | Reporting | Authorized aggregate Excel/PDF exports; admin-restricted personal Excel export with audit logging |
@@ -92,11 +92,11 @@ Requirements: Python 3.12+, Node 22+, Docker with Compose, PostgreSQL 16 (or hos
 
 1. Copy `apps/api/.env.example` to `apps/api/.env`; fill values with local-only secrets. Create an encryption key with `python -c "from cryptography.fernet import Fernet; print(Fernet.generate_key().decode())"`. Use a different long random key for `PHONE_HASH_KEY`.
 2. Set `LOCAL_DB_PASSWORD` in your shell and run `docker compose up -d db`. Set `DATABASE_URL` to `postgresql+psycopg://oms:<password>@localhost:5434/oms` for local Python (or `@db:5432` inside Compose).
-3. From `apps/api/`, install `pip install -r requirements.txt` and run `alembic upgrade head`.
+3. From `apps/api/`, install `pip install -r requirements.lock` and run `alembic upgrade head`.
 4. Initialize **organizational nodes only**, no people: `python -m app.bootstrap init-org`.
 5. Configure a dedicated Supabase Google OAuth project and permitted redirect URLs; sign in once with the intended admin Google account. Get the exact Supabase `auth.users.id` (JWT `sub`) through an authorized Supabase admin interface. Provision it locally with `python -m app.bootstrap admin --sub <auth-sub-uuid> --email <email>`. This is an offline privileged operation; enable Supabase MFA for this identity before using the app.
 6. Run `uvicorn app.main:app --reload` in `apps/api/`.
-7. Copy `apps/web/.env.example` to `apps/web/.env.local` and set the public Supabase project URL/publishable key and backend URL. From `apps/web/`, run `npm install && npm run dev`.
+7. Copy `apps/web/.env.example` to `apps/web/.env.local` and set the public Supabase project URL/publishable key and backend URL. From `apps/web/`, run `npm ci && npm run dev`.
 8. Open http://localhost:3000 and use Google sign-in. Only explicitly approved database accounts can enter.
 
 **Important:** An OAuth sign-in alone never confers organizational access. Google identities are not accepted until a locally approved `app_users` record and scoped `role_grants` exist.
@@ -108,12 +108,13 @@ cd apps/api
 pytest -q
 
 cd ../web
-npm install
+npm ci
 npm run lint
+npm test
 npm run build
 ```
 
-See [architecture](docs/architecture.md), [security and privacy](docs/security.md), [operations](docs/operations.md), and [QA checklist](docs/qa.md).
+See [implementation plan](docs/IMPLEMENTATION_PLAN.md), [project status](docs/PROJECT_STATUS.md), [release checklist](docs/RELEASE_CHECKLIST.md), [architecture](docs/architecture.md), [security and privacy](docs/security.md), [operations](docs/operations.md), and [QA checklist](docs/qa.md).
 
 ## Release status
 
@@ -122,3 +123,12 @@ See [architecture](docs/architecture.md), [security and privacy](docs/security.m
 The software must be used for consensual internal administration, **not** individual political profiling, campaign targeting, or unauthorized sharing of personal data.
 
 **License:** No open-source license has been granted. All rights reserved by the repository rights holder unless a separate license is supplied.
+
+
+## Historical reporting and upgrade
+
+Dashboard and aggregate exports accept inclusive `start_date` / `end_date` in Asia/Dhaka. Counts reflect the selected end date; movements and monthly summaries reflect the selected interval. Category changes preserve overall counts, and historical transfers stay in their original unit scope. Personal exports contain **current** records. See the exact accounting and legacy backfill rules in [architecture](docs/architecture.md).
+
+Before upgrading a populated environment: stop writes, back up the database and keys separately, restore into staging, run `alembic upgrade head` and `alembic check`, and reconcile scoped totals. Migrations reject incomplete history rather than invent historical counts. Do not bypass that failure without a reviewed reconciliation. The source and tested dependency locks contain no real records.
+
+For PostgreSQL integration tests set a dedicated synthetic `TEST_DATABASE_URL` whose user may create/drop schemas, then run `python -m pytest -q`. Each integration/migration fixture creates an isolated schema. **Never point this at a production database.** CI supplies a disposable PostgreSQL 16 service. Local runs without it use SQLite and skip the PostgreSQL locking case.

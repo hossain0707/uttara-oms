@@ -5,7 +5,7 @@ from sqlalchemy.exc import IntegrityError
 from ..auth import Actor, current_actor
 from ..database import get_db
 from ..models import AuditLog, Member, OrgNode
-from ..policies import allowed_nodes, is_thana_admin
+from ..policies import allowed_nodes, is_thana_admin, lock_organization
 from ..schemas import OrgCreate, OrgUpdate
 
 router = APIRouter(prefix="/organization", tags=["organization"])
@@ -27,6 +27,7 @@ def nodes(actor: Actor = Depends(current_actor), db: Session = Depends(get_db)):
 def create_node(body: OrgCreate, actor: Actor = Depends(current_actor), db: Session = Depends(get_db)):
     if not is_thana_admin(actor):
         raise HTTPException(403, "Thana Admin required")
+    lock_organization(db)
     if body.kind == "THANA":
         if body.parent_id is not None or db.query(OrgNode).filter(OrgNode.kind == "THANA").count():
             raise HTTPException(422, "Only one root Thana is allowed")
@@ -53,10 +54,17 @@ def update_node(node_id: UUID, body: OrgUpdate, actor: Actor = Depends(current_a
                 db: Session = Depends(get_db)):
     if not is_thana_admin(actor):
         raise HTTPException(403, "Thana Admin required")
+    lock_organization(db)
     n = db.get(OrgNode, node_id)
     if not n:
         raise HTTPException(404, "Node not found")
     changes = body.model_dump(exclude_unset=True)
+    if not changes:
+        raise HTTPException(422, "No organization fields to update")
+    if changes.get("active") is True and n.parent_id:
+        parent = db.get(OrgNode, n.parent_id)
+        if not parent or not parent.active:
+            raise HTTPException(409, "Activate the parent first")
     if changes.get("active") is False:
         child_count = db.query(OrgNode).filter(OrgNode.parent_id == n.id, OrgNode.active.is_(True)).count()
         member_count = db.query(Member).filter(Member.org_node_id == n.id, Member.status == "ACTIVE").count()

@@ -1,0 +1,90 @@
+"""Exercise actual migrations and legacy event reconstruction on isolated synthetic DBs."""
+import os
+from pathlib import Path
+import subprocess
+import sys
+import uuid
+from datetime import datetime, timezone
+import sqlalchemy as sa
+import pytest
+
+
+def migrate(url, revision):
+    environment = dict(os.environ, DATABASE_URL=url, ENVIRONMENT="test")
+    return subprocess.run([sys.executable, "-m", "alembic", "upgrade", revision],
+                          cwd=Path(__file__).resolve().parents[1], env=environment,
+                          capture_output=True, text=True)
+
+
+@pytest.fixture
+def migration_db(tmp_path):
+    base_url = os.environ.get("TEST_DATABASE_URL")
+    if base_url:
+        from sqlalchemy.engine import make_url
+        schema = "oms_migration_" + uuid.uuid4().hex
+        admin = sa.create_engine(base_url)
+        with admin.begin() as connection:
+            connection.execute(sa.text(f'CREATE SCHEMA "{schema}"'))
+        url = make_url(base_url).update_query_dict({"options":f"-csearch_path={schema}"}).render_as_string(hide_password=False)
+    else:
+        url = "sqlite+pysqlite:///" + str(tmp_path / "migration.sqlite3")
+    engine = sa.create_engine(url)
+    try:
+        yield url, engine
+    finally:
+        engine.dispose()
+        if base_url:
+            with admin.begin() as connection:
+                connection.execute(sa.text(f'DROP SCHEMA "{schema}" CASCADE'))
+            admin.dispose()
+
+
+def legacy_fixture(engine, complete=True):
+    from app.database import Base
+    from app import models
+    metadata = Base.metadata
+    ids = {k:uuid.uuid4() for k in ("root","ward","unit1","unit2","user","member")}
+    now = datetime(2020,1,1,tzinfo=timezone.utc)
+    with engine.begin() as c:
+        org = metadata.tables["org_nodes"]
+        c.execute(org.insert(), [dict(id=ids["root"],parent_id=None,kind="THANA",code="root",name="Test root",active=True)])
+        c.execute(org.insert(), [dict(id=ids["ward"],parent_id=ids["root"],kind="WARD",code="ward",name="Test ward",active=True)])
+        for unit in ("unit1","unit2"):
+            c.execute(org.insert().values(id=ids[unit],parent_id=ids["ward"],kind="UNIT",code=unit,name="Test unit",active=True))
+        c.execute(metadata.tables["app_users"].insert().values(id=ids["user"],auth_sub=str(ids["user"]),email="synthetic@example.invalid",active=True,created_at=now))
+        c.execute(metadata.tables["members"].insert().values(id=ids["member"],member_number="LEGACY-01",full_name="Synthetic Legacy",category="RUKON",status="INACTIVE",org_node_id=ids["unit2"],consent_at=now,consent_version="test",version=4,created_at=now,updated_at=now))
+        history = [("CREATED",None,"ACTIVE"),("CATEGORY","SUPPORTER","RUKON"),("TRANSFER",str(ids["unit1"]),str(ids["unit2"])),("DEACTIVATE","ACTIVE","INACTIVE")]
+        for i,(action,before,after) in enumerate(history):
+            if not complete and action == "CREATED": continue
+            c.execute(metadata.tables["member_events"].insert().values(id=uuid.uuid4(),member_id=ids["member"],action=action,before=before,after=after,actor_id=ids["user"],created_at=now.replace(day=i+1)))
+    return ids
+
+
+def test_backfill_and_schema_match(migration_db):
+    url, engine = migration_db
+    result = migrate(url,"0002_access")
+    assert result.returncode == 0, result.stderr
+    ids = legacy_fixture(engine)
+    result = migrate(url,"head")
+    assert result.returncode == 0, result.stderr
+    with engine.connect() as c:
+        rows = c.execute(sa.text("SELECT category, sum(delta) FROM membership_deltas GROUP BY category")).all()
+        assert all(count == 0 for _,count in rows)
+        assert c.execute(sa.text("SELECT count(*) FROM membership_deltas")).scalar_one() == 6
+        assert c.execute(sa.text("SELECT count(*) FROM members")).scalar_one() == 1
+        assert c.execute(sa.text("SELECT version_num FROM alembic_version")).scalar_one() == "0004_invariants"
+    result = subprocess.run([sys.executable,"-m","alembic","check"], cwd=Path(__file__).resolve().parents[1],env=dict(os.environ,DATABASE_URL=url,ENVIRONMENT="test"),capture_output=True,text=True)
+    assert result.returncode == 0, result.stdout+result.stderr
+    if engine.dialect.name == "postgresql":
+        with pytest.raises(sa.exc.DBAPIError, match="append-only"):
+            with engine.begin() as c:
+                c.execute(sa.text("DELETE FROM membership_deltas"))
+
+
+def test_backfill_rejects_incomplete_history(migration_db):
+    url, engine = migration_db
+    assert migrate(url,"0002_access").returncode == 0
+    legacy_fixture(engine, complete=False)
+    result = migrate(url,"head")
+    assert result.returncode != 0
+    assert "Missing legacy creation event" in result.stderr

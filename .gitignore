@@ -13,3 +13,5 @@ coverage/
 *.db
 *.log
 .DS_Store
+
+*.tsbuildinfo

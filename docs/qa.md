@@ -32,3 +32,15 @@
 ## Release signoff
 
 Do not ingest real sensitive member records until all security gates have named accountable signoffs and a documented incident-response process.
+
+
+## Automated checks added during hardening
+
+- API: historical category/status/transfer accounting, original-unit attribution, Dhaka midnight cutoff, date validation, personal/aggregate export boundaries, valid XLSX/PDF containers, stale updates/approvals, inactive hierarchy/reactivation, strict writes, input-free errors, readiness and response headers.
+- Identity: locally generated RSA signatures; expired, wrong issuer/audience/role, missing expiry, invalid signatures, future-issued, malformed, unsigned and HS256 rejection; unapproved identity and admin MFA denial.
+- Migration: actual 0002→head legacy backfill, accounting conservation, no duplicate people, refusal of missing creation history, model/migration drift check; PostgreSQL additionally tests immutable-history trigger.
+- PostgreSQL concurrency: two simultaneous routine edits at the same version result in exactly one success and one 409. Requires TEST_DATABASE_URL; not simulated on SQLite. A second PostgreSQL-only test verifies read-only REPEATABLE READ reporting.
+- Frontend: date filter/reset behavior, report failure state, administrator organization rename/deactivation and authenticator challenge error handling (Vitest/jsdom; mocked API/identity provider).
+- CI: dedicated PostgreSQL schemas per route/migration fixture, exact Alembic head, model drift check, backend suite, frontend tests/typecheck/build and separate dependency audits.
+
+jsdom component tests do not prove browser OAuth, mobile layout, accessibility or live MFA enrollment. Those acceptance gates require staging and real browsers with synthetic identities. A successful dependency audit does not replace penetration testing.
