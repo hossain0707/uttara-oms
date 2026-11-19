@@ -6,6 +6,7 @@ import {api, type Category, type Member, type OrgNode} from "@/lib/api";
 
 type NewProfile = {member_number:string;full_name:string;father_name:string;phone:string;address:string;occupation:string;position:string;category:Category;org_node_id:string;joined_on:string};
 const blank:NewProfile={member_number:"",full_name:"",father_name:"",phone:"",address:"",occupation:"",position:"",category:"SUPPORTER",org_node_id:"",joined_on:""};
+type HistoryItem={id:string;action:string;before:string|null;after:string|null;actor_id:string;created_at:string};
 const labels:Record<Category,string>={RUKON:"Rukon · রুকন",WORKER:"Worker · কর্মী",ASSOCIATE:"Associate · সহযোগী",SUPPORTER:"Supporter · সমর্থক"};
 
 export default function PeoplePage(){
@@ -18,6 +19,7 @@ export default function PeoplePage(){
   const [profile,setProfile]=useState<NewProfile>(blank);
   const [consented,setConsented]=useState(false);
   const [editing,setEditing]=useState<Member|null>(null);
+  const [history,setHistory]=useState<HistoryItem[]>([]);
   const [routine,setRoutine]=useState({full_name:"",father_name:"",phone:"",address:"",occupation:"",position:""});
   const [changeKind,setChangeKind]=useState("CATEGORY");
   const [changeValue,setChangeValue]=useState("WORKER");
@@ -36,7 +38,7 @@ export default function PeoplePage(){
       setProfile(blank);setConsented(false);setShowCreate(false);setNotice("Profile saved securely.");await load();
     }catch(err){setNotice(err instanceof Error?err.message:String(err));}finally{setBusy(false);}
   };
-  const choose=(m:Member)=>{setEditing(m);setRoutine({full_name:m.full_name,father_name:m.father_name||"",phone:m.phone||"",address:m.address||"",occupation:m.occupation||"",position:m.position||""});setChangeKind("CATEGORY");setChangeValue(m.category==="WORKER"?"RUKON":"WORKER");};
+  const choose=(m:Member)=>{setEditing(m);setHistory([]);void api<{items:HistoryItem[]}>("/members/"+m.id+"/history").then(data=>setHistory(data.items)).catch(err=>setNotice(String(err)));setRoutine({full_name:m.full_name,father_name:m.father_name||"",phone:m.phone||"",address:m.address||"",occupation:m.occupation||"",position:m.position||""});setChangeKind("CATEGORY");setChangeValue(m.category==="WORKER"?"RUKON":"WORKER");};
   const saveRoutine=async(e:FormEvent)=>{e.preventDefault();if(!editing)return;setBusy(true);setNotice("");
     try{await api("/members/"+editing.id,{method:"PATCH",body:JSON.stringify({...routine,expected_version:editing.version})});setEditing(null);setNotice("Routine changes saved.");await load();}
     catch(err){setNotice(err instanceof Error?err.message:String(err));}finally{setBusy(false);}
@@ -66,6 +68,10 @@ export default function PeoplePage(){
       <form onSubmit={propose}><div className="form-grid"><div className="form-field"><label>Change type</label><select className="select" value={changeKind} onChange={e=>{setChangeKind(e.target.value);setChangeValue(e.target.value==="TRANSFER"?"":e.target.value==="CATEGORY"?"WORKER":"");}}><option value="CATEGORY">Change category</option><option value="TRANSFER">Transfer unit</option><option value="DEACTIVATE">Deactivate</option><option value="REACTIVATE">Reactivate</option></select></div>
         {changeKind==="CATEGORY"?<div className="form-field"><label>New category</label><select className="select" value={changeValue} onChange={e=>setChangeValue(e.target.value)}>{Object.entries(labels).map(([key,label])=><option value={key} key={key}>{label}</option>)}</select></div>:changeKind==="TRANSFER"?<div className="form-field"><label>Destination unit</label><select className="select" required value={changeValue} onChange={e=>setChangeValue(e.target.value)}><option value="">Choose a unit</option>{units.filter(n=>n.id!==editing.org_node_id).map(n=><option key={n.id} value={n.id}>{n.name}</option>)}</select></div>:<p className="hint">This change will not take effect until a separate, authorized officer approves it.</p>}
       </div><div className="form-actions"><button disabled={busy||(changeKind==="TRANSFER"&&!changeValue)} className="secondary-btn"><ShieldCheck size={15}/> Submit for approval</button></div></form>
+      <hr className="subtle-divider"/>
+      <h2>Record activity history</h2>
+      <p className="subhead">Most recent organizational transitions and routine edits, with actor and timestamp.</p>
+      {history.length ? <div className="table-wrap"><table className="data-table"><thead><tr><th>Date</th><th>Action</th><th>Previous</th><th>Updated</th><th>Recorded by</th></tr></thead><tbody>{history.map(entry=><tr key={entry.id}><td>{new Date(entry.created_at).toLocaleString()}</td><td>{entry.action.replaceAll("_"," ")}</td><td>{entry.before||"—"}</td><td>{entry.after||"—"}</td><td>{entry.actor_id.slice(0,8)}…</td></tr>)}</tbody></table></div> : <p className="hint">No additional history entries are available.</p>}
     </div>}
   </Shell>;
 }
