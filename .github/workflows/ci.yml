@@ -9,11 +9,25 @@ permissions:
 jobs:
   backend:
     runs-on: ubuntu-latest
+    services:
+      postgres:
+        image: postgres:16-alpine
+        env:
+          POSTGRES_USER: oms_ci
+          POSTGRES_PASSWORD: ci-only-password
+          POSTGRES_DB: oms_ci
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd "pg_isready -U oms_ci -d oms_ci"
+          --health-interval 5s
+          --health-timeout 5s
+          --health-retries 10
     defaults:
       run:
         working-directory: apps/api
     env:
-      DATABASE_URL: 'sqlite+pysqlite:///:memory:'
+      DATABASE_URL: postgresql+psycopg://oms_ci:ci-only-password@localhost:5432/oms_ci
       SUPABASE_ISSUER: https://example.supabase.co/auth/v1
       SUPABASE_JWKS_URL: https://example.supabase.co/auth/v1/.well-known/jwks.json
       JWT_AUDIENCE: authenticated
@@ -29,6 +43,8 @@ jobs:
           cache-dependency-path: apps/api/requirements.txt
       - run: pip install -r requirements.txt
       - run: python -m compileall -q app
+      - run: alembic upgrade head
+      - run: python -m app.bootstrap init-org
       - run: python -m pytest -q
 
   frontend:
