@@ -41,8 +41,8 @@ jobs:
           docker run -d --name oms-web -p 127.0.0.1:3000:3000 uttara-web:ci
       - name: Verify HTTP and native PDF dependencies
         run: |
-          curl --fail --retry 12 --retry-delay 2 --retry-connrefused http://127.0.0.1:8000/health/live
-          curl --fail --retry 12 --retry-delay 2 --retry-connrefused http://127.0.0.1:3000/
+          curl --fail --retry 12 --retry-delay 2 --retry-connrefused --retry-all-errors --retry-max-time 60 http://127.0.0.1:8000/health/live
+          curl --fail --retry 12 --retry-delay 2 --retry-connrefused --retry-all-errors --retry-max-time 60 http://127.0.0.1:3000/
           test "$(curl --silent -o /dev/null -w '%{http_code}' http://127.0.0.1:8000/health/ready)" = "503"
           docker exec oms-api python -c "from weasyprint import HTML; assert HTML(string='<h1>Synthetic PDF check</h1>').write_pdf().startswith(b'%PDF-')"
           test "$(docker exec oms-api id -u)" != "0"
