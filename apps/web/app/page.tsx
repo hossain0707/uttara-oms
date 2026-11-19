@@ -44,5 +44,8 @@ export default function Home() {
         <Link href="/members" className="primary-btn" style={{marginTop:12}}>Manage people <ArrowRight size={15}/></Link>
       </div>
     </div>
+    <div className="panel" style={{marginTop:20}}><div className="panel-head"><div><h2>Ward overview</h2><span className="subhead">Active people by ward, restricted to your assigned scope</span></div><GitBranch size={20} color="#318A67"/></div>
+      {data?.by_ward?.length ? <div className="table-wrap"><table className="data-table"><thead><tr><th>Ward</th><th>Code</th><th>Active</th></tr></thead><tbody>{data.by_ward.map(w=><tr key={w.id}><td>{w.name}</td><td>{w.code}</td><td><b>{w.count}</b></td></tr>)}</tbody></table></div> : <div className="empty"><GitBranch size={26}/><strong>No wards visible</strong><span>Authorized ward records will appear here.</span></div>}
+    </div>
   </Shell>;
 }

@@ -98,6 +98,10 @@ def test_sensitive_change_requires_independent_approval(context):
     assert client.get("/api/v1/members/"+item["id"]).json()["category"] == "RUKON"
     dashboard = client.get("/api/v1/reports/dashboard").json()
     assert dashboard["total_active"] == 1
+    assert dashboard["by_ward"][0]["count"] == 1
+    history = client.get("/api/v1/members/"+item["id"]+"/history")
+    assert history.status_code == 200
+    assert {row["action"] for row in history.json()["items"]} == {"CREATED", "CATEGORY"}
     assert dashboard["by_category"]["RUKON"] == 1
     assert dashboard["this_month"]["increase"] == 1
 
@@ -116,3 +120,27 @@ def test_cross_ward_transfer_needs_thana_admin(context):
     assert accepted.status_code == 200, accepted.text
     holder["actor"] = who["outsider"]
     assert client.get("/api/v1/members/"+member["id"]).status_code == 200
+
+
+
+def test_access_grant_requires_second_admin(context):
+    client, holder, who, unit1, unit2 = context
+    from app.auth import Actor
+    import uuid
+    target = uuid.uuid4()
+    holder["actor"] = who["admin"]
+    response = client.post("/api/v1/access/requests", json={
+        "auth_sub": str(target), "email": "synthetic-user@example.invalid",
+        "role": "UNIT_EDITOR", "scope_node_id": str(unit1.id), "operation": "GRANT",
+    })
+    assert response.status_code == 201, response.text
+    rid = response.json()["id"]
+    assert client.post("/api/v1/access/requests/"+rid+"/decision",json={"approve":True}).status_code == 403
+    reviewer = Actor(uuid.uuid4(), "independent-admin@example.invalid", [("THANA_ADMIN", None)], True)
+    holder["actor"] = reviewer
+    approved = client.post("/api/v1/access/requests/"+rid+"/decision",json={"approve":True})
+    assert approved.status_code == 200, approved.text
+    people = client.get("/api/v1/access/users").json()["items"]
+    assert any(p["auth_sub"] == str(target) and p["roles"][0]["role"] == "UNIT_EDITOR" for p in people)
+    holder["actor"] = who["outsider"]
+    assert client.get("/api/v1/access/users").status_code == 403

@@ -18,6 +18,7 @@ export type Dashboard = {
   total_active: number; by_category: Record<Category, number>;
   this_month: {increase: number; decrease: number; net: number};
   by_unit: { id: string; name: string; code: string; count: number }[];
+  by_ward: { id: string; name: string; code: string; count: number }[];
   generated_at: string;
 };
 

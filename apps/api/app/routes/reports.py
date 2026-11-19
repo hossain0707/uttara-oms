@@ -25,6 +25,14 @@ def report_data(db: Session, actor: Actor):
         Member.org_node_id.in_(ids), Member.status == "ACTIVE").group_by(Member.org_node_id).all()
     counts = dict(rows)
     by_unit = [{"id": str(n.id), "name": n.name, "code": n.code, "count": counts.get(n.id, 0)} for n in units]
+    ward_totals = {}
+    for unit in units:
+        if unit.parent_id:
+            ward_totals[unit.parent_id] = ward_totals.get(unit.parent_id, 0) + counts.get(unit.id, 0)
+    ward_ids = set(ward_totals) | {n for n in ids if db.get(OrgNode, n).kind == "WARD"}
+    wards = db.query(OrgNode).filter(OrgNode.kind == "WARD", OrgNode.id.in_(ward_ids)).all()
+    by_ward = [{"id": str(w.id), "name": w.name, "code": w.code,
+                "count": ward_totals.get(w.id, 0)} for w in sorted(wards, key=lambda v: v.code)]
     # Events are scoped to the member's current assigned unit.
     start = datetime.now(timezone.utc).replace(day=1, hour=0, minute=0, second=0, microsecond=0)
     events = (db.query(MemberEvent.action, MemberEvent.after, func.count(MemberEvent.id))
@@ -34,7 +42,7 @@ def report_data(db: Session, actor: Actor):
     increased = sum(n for action, after, n in events if action == "CREATED" or (action == "REACTIVATE" and after == "ACTIVE"))
     decreased = sum(n for action, after, n in events if action == "DEACTIVATE" and after == "INACTIVE")
     return {"total_active": sum(data.values()), "by_category": data,
-            "by_unit": by_unit, "this_month": {"increase": increased, "decrease": decreased, "net": increased - decreased},
+            "by_unit": by_unit, "by_ward": by_ward, "this_month": {"increase": increased, "decrease": decreased, "net": increased - decreased},
             "generated_at": datetime.now(timezone.utc).isoformat()}
 
 
@@ -69,6 +77,11 @@ def export_xlsx(include_personal: bool = False, actor: Actor = Depends(current_a
     for idx, unit in enumerate(data["by_unit"], 1):
         units.write_row(idx, 0, [unit["name"], unit["code"], unit["count"]])
     units.set_column("A:A", 35)
+    wards_sheet = book.add_worksheet("Ward counts")
+    wards_sheet.write_row(0, 0, ["Ward", "Code", "Active"], header)
+    for idx, ward in enumerate(data["by_ward"], 1):
+        wards_sheet.write_row(idx, 0, [ward["name"], ward["code"], ward["count"]])
+    wards_sheet.set_column("A:A", 35)
     if include_personal:
         people = book.add_worksheet("Restricted personal records")
         fields = ["Member number", "Name", "Phone", "Category", "Status", "Unit ID"]

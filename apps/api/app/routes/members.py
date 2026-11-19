@@ -126,6 +126,7 @@ def update_routine(member_id: UUID, payload: MemberRoutineUpdate, actor: Actor =
         for key, value in data.items():
             setattr(m, key, value)
         m.version += 1
+        db.add(MemberEvent(member_id=m.id, action="ROUTINE_UPDATED", after=", ".join(sorted(payload.model_fields_set - {"expected_version"})), actor_id=actor.id))
         db.add(AuditLog(actor_id=actor.id, action="MEMBER_ROUTINE_UPDATED",
                         target_id=str(m.id), detail="Fields: " + ", ".join(sorted(payload.model_fields_set - {"expected_version"}))))
         db.commit()
@@ -134,3 +135,16 @@ def update_routine(member_id: UUID, payload: MemberRoutineUpdate, actor: Actor =
         raise HTTPException(409, "Phone number already exists") from exc
     db.refresh(m)
     return view(m)
+
+
+
+@router.get("/{member_id}/history")
+def history(member_id: UUID, actor: Actor = Depends(current_actor),
+            db: Session = Depends(get_db)):
+    member = visible(db, actor, member_id)
+    rows = (db.query(MemberEvent).filter(MemberEvent.member_id == member.id)
+            .order_by(MemberEvent.created_at.desc()).limit(250).all())
+    return {"items": [{
+        "id": str(e.id), "action": e.action, "before": e.before, "after": e.after,
+        "actor_id": str(e.actor_id), "created_at": e.created_at.isoformat()
+    } for e in rows]}
