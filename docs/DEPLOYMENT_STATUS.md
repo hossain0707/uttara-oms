@@ -24,9 +24,9 @@ Updated 2026-11-20 Asia/Seoul. Application is NOT live.
 
 ## Required next steps
 
-1. Choose the hosting budget (free-only or an explicit usage-billed allowance). No allowance has been supplied; usage-billed deployment is paused. Google OAuth configuration is now saved; do not ask the user to recreate its credentials.
-2. Confirm a cloud spending ceiling and billing account before launching paid/usage-billed resources. Min 0/max 1 instances reduces exposure but is not a monetary cap.
-3. Inspect the created Supabase project, choose matching cloud region, configure Google OAuth and TOTP, and set exact redirect origins.
+1. The user selected Free only. Render Hobby/no card was verified; the new backend form selects Free ($0/month), Singapore, Docker context apps/api, health /health/ready and auto-deploy Off. The service is not deployed. Google OAuth configuration is saved; do not recreate its credentials.
+2. Keep deployment on the free-only topology below. Do not add billing or launch usage-billed resources.
+3. Supabase Singapore, Google OAuth and TOTP are configured. Set exact frontend redirect origins after its deployment URL is confirmed.
 4. Use managed secrets and a dedicated least-privilege database runtime identity. The `oms` schema currently has RLS enabled with no runtime-role policies, so do not deploy until that identity, its required policies and table privileges are provisioned. Set the connection search_path to `oms` (for example, via psycopg options `-csearch_path=oms`). Any new security-sensitive grants or public ingress exposure require action-time confirmation in the browser.
 5. Connect the authorized source, build containers, configure port 8000 for the API, run migrations in a controlled job, bootstrap organization and named administrators, then validate readiness and unauthorized rejection.
 6. Build/configure the frontend using only public Supabase settings and the verified API origin. Choose Cloudflare static export or a compatible container deployment; current web Dockerfile is standalone Next.js.
@@ -38,3 +38,14 @@ Existing Trippy/AgentVerse resources were inspected only to distinguish targets;
 ## Fresh database renderer
 
 Run `python scripts/render_fresh_sql.py --schema oms` from `apps/api` to generate initialization SQL without deployment credentials. It deliberately fails if the schema already exists. Do not rerun it against the provisioned project. Existing databases must use Alembic migrations instead. The ledger backfill is skipped only because a newly created schema has no legacy rows; this is not a populated-database migration shortcut. The script enables RLS and revokes PUBLIC privileges; backend runtime policies must be separately reviewed/provisioned.
+
+
+## Free-only hosting decision
+
+The user selected **Free only**. Do not deploy Cloud Run or Cloudflare Containers, add a payment method, enable paid plans, add paid disks/databases, or authorize automatic overages. The proposed zero-cost topology is Cloudflare Pages static export + Render Free Docker web service + the existing Supabase Free project. Check Render billing before creation: with no payment method, exceeding bandwidth suspends free services and exceeding pipeline minutes stops builds. Render's free backend sleeps after 15 idle minutes and can be restarted/suspended by the platform; this is a limited pilot and does not establish a production availability SLA.
+
+`render.yaml` explicitly requests one Free Docker backend in Singapore and no Render database, disk or paid job. Existing migrations are already applied in Supabase; Free Render has no paid pre-deploy job, so future migrations must run as controlled operator tasks rather than automatic startup migrations. Set actual secrets directly in the provider; never use CI placeholders for deployment.
+
+The frontend supports `npm run build:static` in `apps/web`; Cloudflare Pages output is `out`. The build requires the actual public backend URL, Supabase URL and publishable key and emits security/no-store headers with a CSP limited to the configured API/Auth origins. Standalone Docker builds remain the default. Do not publish using the `example-api.onrender.com` CI validation origin.
+
+References: [Render Free limits](https://render.com/docs/free), [Render Docker hosting](https://render.com/hosting/docker), [Cloudflare Next.js static exports](https://developers.cloudflare.com/pages/framework-guides/nextjs/deploy-a-static-nextjs-site/).
