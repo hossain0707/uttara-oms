@@ -28,8 +28,8 @@
 | Check | Result |
 | --- | --- |
 | Python 3.12 compile | Passed |
-| Backend suite from locked dependencies | 35 passed, 2 skipped (PostgreSQL only) |
-| Actual Alembic 0002→head backfill and schema drift | Passed on SQLite; included in backend suite |
+| Backend suite from locked dependencies | 37 passed on PostgreSQL CI; local SQLite run: 35 passed, 2 PostgreSQL-only skips |
+| Actual Alembic 0002→head backfill and schema drift | Passed on SQLite and PostgreSQL CI; included in backend suite |
 | Incomplete legacy history migration | Correctly rejected; included in backend suite |
 | Vitest/jsdom | 4 passed across 3 files |
 | TypeScript (`npm run lint`) | Passed; this command is a typecheck, not an ESLint run |
@@ -45,18 +45,20 @@ One Starlette/httpx test-client deprecation warning remains; tests pass. Depende
 
 This workspace has no Docker executable and blocks local socket creation. A temporary PostgreSQL start failed at socket creation; therefore PostgreSQL row-locking/snapshot/trigger checks and Docker image smoke tests were **not run locally**. CI now defines these checks against disposable PostgreSQL 16, but no new CI result is claimed.
 
-GitHub source access became available in the next session. Source publication and PR checks are being resumed through the connected account. The earlier local-only limitation no longer describes the connection. This does not establish a live deployment: Supabase currently requires sign-in in the connected browser, and no matching Uttara Google Cloud project was found by name. Existing unrelated cloud projects have not been modified. Track actual branch/PR results and deployment settings before release.
+Source is published in [PR #1](https://github.com/hossain0707/uttara-oms/pull/1), code commit `245381e13a9394dc1d180ab4556636c8d2d930b8`. [Quality checks](https://github.com/hossain0707/uttara-oms/actions/runs/44556745119) passed, including all 37 backend tests against PostgreSQL 16, migration drift/backfill/immutable-history checks, concurrent edits, read-only report snapshots, frontend typecheck/tests/build. [Dependency security](https://github.com/hossain0707/uttara-oms/actions/runs/44556744735) also passed.
+
+Browser setup created a dedicated Google Cloud project `uttara-oms` and Free Supabase organization “Uttara OMS”. The Supabase database project form is prepared but not submitted: creating its database password requires user handoff. Cloud Run service `uttara-oms-api` is drafted with min 0/max 1 instances and requires authentication, but repository connection, configuration and deployment are not complete. No unrelated apps were modified. See DEPLOYMENT_STATUS.md.
 
 ## Remaining release blockers
 
-See [RELEASE_CHECKLIST.md](RELEASE_CHECKLIST.md) for owners and evidence. In particular: PostgreSQL concurrency and snapshot checks, container smoke tests, Google PKCE/MFA enrollment/recovery and mobile/browser acceptance in staging, TLS/CSP/ingress limits, least-privilege DB permissions, load/export limits, backup restore evidence, independent security review, approved privacy/retention/erasure policy and key-rotation tooling. Do not ingest real sensitive records until those gates are satisfied.
+See [RELEASE_CHECKLIST.md](RELEASE_CHECKLIST.md) for owners and evidence. In particular: Container smoke tests, Google PKCE/MFA enrollment/recovery and mobile/browser acceptance in staging, TLS/CSP/ingress limits, least-privilege DB permissions, load/export limits, backup restore evidence, independent security review, approved privacy/retention/erasure policy and key-rotation tooling. Do not ingest real sensitive records until those gates are satisfied.
 
 The supplied command ends at “Clearly”. Requirements after that point were not received and are not claimed complete. Stable organizational codes and IDs are retained; names/activation are editable. No redesign of working architecture was performed.
 
 ## Continue from this branch
 
 1. Read IMPLEMENTATION_PLAN.md, architecture.md and RELEASE_CHECKLIST.md.
-2. Push `hardening/production-foundation` from an authenticated checkout; open a PR targeting main.
-3. Require the new Quality checks and Dependency security workflows. PostgreSQL tests must run without skips in CI.
+2. Review published PR #1 targeting main; the implementation commit has green CI.
+3. Keep the Quality checks and Dependency security workflows required. PostgreSQL tests ran without skips in the verified code CI run.
 4. Rehearse migration/backfill on an isolated restored staging database with writes stopped; do not bypass incomplete-history failures.
 5. Complete staging/manual/recovery/privacy gates, record accountable signoffs, then decide deployment.
