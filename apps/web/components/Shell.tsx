@@ -2,7 +2,7 @@
 import { useEffect, useState, type ReactNode } from "react";
 import { usePathname } from "next/navigation";
 import Link from "next/link";
-import { LayoutDashboard, Users, GitBranch, ShieldCheck, FileBarChart2, LogOut, Menu, Network, ShieldAlert } from "lucide-react";
+import { LayoutDashboard, Users, GitBranch, ShieldCheck, FileBarChart2, LogOut, Menu, Network, ShieldAlert, UserCog } from "lucide-react";
 import { api, type Identity } from "@/lib/api";
 import { authClient } from "@/lib/supabase";
 
@@ -12,6 +12,7 @@ const items = [
   { href: "/organization", label: "Organization", icon: GitBranch },
   { href: "/approvals", label: "Approvals", icon: ShieldCheck },
   { href: "/reports", label: "Reports", icon: FileBarChart2 },
+  { href: "/access", label: "Access control", icon: UserCog },
 ];
 
 export default function Shell({ title, subtitle, children }: {title: string; subtitle: string; children: ReactNode}) {
@@ -68,7 +69,7 @@ export default function Shell({ title, subtitle, children }: {title: string; sub
     <aside className={"sidebar " + (mobile ? "sidebar-open" : "")}>
       <Link className="sidebar-brand" href="/"><span className="brand-icon"><Network size={24}/></span><span>Uttara <b>OMS</b><small>MANAGEMENT SYSTEM</small></span></Link>
       <div className="nav-caption">WORKSPACE</div>
-      <nav>{items.map(({href,label,icon:Icon}) => <Link onClick={()=>setMobile(false)} key={href} className={"nav-link " + (path === href ? "active" : "")} href={href}><Icon size={19}/>{label}</Link>)}</nav>
+      <nav>{items.filter(item => item.href!=="/access" || identity.roles.some(r=>r.role==="THANA_ADMIN")).map(({href,label,icon:Icon}) => <Link onClick={()=>setMobile(false)} key={href} className={"nav-link " + (path === href ? "active" : "")} href={href}><Icon size={19}/>{label}</Link>)}</nav>
       <div className="sidebar-foot"><div className="sidebar-lock"><ShieldCheck size={17}/> Private workspace</div><div className="account-name">{identity.email}</div><button className="logout-btn" onClick={signOut}><LogOut size={16}/> Sign out</button></div>
     </aside>
     {mobile && <button className="nav-backdrop" aria-label="Close navigation" onClick={()=>setMobile(false)}/>}

@@ -59,7 +59,7 @@ flowchart LR
 - **Ward Admin**: read/write within a Ward and its units; approve non-self requests within that Ward.
 - **Unit Responsible Officer**: read/write within assigned Unit; submit requests but cannot approve them.
 - **Sensitive actions**: category/status/unit transfers are pending until approved by another authorized officer. Cross-ward transfers require Thana Admin approval.
-- **Role provisioning**: performed offline by an authorized operator; no public signup or HTTP role-grant endpoint.
+- **Role provisioning**: first two administrators are bootstrapped offline; all subsequent role grants/revocations require a second administrator's independent approval via the Access control UI.
 
 All permissions are rechecked by the backend; the frontend only provides a user interface.
 
