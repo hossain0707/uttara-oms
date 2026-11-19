@@ -47,7 +47,7 @@ This workspace has no Docker executable and blocks local socket creation. A temp
 
 Source is published in [PR #1](https://github.com/hossain0707/uttara-oms/pull/1), code commit `245381e13a9394dc1d180ab4556636c8d2d930b8`. [Quality checks](https://github.com/hossain0707/uttara-oms/actions/runs/44556745119) passed, including all 37 backend tests against PostgreSQL 16, migration drift/backfill/immutable-history checks, concurrent edits, read-only report snapshots, frontend typecheck/tests/build. [Dependency security](https://github.com/hossain0707/uttara-oms/actions/runs/44556744735) also passed.
 
-Browser setup created a dedicated Google Cloud project `uttara-oms` and Free Supabase organization “Uttara OMS”. The Supabase database project form is prepared but not submitted: creating its database password requires user handoff. Cloud Run service `uttara-oms-api` is drafted with min 0/max 1 instances and requires authentication, but repository connection, configuration and deployment are not complete. No unrelated apps were modified. See DEPLOYMENT_STATUS.md.
+Browser setup created a dedicated Google Cloud project `uttara-oms` and Free Supabase organization “Uttara OMS”. The user completed Supabase database project creation. Its separate OMS schema is initialized and verified (10 RLS-protected tables, migration 0004, 12 wards, no person records); Google policy acceptance/client credentials and runtime-role policies are pending. Cloud Run service `uttara-oms-api` is drafted with min 0/max 1 instances and requires authentication, but repository connection, configuration and deployment are not complete. No unrelated apps were modified. See DEPLOYMENT_STATUS.md.
 
 ## Remaining release blockers
 

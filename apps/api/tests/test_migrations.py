@@ -88,3 +88,33 @@ def test_backfill_rejects_incomplete_history(migration_db):
     result = migrate(url,"head")
     assert result.returncode != 0
     assert "Missing legacy creation event" in result.stderr
+
+
+def test_fresh_sql_renderer(tmp_path):
+    script = Path(__file__).resolve().parents[1] / "scripts" / "render_fresh_sql.py"
+    schema = "oms_fresh_" + uuid.uuid4().hex
+    result = subprocess.run([sys.executable,str(script),"--schema",schema],capture_output=True,text=True)
+    assert result.returncode == 0, result.stderr
+    sql = result.stdout
+    assert f'CREATE SCHEMA "{schema}";' in sql
+    assert "IF NOT EXISTS" not in sql
+    assert "0004_invariants" in sql
+    assert sql.count("'WARD','ward-") == 12
+    assert "CREATE TRIGGER oms_history_immutable" in sql
+    assert "INSERT INTO members" not in sql
+    assert "ENABLE ROW LEVEL SECURITY" in sql
+    assert "FROM PUBLIC" in sql
+    base_url = os.environ.get("TEST_DATABASE_URL")
+    if base_url:
+        engine = sa.create_engine(base_url)
+        try:
+            with engine.connect() as c:
+                c.exec_driver_sql(sql)
+                assert c.execute(sa.text(f'SELECT count(*) FROM "{schema}".org_nodes')).scalar_one() == 13
+                assert c.execute(sa.text(f'SELECT count(*) FROM "{schema}".members')).scalar_one() == 0
+                assert c.execute(sa.text(f'SELECT version_num FROM "{schema}".alembic_version')).scalar_one() == "0004_invariants"
+                c.commit()
+        finally:
+            with engine.begin() as c:
+                c.execute(sa.text(f'DROP SCHEMA IF EXISTS "{schema}" CASCADE'))
+            engine.dispose()
