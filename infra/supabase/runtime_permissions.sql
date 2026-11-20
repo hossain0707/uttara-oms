@@ -1,0 +1,56 @@
+-- Run as the schema owner after creating oms_runtime with LOGIN and a private password.
+-- Backend RBAC remains the user authorization boundary; this role is server-only.
+-- No schema ownership, migration, TRUNCATE, or history mutation privileges are granted.
+BEGIN;
+DO $$ BEGIN IF (SELECT rolsuper OR rolcreaterole OR rolcreatedb OR rolreplication OR rolbypassrls FROM pg_roles WHERE rolname = 'oms_runtime') IS DISTINCT FROM false THEN RAISE EXCEPTION 'oms_runtime must exist without administrative privileges'; END IF; END $$;
+GRANT USAGE ON SCHEMA oms TO oms_runtime;
+ALTER ROLE oms_runtime SET search_path = oms;
+ALTER ROLE oms_runtime SET statement_timeout = '30s';
+ALTER ROLE oms_runtime SET idle_in_transaction_session_timeout = '60s';
+GRANT SELECT, INSERT, UPDATE ON TABLE oms.org_nodes TO oms_runtime;
+ALTER TABLE oms.org_nodes ENABLE ROW LEVEL SECURITY;
+CREATE POLICY oms_runtime_select ON oms.org_nodes FOR SELECT TO oms_runtime USING (true);
+CREATE POLICY oms_runtime_insert ON oms.org_nodes FOR INSERT TO oms_runtime WITH CHECK (true);
+CREATE POLICY oms_runtime_update ON oms.org_nodes FOR UPDATE TO oms_runtime USING (true) WITH CHECK (true);
+GRANT SELECT, INSERT, UPDATE ON TABLE oms.app_users TO oms_runtime;
+ALTER TABLE oms.app_users ENABLE ROW LEVEL SECURITY;
+CREATE POLICY oms_runtime_select ON oms.app_users FOR SELECT TO oms_runtime USING (true);
+CREATE POLICY oms_runtime_insert ON oms.app_users FOR INSERT TO oms_runtime WITH CHECK (true);
+CREATE POLICY oms_runtime_update ON oms.app_users FOR UPDATE TO oms_runtime USING (true) WITH CHECK (true);
+GRANT SELECT, INSERT, DELETE ON TABLE oms.role_grants TO oms_runtime;
+ALTER TABLE oms.role_grants ENABLE ROW LEVEL SECURITY;
+CREATE POLICY oms_runtime_select ON oms.role_grants FOR SELECT TO oms_runtime USING (true);
+CREATE POLICY oms_runtime_insert ON oms.role_grants FOR INSERT TO oms_runtime WITH CHECK (true);
+CREATE POLICY oms_runtime_delete ON oms.role_grants FOR DELETE TO oms_runtime USING (true);
+GRANT SELECT, INSERT, UPDATE ON TABLE oms.members TO oms_runtime;
+ALTER TABLE oms.members ENABLE ROW LEVEL SECURITY;
+CREATE POLICY oms_runtime_select ON oms.members FOR SELECT TO oms_runtime USING (true);
+CREATE POLICY oms_runtime_insert ON oms.members FOR INSERT TO oms_runtime WITH CHECK (true);
+CREATE POLICY oms_runtime_update ON oms.members FOR UPDATE TO oms_runtime USING (true) WITH CHECK (true);
+GRANT SELECT, INSERT, UPDATE ON TABLE oms.change_requests TO oms_runtime;
+ALTER TABLE oms.change_requests ENABLE ROW LEVEL SECURITY;
+CREATE POLICY oms_runtime_select ON oms.change_requests FOR SELECT TO oms_runtime USING (true);
+CREATE POLICY oms_runtime_insert ON oms.change_requests FOR INSERT TO oms_runtime WITH CHECK (true);
+CREATE POLICY oms_runtime_update ON oms.change_requests FOR UPDATE TO oms_runtime USING (true) WITH CHECK (true);
+GRANT SELECT, INSERT, UPDATE ON TABLE oms.access_requests TO oms_runtime;
+ALTER TABLE oms.access_requests ENABLE ROW LEVEL SECURITY;
+CREATE POLICY oms_runtime_select ON oms.access_requests FOR SELECT TO oms_runtime USING (true);
+CREATE POLICY oms_runtime_insert ON oms.access_requests FOR INSERT TO oms_runtime WITH CHECK (true);
+CREATE POLICY oms_runtime_update ON oms.access_requests FOR UPDATE TO oms_runtime USING (true) WITH CHECK (true);
+GRANT SELECT, INSERT ON TABLE oms.member_events TO oms_runtime;
+ALTER TABLE oms.member_events ENABLE ROW LEVEL SECURITY;
+CREATE POLICY oms_runtime_select ON oms.member_events FOR SELECT TO oms_runtime USING (true);
+CREATE POLICY oms_runtime_insert ON oms.member_events FOR INSERT TO oms_runtime WITH CHECK (true);
+GRANT SELECT, INSERT ON TABLE oms.membership_deltas TO oms_runtime;
+ALTER TABLE oms.membership_deltas ENABLE ROW LEVEL SECURITY;
+CREATE POLICY oms_runtime_select ON oms.membership_deltas FOR SELECT TO oms_runtime USING (true);
+CREATE POLICY oms_runtime_insert ON oms.membership_deltas FOR INSERT TO oms_runtime WITH CHECK (true);
+GRANT SELECT, INSERT ON TABLE oms.audit_logs TO oms_runtime;
+ALTER TABLE oms.audit_logs ENABLE ROW LEVEL SECURITY;
+CREATE POLICY oms_runtime_select ON oms.audit_logs FOR SELECT TO oms_runtime USING (true);
+CREATE POLICY oms_runtime_insert ON oms.audit_logs FOR INSERT TO oms_runtime WITH CHECK (true);
+GRANT SELECT ON TABLE oms.alembic_version TO oms_runtime;
+CREATE POLICY oms_runtime_select ON oms.alembic_version FOR SELECT TO oms_runtime USING (true);
+COMMIT;
+-- Check as owner; no credentials are included in this script.
+SELECT has_schema_privilege('oms_runtime','oms','USAGE') AS runtime_schema_usage, has_schema_privilege('oms_runtime','oms','CREATE') AS runtime_schema_create, has_table_privilege('oms_runtime','oms.member_events','UPDATE') AS history_update, has_table_privilege('oms_runtime','oms.members','DELETE') AS member_delete;

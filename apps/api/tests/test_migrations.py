@@ -118,3 +118,50 @@ def test_fresh_sql_renderer(tmp_path):
             with engine.begin() as c:
                 c.execute(sa.text(f'DROP SCHEMA IF EXISTS "{schema}" CASCADE'))
             engine.dispose()
+
+
+def test_runtime_permissions_enforce_database_boundary():
+    """Exercise the deployment grants under an actual restricted PostgreSQL role."""
+    base_url = os.environ.get("TEST_DATABASE_URL")
+    if not base_url:
+        pytest.skip("Runtime grants require PostgreSQL")
+    import re
+    root = Path(__file__).resolve().parents[3]
+    schema = "oms_runtime_test_" + uuid.uuid4().hex
+    role = "oms_test_" + uuid.uuid4().hex
+    script = Path(__file__).resolve().parents[1] / "scripts" / "render_fresh_sql.py"
+    fresh = subprocess.run([sys.executable, str(script), "--schema", schema],
+                           capture_output=True, text=True, check=True).stdout
+    grants = (root / "infra/supabase/runtime_permissions.sql").read_text()
+    grants = re.sub(r"\boms_runtime\b", role, grants)
+    grants = re.sub(r"\boms\b", schema, grants)
+    engine = sa.create_engine(base_url)
+    try:
+        with engine.connect() as c:
+            c.exec_driver_sql(f'CREATE ROLE "{role}" NOLOGIN')
+            c.commit()
+            c.exec_driver_sql(fresh)
+            c.exec_driver_sql(grants)
+            c.commit()
+        with engine.begin() as c:
+            c.exec_driver_sql(f'SET LOCAL ROLE "{role}"')
+            assert c.exec_driver_sql(f'SELECT count(*) FROM "{schema}".org_nodes').scalar_one() == 13
+            assert c.exec_driver_sql(f'SELECT version_num FROM "{schema}".alembic_version').scalar_one() == "0004_invariants"
+            assert c.exec_driver_sql(f'UPDATE "{schema}".org_nodes SET name=name WHERE kind=\'THANA\'').rowcount == 1
+        for statement in (
+            f'DELETE FROM "{schema}".members',
+            f'UPDATE "{schema}".member_events SET action=action',
+            f'DELETE FROM "{schema}".audit_logs',
+            f'TRUNCATE "{schema}".membership_deltas',
+            f'CREATE TABLE "{schema}".forbidden (id integer)',
+        ):
+            with pytest.raises(sa.exc.DBAPIError, match="permission denied"):
+                with engine.begin() as c:
+                    c.exec_driver_sql(f'SET LOCAL ROLE "{role}"')
+                    c.exec_driver_sql(statement)
+    finally:
+        with engine.begin() as c:
+            c.exec_driver_sql(f'DROP SCHEMA IF EXISTS "{schema}" CASCADE')
+            c.exec_driver_sql(f'DROP OWNED BY "{role}"')
+            c.exec_driver_sql(f'DROP ROLE "{role}"')
+        engine.dispose()

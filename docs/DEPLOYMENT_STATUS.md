@@ -49,3 +49,7 @@ The user selected **Free only**. Do not deploy Cloud Run or Cloudflare Container
 The frontend supports `npm run build:static` in `apps/web`; Cloudflare Pages output is `out`. The build requires the actual public backend URL, Supabase URL and publishable key and emits security/no-store headers with a CSP limited to the configured API/Auth origins. Standalone Docker builds remain the default. Do not publish using the `example-api.onrender.com` CI validation origin.
 
 References: [Render Free limits](https://render.com/docs/free), [Render Docker hosting](https://render.com/hosting/docker), [Cloudflare Next.js static exports](https://developers.cloudflare.com/pages/framework-guides/nextjs/deploy-a-static-nextjs-site/).
+
+## Runtime login handoff completed
+
+The user created `oms_runtime` in the original Uttara OMS Supabase project. Verified LOGIN true, SUPERUSER/CREATEROLE/CREATEDB/REPLICATION/BYPASSRLS false. The restricted grants in `infra/supabase/runtime_permissions.sql` are prepared but NOT applied. They permit backend data operations only in `oms`, keep events/ledger/audit insert-only, allow deletion only of role grants for the existing revocation workflow, and make migration metadata read-only. Server-side RBAC remains the end-user authorization boundary; runtime policies do not provide per-user isolation. Apply only as owner after action-time approval. No credential is included. The user briefly accessed another Supabase account; no Trippy project was paused, modified, or reused, and no replacement OMS project was created.
