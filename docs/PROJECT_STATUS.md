@@ -126,3 +126,8 @@ Owner requested six-digit passwordless email signup/sign-in. Supabase Email OTP 
 ### Email acceptance and final release request — 2026-11-20
 
 After private sender credential correction, the email send succeeded. The owner confirmed receiving a six-digit code and signing into the personal workspace, and supplied a screenshot showing that workspace. Google sign-in is also owner-confirmed. The owner explicitly requested merging all release work and deploying for final checking. Fixed the selected personal tab CSS specificity: a later general button rule previously painted the background white while leaving white selected text. Email OTP remains subject to final canonical deployment verification; no new-user, abuse-control or production-certification claim is made.
+
+
+### Main release deployment — 2026-11-20
+
+PR #5 and full-release PR #1 were merged. Main application release is 1fca4f0b1cfdabbbf9b78fc5013c951a0df2c1e0. Render Free deployed that source successfully (Live, 21:33 Asia/Seoul). Cloudflare production branch was switched to main and the email-code form build flag enabled after owner-confirmed receipt and sign-in. The selected personal tab contrast is fixed in this release. Owner final acceptance remains requested; preserve free-only infrastructure and existing keys/data.

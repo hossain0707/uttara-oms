@@ -2,13 +2,13 @@
 
 Updated 2026-11-20 (Asia/Seoul). This supersedes historical setup notes in earlier revisions and chronological project-plan entries.
 
-**Latest email acceptance:** after owner correction of the Gmail App Password, the send request succeeded. The owner confirmed receipt of a six-digit code, successful verification and entry to the personal workspace; a supplied screenshot confirms that workspace. Google sign-in also remains available. Canonical production activation and merging the deployment branch into main are the current release steps. This is owner-confirmed returning-user acceptance, not a claim that every browser/security scenario has passed.
+**Latest release:** PR #5 (profile-tab visibility and email acceptance evidence) and PR #1 (full release) are merged. Application release commit: `1fca4f0b1cfdabbbf9b78fc5013c951a0df2c1e0` on main. Render deployment from that commit is Live; Cloudflare production branch is main with the email UI enabled. Owner confirmed receiving a six-digit code and signing into the personal workspace. Google sign-in is also owner-confirmed. Final canonical UI checks and new-user/abuse acceptance are separate from this returning-user verification.
 
 ## Source and live services
 
 - Repository: https://github.com/hossain0707/uttara-oms
-- Deployment branch: **hardening/production-foundation**. Default `main` still contains the original foundation at `9baf58a3f2117eabc4db26801b906ee6418989d0`; do not deploy it accidentally.
-- PR #1 is the open draft to main. PR #2, #3 and #4 were merged into the deployment branch.
+- Production deployment branch: **main**. The previous hardening/production-foundation branch was merged through PR #1.
+- PR #1 and #5 are merged; earlier PR #2, #3 and #4 are included.
 - Frontend: https://uttara-oms.pages.dev — Cloudflare Pages static export.
 - Backend: https://uttara-oms-api.onrender.com — Render Free Docker service, Singapore.
 - Database/Auth: Supabase Free, project `ahlgssvkdrbrsebkgafa`, Singapore. PostgreSQL database `postgres`, isolated application schema `oms`.
@@ -34,7 +34,7 @@ CI for PR #4: quality 44719729349, dependency security 44719729331, containers 4
 - Every organizational role requires authenticator AAL2. Basic users do not require an authenticator. Enrollment QR is distinct from a verified factor's normal code challenge.
 - Supabase Email is enabled; Confirm email on, anonymous sign-in off, Google/TOTP preserved. Email OTP length 6 (saved and verified after reload on 2026-11-20), expiry 600 seconds.
 - **Email OTP returning-user acceptance passed after credential correction.** Both Token-based templates are saved; owner confirmed receipt and successful verification. Earlier SMTP rejection notes are historical.
-- Production `NEXT_PUBLIC_EMAIL_OTP_ENABLED=true` was restored after the failed send; fallback deployment and live Google-only login were verified. Re-enable only for controlled acceptance after credential correction. Google remains available.
+- Production `NEXT_PUBLIC_EMAIL_OTP_ENABLED=true` is now enabled after owner-confirmed inbox delivery and verification. Google remains available.
 
 ## Immediate email completion sequence
 
@@ -49,7 +49,7 @@ CI for PR #4: quality 44719729349, dependency security 44719729331, containers 4
 
 ### Backend
 
-Render service `srv-dbvsonec6qcc73ag9t70`, Free Singapore; branch hardening/production-foundation; Docker context `./apps/api`, Dockerfile `./apps/api/Dockerfile`; port 8000; health `/health/ready`; auto-deploy off. The service root can return 404 normally.
+Render service `srv-dbvsonec6qcc73ag9t70`, Free Singapore; branch main; Docker context `./apps/api`, Dockerfile `./apps/api/Dockerfile`; port 8000; health `/health/ready`; auto-deploy off. The service root can return 404 normally.
 
 Secrets in Render: DATABASE_URL, ENCRYPTION_KEY, PHONE_HASH_KEY. Preserve existing keys; replacing them in place breaks decryption/deduplication. Non-secret configuration:
 
@@ -69,7 +69,7 @@ Use a separate migration owner. Runtime privileges exclude schema CREATE/DDL, TR
 
 ### Frontend
 
-Cloudflare Pages project uttara-oms; root `apps/web`; command `npm ci && npm run build:static`; output `out`; automatic production deployments enabled for hardening/production-foundation. Public build variables:
+Cloudflare Pages project uttara-oms; root `apps/web`; command `npm ci && npm run build:static`; output `out`; automatic production deployments enabled for main. Public build variables:
 
 ```dotenv
 NEXT_PUBLIC_API_URL=https://uttara-oms-api.onrender.com
