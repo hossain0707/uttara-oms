@@ -2,11 +2,13 @@
 
 Updated 2026-11-20 (Asia/Seoul). This supersedes historical setup notes in earlier revisions and chronological project-plan entries.
 
+**Latest email acceptance:** after owner correction of the Gmail App Password, the send request succeeded. The owner confirmed receipt of a six-digit code, successful verification and entry to the personal workspace; a supplied screenshot confirms that workspace. Google sign-in also remains available. Canonical production activation and merging the deployment branch into main are the current release steps. This is owner-confirmed returning-user acceptance, not a claim that every browser/security scenario has passed.
+
 ## Source and live services
 
 - Repository: https://github.com/hossain0707/uttara-oms
 - Deployment branch: **hardening/production-foundation**. Default `main` still contains the original foundation at `9baf58a3f2117eabc4db26801b906ee6418989d0`; do not deploy it accidentally.
-- PR #1 is the open draft to main. PR #2 and #3 were merged into the deployment branch.
+- PR #1 is the open draft to main. PR #2, #3 and #4 were merged into the deployment branch.
 - Frontend: https://uttara-oms.pages.dev — Cloudflare Pages static export.
 - Backend: https://uttara-oms-api.onrender.com — Render Free Docker service, Singapore.
 - Database/Auth: Supabase Free, project `ahlgssvkdrbrsebkgafa`, Singapore. PostgreSQL database `postgres`, isolated application schema `oms`.
@@ -17,12 +19,12 @@ Updated 2026-11-20 (Asia/Seoul). This supersedes historical setup notes in earli
 | Component | Source | Deployment |
 | --- | --- | --- |
 | Backend | `ee3bcef3b8f864a39f34348ca4292a2e910a25ae` | `dep-dbvv11942hec7387ikug`, Live; `/health/ready` returned `ready` |
-| Frontend | `2ca020fb4fbb2241be7229d59ec8352631bf9687` | `81b123e3-f073-49c0-91c2-dcd042497d71`, successful production build |
+| Frontend | `6a9ac19dd1700993f0724e5affedf2d65cd2fcda` | `75d16ad5-2178-4383-a22d-60058d2b96ca`, successful OTP-enabled build; mail acceptance failed, fallback d71753bc-94b0-4611-99a1-f1dcec8fc123 succeeded, email form hidden |
 | Database | `0005_personal_workspace` | Additive upgrade applied once after owner approval; do not rerun fresh initialization or the 0004-only upgrade script |
 
 The subsequent packaging/documentation follow-up does not change the database revision or API. Consult the GitHub branch head and provider deployment source before claiming a newer release is live.
 
-CI at `9864a9e`: quality 44692642884, dependency security 44692643047, containers 44692643139 all passed. PostgreSQL backend: 59 tests; frontend: 11 tests. Container checks include nonroot users, HTTP startup and native PDF rendering. Passing checks does not certify a production service.
+CI for PR #4: quality 44719729349, dependency security 44719729331, containers 44719729254 all passed. PostgreSQL backend: 59 tests; frontend: 12 tests. Container checks include nonroot users, HTTP startup and native PDF rendering. Passing checks does not certify a production service.
 
 ## Current authentication and authorization
 
@@ -30,15 +32,15 @@ CI at `9864a9e`: quality 44692642884, dependency security 44692643047, container
 - Personal profile, reading progress, daily/monthly report drafts and owner exports are deployed. Submitted reports require an explicitly assigned reviewer.
 - Main admins approve user role applications and assign reviewers/monthly targets. Administrator-initiated permission changes retain independent admin approval.
 - Every organizational role requires authenticator AAL2. Basic users do not require an authenticator. Enrollment QR is distinct from a verified factor's normal code challenge.
-- Supabase Email is enabled; Confirm email on, anonymous sign-in off, Google/TOTP preserved. Email OTP length 8, expiry 600 seconds.
-- **Public email OTP delivery is unfinished.** A fresh SMTP inspection still shows custom SMTP disabled. A previous checked toggle was an unsaved setup form, not a working sender.
-- Keep `NEXT_PUBLIC_EMAIL_OTP_ENABLED=false` until the sender, both code templates and real delivered-code tests are ready. Google remains available.
+- Supabase Email is enabled; Confirm email on, anonymous sign-in off, Google/TOTP preserved. Email OTP length 6 (saved and verified after reload on 2026-11-20), expiry 600 seconds.
+- **Email OTP returning-user acceptance passed after credential correction.** Both Token-based templates are saved; owner confirmed receipt and successful verification. Earlier SMTP rejection notes are historical.
+- Production `NEXT_PUBLIC_EMAIL_OTP_ENABLED=true` was restored after the failed send; fallback deployment and live Google-only login were verified. Re-enable only for controlled acceptance after credential correction. Google remains available.
 
 ## Immediate email completion sequence
 
-1. Owner creates/enters the chosen sender's credential privately and saves SMTP. For the discussed Gmail option: host `smtp.gmail.com`, port `465`, matching sender/username, sender name Uttara OMS, and a Google App Password. Google verification/credential creation must be completed by the owner, not inferred or bypassed.
-2. Confirm SMTP is actually saved without revealing its password.
-3. Set **Confirm sign up** and **Magic link or OTP** email bodies to `infra/supabase/email-otp.html`, including `{{ .Token }}`; do not leave a magic-link-only body.
+1. Completed: owner privately corrected the sender App Password; actual email receipt and verification were confirmed. For the discussed Gmail option: host `smtp.gmail.com`, port `465`, matching sender/username, sender name Uttara OMS, and a Google App Password. Google verification/credential creation must be completed by the owner, not inferred or bypassed.
+2. Completed: confirmed SMTP persisted after a reload without revealing its password.
+3. Completed: set **Confirm sign up** and **Magic link or OTP** email bodies to `infra/supabase/email-otp.html`, including `{{ .Token }}`; do not leave a magic-link-only body.
 4. Preserve email confirmation, Google and role MFA. Review rate limits within the chosen free sender allowance.
 5. Enable `NEXT_PUBLIC_EMAIL_OTP_ENABLED=true` in the frontend build environment and rebuild. Pages, Docker and Compose consume it at build time; a runtime restart cannot replace the compiled value.
 6. Owner privately enters received codes for new/returning-user tests. Verify incorrect/expired code rejection, role isolation and leader AAL1/AAL2 behavior before declaring email signup operational.
@@ -73,7 +75,7 @@ Cloudflare Pages project uttara-oms; root `apps/web`; command `npm ci && npm run
 NEXT_PUBLIC_API_URL=https://uttara-oms-api.onrender.com
 NEXT_PUBLIC_SUPABASE_URL=https://ahlgssvkdrbrsebkgafa.supabase.co
 NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY=<project publishable key; never service-role/private key>
-NEXT_PUBLIC_EMAIL_OTP_ENABLED=false
+NEXT_PUBLIC_EMAIL_OTP_ENABLED=true
 ```
 
 The static builder emits no-store/security headers and CSP restricted to configured API/Auth origins. Preview hosts are separate origins; do not replace CORS with a wildcard for testing. Supabase Site URL is the canonical frontend. Google callback is `https://ahlgssvkdrbrsebkgafa.supabase.co/auth/v1/callback`. OAuth client is configured in the dedicated Google project; do not recreate working secrets.

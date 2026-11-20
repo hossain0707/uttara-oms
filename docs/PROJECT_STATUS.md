@@ -1,6 +1,6 @@
 # Project status
 
-Current summary (2026-11-20): live free-hosted Pages/Render/Supabase pilot, migration 0005, automatic basic Google accounts and personal workspace. Email OTP remains gated pending saved SMTP credentials and delivered-code tests. Historical entries below record earlier stages and are superseded by the latest release notes and DEPLOYMENT_STATUS.md.
+Current summary (2026-11-20): live free-hosted Pages/Render/Supabase pilot, migration 0005, automatic basic Google accounts and personal workspace. Email OTP delivery is blocked by Gmail SMTP 534/5.7.9; the owner must correct the saved App Password and complete delivered-code tests. Historical entries below record earlier stages and are superseded by the latest release notes and DEPLOYMENT_STATUS.md.
 
 **Engineering hardening implemented locally; production release BLOCKED.** Reviewed and tested on 2026-11-20 Asia/Seoul. No live deployment, production credentials or real records were used.
 
@@ -107,3 +107,22 @@ Email provider is enabled, email confirmation remains on, anonymous accounts rem
 ## Remaining setup follow-up
 
 Rechecked active GitHub source: hardening/production-foundation at 2ca020f; default main remains the original foundation. A fresh live SMTP inspection still shows custom SMTP disabled, not a saved provider. The code form must remain off until owner credential entry, both Token templates and delivered-code tests finish. Added the missing NEXT_PUBLIC_EMAIL_OTP_ENABLED build argument/ENV to the frontend Dockerfile and Compose with false default; container CI now builds the explicit true variant. Added enabled-shell coverage alongside the disabled-delivery regression. Consolidated deployment status and corrected outdated README onboarding/deployment claims. No new role grants, key rotations or paid resources are part of this follow-up.
+
+## Email sender activation — 2026-11-20
+
+Owner completed private SMTP credential entry and saved the chosen Gmail sender. A fresh page reload confirmed custom SMTP enabled. Both Confirm sign up and Magic link or OTP templates were replaced with infra/supabase/email-otp.html (Token code, no magic-link-only body), saved successfully. Production Cloudflare NEXT_PUBLIC_EMAIL_OTP_ENABLED was set to true and a rebuild started from the previously validated source. Actual delivered-code verification and fresh-account/returning-user acceptance are still pending; saving SMTP is not proof of inbox delivery or successful verification. Google sign-in, Confirm email and leader MFA remain required/preserved. No private credential was read or recorded.
+
+
+### SMTP live-send diagnosis — 2026-11-20
+
+The OTP-enabled Pages build 75d16ad5 succeeded from deployment source 6a9ac19. An actual send to an existing owner-controlled basic account failed. Auth logs identify Gmail SMTP 534/5.7.9: Application-specific password required. Saved SMTP is not proof of valid credentials. The production flag was reset to false and fallback deployment d71753bc-94b0-4611-99a1-f1dcec8fc123 succeeded at 19:55 Asia/Seoul; the canonical login was reloaded and verified to show Google sign-in with email paused. Both Token templates remain saved. The owner must privately enter and submit a valid App Password for the configured sender; no password, received code or personal address is recorded here. Returning-user verification and new-user acceptance remain incomplete.
+
+
+### Six-digit email login configuration — 2026-11-20
+
+Owner requested six-digit passwordless email signup/sign-in. Supabase Email OTP length was changed to 6 and verified after a page reload; expiry remains 600 seconds. The existing frontend numeric-code validation supports this length. Gmail previously rejected the configured credential with SMTP 534/5.7.9 at 20:08 Asia/Seoul. No credential was changed by the agent; email delivery and inbox-code acceptance remain blocked. Canonical production email form remains gated off while Google sign-in is available.
+
+
+### Email acceptance and final release request — 2026-11-20
+
+After private sender credential correction, the email send succeeded. The owner confirmed receiving a six-digit code and signing into the personal workspace, and supplied a screenshot showing that workspace. Google sign-in is also owner-confirmed. The owner explicitly requested merging all release work and deploying for final checking. Fixed the selected personal tab CSS specificity: a later general button rule previously painted the background white while leaving white selected text. Email OTP remains subject to final canonical deployment verification; no new-user, abuse-control or production-certification claim is made.
