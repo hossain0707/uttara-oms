@@ -1,5 +1,7 @@
 # Implementation plan
 
+Current follow-up (2026-11-20): finish sender setup and real email OTP acceptance; propagate the delivery flag through Docker/Compose; reconcile current deployment documentation. Baseline sections below are historical, not current deployment claims. See DEPLOYMENT_STATUS.md for the live topology.
+
 Baseline reviewed: `9baf58a3f2117eabc4db26801b906ee6418989d0` (main), 2026-11-20 Asia/Seoul.
 Only remote branch: main; all 11 commits inspected. Latest Quality checks run 44549149392 succeeded for this SHA. No AGENTS.md found.
 

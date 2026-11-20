@@ -6,7 +6,7 @@ import {api} from "@/lib/api";
 vi.mock("next/navigation",()=>({usePathname:()=>"/"}));
 vi.mock("@/lib/supabase",()=>({authClient:vi.fn()}));
 vi.mock("@/lib/api",()=>({api:vi.fn()}));
-afterEach(()=>{cleanup();vi.clearAllMocks();});
+afterEach(()=>{cleanup();vi.clearAllMocks();vi.unstubAllEnvs();});
 it("automatically registers a Google account and shows the personal workspace without organizational records",async()=>{
   vi.mocked(authClient).mockReturnValue({auth:{
     getSession:vi.fn().mockResolvedValue({data:{session:{access_token:"synthetic"}}}),
@@ -34,4 +34,14 @@ it("keeps Google sign-in available while the email sender is unconfigured",async
   expect(screen.queryByLabelText("Email address")).toBeNull();
   expect(screen.getByText(/Email-code sign-in is awaiting email sender setup/)).toBeTruthy();
   vi.unstubAllEnvs();
+});
+
+it("shows email code signup alongside Google only when delivery is enabled",async()=>{
+  vi.stubEnv("NEXT_PUBLIC_EMAIL_OTP_ENABLED","true");
+  vi.mocked(authClient).mockReturnValue({auth:{getSession:vi.fn().mockResolvedValue({data:{session:null}}),onAuthStateChange:vi.fn().mockReturnValue({data:{subscription:{unsubscribe:vi.fn()}}})}} as never);
+  render(<Shell title="Dashboard" subtitle="Workspace"><p>Private workspace records</p></Shell>);
+  await screen.findByLabelText("Email address");
+  expect(screen.getByRole("button",{name:"Sign up / sign in with email"})).toBeTruthy();
+  expect(screen.getByRole("button",{name:"Continue with Google"})).toBeTruthy();
+  expect(screen.queryByText(/Email-code sign-in is awaiting email sender setup/)).toBeNull();
 });

@@ -1,5 +1,7 @@
 # Project status
 
+Current summary (2026-11-20): live free-hosted Pages/Render/Supabase pilot, migration 0005, automatic basic Google accounts and personal workspace. Email OTP remains gated pending saved SMTP credentials and delivered-code tests. Historical entries below record earlier stages and are superseded by the latest release notes and DEPLOYMENT_STATUS.md.
+
 **Engineering hardening implemented locally; production release BLOCKED.** Reviewed and tested on 2026-11-20 Asia/Seoul. No live deployment, production credentials or real records were used.
 
 ## Repository baseline
@@ -101,3 +103,7 @@ Live provider inspection on 2026-11-20: Email remains disabled; custom SMTP is o
 PR #2 merged to hardening/production-foundation at ee3bcef3b8f864a39f34348ca4292a2e910a25ae after 59 PostgreSQL backend tests, 10 frontend tests, production/static builds, dependency security and container checks passed. User approved the schema/runtime/auth changes. The live Supabase schema is now 0005_personal_workspace. Render deployment dep-dbvv11942hec7387ikug is Live with readiness 200; Cloudflare production 6f439d5b-49f1-4de7-8f1f-77981e10ecd5 published the same merge. Signed-in administrator dashboard and personal-profile API/UI were verified in the live browser. No profiles, consents, reports, reviewers or new leader grants were invented for verification.
 
 Email provider is enabled, email confirmation remains on, anonymous accounts remain off, Google remains enabled. OTP length remains 8 digits and expiry was reduced to 600 seconds. The current free built-in email template is a magic link, and editing it requires custom SMTP or a Send Email hook (the alternative is paid Pro, which was not selected). Custom SMTP is not configured. Therefore public email OTP delivery remains blocked. The frontend email-code form is gated by NEXT_PUBLIC_EMAIL_OTP_ENABLED, default false, until a free sender, both OTP templates and real delivery verification are ready. Google sign-in remains available for normal users and leaders. No paid services were enabled.
+
+## Remaining setup follow-up
+
+Rechecked active GitHub source: hardening/production-foundation at 2ca020f; default main remains the original foundation. A fresh live SMTP inspection still shows custom SMTP disabled, not a saved provider. The code form must remain off until owner credential entry, both Token templates and delivered-code tests finish. Added the missing NEXT_PUBLIC_EMAIL_OTP_ENABLED build argument/ENV to the frontend Dockerfile and Compose with false default; container CI now builds the explicit true variant. Added enabled-shell coverage alongside the disabled-delivery regression. Consolidated deployment status and corrected outdated README onboarding/deployment claims. No new role grants, key rotations or paid resources are part of this follow-up.

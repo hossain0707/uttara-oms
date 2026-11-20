@@ -1,75 +1,97 @@
-# Deployment status
+# Current deployment status
 
-Updated 2026-11-20 Asia/Seoul. Application is NOT live.
+Updated 2026-11-20 (Asia/Seoul). This supersedes historical setup notes in earlier revisions and chronological project-plan entries.
 
-## Source and verification
+## Source and live services
 
-- Published: [PR #1](https://github.com/hossain0707/uttara-oms/pull/1), `hardening/production-foundation`.
-- Verified application/container-check commit: `d685604692c98fac3a59e2f78657d3c0c52f3b88`.
-- Quality checks run 44563457929 passed: PostgreSQL backend **38 passed**, frontend tests/typecheck/build passed.
-- Dependency security run 44563457739 passed both Python and Node audits.
-- Container smoke run 44563457858 passed both Docker builds, HTTP startup, native PDF generation, expected 503 for an unmigrated test database, and nonroot users. Initial smoke failure was a transient startup connection reset; bounded retries fixed the readiness check.
+- Repository: https://github.com/hossain0707/uttara-oms
+- Deployment branch: **hardening/production-foundation**. Default `main` still contains the original foundation at `9baf58a3f2117eabc4db26801b906ee6418989d0`; do not deploy it accidentally.
+- PR #1 is the open draft to main. PR #2 and #3 were merged into the deployment branch.
+- Frontend: https://uttara-oms.pages.dev — Cloudflare Pages static export.
+- Backend: https://uttara-oms-api.onrender.com — Render Free Docker service, Singapore.
+- Database/Auth: Supabase Free, project `ahlgssvkdrbrsebkgafa`, Singapore. PostgreSQL database `postgres`, isolated application schema `oms`.
+- No OMS Cloud Run service, Render PostgreSQL, paid disk or Cloudflare container was deployed. Unrelated applications are not reused.
 
-## Browser setup completed
+## Last verified releases
 
-- Created dedicated Google Cloud project `uttara-oms` (display name Uttara OMS).
-- Enabled Cloud Run Admin API while preparing the deployment form.
-- Draft backend service name `uttara-oms-api`, request billing, min 0/max 1 instances, require authentication. The service has NOT been created or deployed.
-- Created Supabase organization Uttara OMS on the Free plan ($0/month).
-- Supabase project `uttara-oms` is created and Healthy in Singapore (`ap-southeast-1`); the user completed database password creation.
-- Initialized dedicated `oms` schema from the existing migrations in one transaction, using the fresh-database renderer. Verified revision `0004_invariants`, 10 tables, RLS on all tables, 12 wards, 0 people, and no schema USAGE for anon/authenticated roles. PUBLIC schema/table/function privileges were revoked. No administrator grant or login role was created.
-- Supabase Google provider is enabled and saved; email/password sign-in is disabled. Credentials were entered directly by the user and were not extracted. TOTP MFA is Enabled, with the existing 15-minute AAL1-session limit retained. Observed callback: `https://ahlgssvkdrbrsebkgafa.supabase.co/auth/v1/callback`.
-- Google Auth Platform branding and Web OAuth client were created by the user after their policy review. Current Supabase JWT signing uses ECC (P-256), compatible with the backend ES256 verification; the old HS256 key is marked Previous. Live end-to-end login and final frontend redirect origin remain unverified.
-- Cloudflare account is accessible; no Uttara application, integration or domain change was created.
+| Component | Source | Deployment |
+| --- | --- | --- |
+| Backend | `ee3bcef3b8f864a39f34348ca4292a2e910a25ae` | `dep-dbvv11942hec7387ikug`, Live; `/health/ready` returned `ready` |
+| Frontend | `2ca020fb4fbb2241be7229d59ec8352631bf9687` | `81b123e3-f073-49c0-91c2-dcd042497d71`, successful production build |
+| Database | `0005_personal_workspace` | Additive upgrade applied once after owner approval; do not rerun fresh initialization or the 0004-only upgrade script |
 
-## Required next steps
+The subsequent packaging/documentation follow-up does not change the database revision or API. Consult the GitHub branch head and provider deployment source before claiming a newer release is live.
 
-1. The user selected Free only. Render Hobby/no card was verified; the new backend form selects Free ($0/month), Singapore, Docker context apps/api, health /health/ready and auto-deploy Off. The service is not deployed. Google OAuth configuration is saved; do not recreate its credentials.
-2. Keep deployment on the free-only topology below. Do not add billing or launch usage-billed resources.
-3. Supabase Singapore, Google OAuth and TOTP are configured. Set exact frontend redirect origins after its deployment URL is confirmed.
-4. Use managed secrets and a dedicated least-privilege database runtime identity. The `oms` schema currently has RLS enabled with no runtime-role policies, so do not deploy until that identity, its required policies and table privileges are provisioned. Set the connection search_path to `oms` (for example, via psycopg options `-csearch_path=oms`). Any new security-sensitive grants or public ingress exposure require action-time confirmation in the browser.
-5. Connect the authorized source, build containers, configure port 8000 for the API, run migrations in a controlled job, bootstrap organization and named administrators, then validate readiness and unauthorized rejection.
-6. Build/configure the frontend using only public Supabase settings and the verified API origin. Choose Cloudflare static export or a compatible container deployment; current web Dockerfile is standalone Next.js.
-7. Validate the complete login/MFA, role, approval, browser/mobile, backup/recovery and privacy release gates before production use.
+CI at `9864a9e`: quality 44692642884, dependency security 44692643047, containers 44692643139 all passed. PostgreSQL backend: 59 tests; frontend: 11 tests. Container checks include nonroot users, HTTP startup and native PDF rendering. Passing checks does not certify a production service.
 
-Existing Trippy/AgentVerse resources were inspected only to distinguish targets; no changes to their services or configuration were made. No secret, real member record or database dump is included here.
+## Current authentication and authorization
 
+- Google OAuth signup/sign-in works. Basic signup creates an active self-only account, no official membership and no role grant.
+- Personal profile, reading progress, daily/monthly report drafts and owner exports are deployed. Submitted reports require an explicitly assigned reviewer.
+- Main admins approve user role applications and assign reviewers/monthly targets. Administrator-initiated permission changes retain independent admin approval.
+- Every organizational role requires authenticator AAL2. Basic users do not require an authenticator. Enrollment QR is distinct from a verified factor's normal code challenge.
+- Supabase Email is enabled; Confirm email on, anonymous sign-in off, Google/TOTP preserved. Email OTP length 8, expiry 600 seconds.
+- **Public email OTP delivery is unfinished.** A fresh SMTP inspection still shows custom SMTP disabled. A previous checked toggle was an unsaved setup form, not a working sender.
+- Keep `NEXT_PUBLIC_EMAIL_OTP_ENABLED=false` until the sender, both code templates and real delivered-code tests are ready. Google remains available.
 
-## Fresh database renderer
+## Immediate email completion sequence
 
-Run `python scripts/render_fresh_sql.py --schema oms` from `apps/api` to generate initialization SQL without deployment credentials. It deliberately fails if the schema already exists. Do not rerun it against the provisioned project. Existing databases must use Alembic migrations instead. The ledger backfill is skipped only because a newly created schema has no legacy rows; this is not a populated-database migration shortcut. The script enables RLS and revokes PUBLIC privileges; backend runtime policies must be separately reviewed/provisioned.
+1. Owner creates/enters the chosen sender's credential privately and saves SMTP. For the discussed Gmail option: host `smtp.gmail.com`, port `465`, matching sender/username, sender name Uttara OMS, and a Google App Password. Google verification/credential creation must be completed by the owner, not inferred or bypassed.
+2. Confirm SMTP is actually saved without revealing its password.
+3. Set **Confirm sign up** and **Magic link or OTP** email bodies to `infra/supabase/email-otp.html`, including `{{ .Token }}`; do not leave a magic-link-only body.
+4. Preserve email confirmation, Google and role MFA. Review rate limits within the chosen free sender allowance.
+5. Enable `NEXT_PUBLIC_EMAIL_OTP_ENABLED=true` in the frontend build environment and rebuild. Pages, Docker and Compose consume it at build time; a runtime restart cannot replace the compiled value.
+6. Owner privately enters received codes for new/returning-user tests. Verify incorrect/expired code rejection, role isolation and leader AAL1/AAL2 behavior before declaring email signup operational.
 
+## Deployment configuration
 
-## Free-only hosting decision
+### Backend
 
-The user selected **Free only**. Do not deploy Cloud Run or Cloudflare Containers, add a payment method, enable paid plans, add paid disks/databases, or authorize automatic overages. The proposed zero-cost topology is Cloudflare Pages static export + Render Free Docker web service + the existing Supabase Free project. Check Render billing before creation: with no payment method, exceeding bandwidth suspends free services and exceeding pipeline minutes stops builds. Render's free backend sleeps after 15 idle minutes and can be restarted/suspended by the platform; this is a limited pilot and does not establish a production availability SLA.
+Render service `srv-dbvsonec6qcc73ag9t70`, Free Singapore; branch hardening/production-foundation; Docker context `./apps/api`, Dockerfile `./apps/api/Dockerfile`; port 8000; health `/health/ready`; auto-deploy off. The service root can return 404 normally.
 
-`render.yaml` explicitly requests one Free Docker backend in Singapore and no Render database, disk or paid job. Existing migrations are already applied in Supabase; Free Render has no paid pre-deploy job, so future migrations must run as controlled operator tasks rather than automatic startup migrations. Set actual secrets directly in the provider; never use CI placeholders for deployment.
+Secrets in Render: DATABASE_URL, ENCRYPTION_KEY, PHONE_HASH_KEY. Preserve existing keys; replacing them in place breaks decryption/deduplication. Non-secret configuration:
 
-The frontend supports `npm run build:static` in `apps/web`; Cloudflare Pages output is `out`. The build requires the actual public backend URL, Supabase URL and publishable key and emits security/no-store headers with a CSP limited to the configured API/Auth origins. Standalone Docker builds remain the default. Do not publish using the `example-api.onrender.com` CI validation origin.
+```dotenv
+ENVIRONMENT=production
+PORT=8000
+REQUIRE_ADMIN_MFA=true
+JWT_AUDIENCE=authenticated
+SUPABASE_ISSUER=https://ahlgssvkdrbrsebkgafa.supabase.co/auth/v1
+SUPABASE_JWKS_URL=https://ahlgssvkdrbrsebkgafa.supabase.co/auth/v1/.well-known/jwks.json
+CORS_ORIGINS=https://uttara-oms.pages.dev
+```
 
-References: [Render Free limits](https://render.com/docs/free), [Render Docker hosting](https://render.com/hosting/docker), [Cloudflare Next.js static exports](https://developers.cloudflare.com/pages/framework-guides/nextjs/deploy-a-static-nextjs-site/).
+Runtime DB role `oms_runtime` uses the shared session pooler (host verified during setup: `aws-1-ap-southeast-1.pooler.supabase.com`, port 5432, username `oms_runtime.ahlgssvkdrbrsebkgafa`, database postgres), TLS and `search_path=oms`. The password is not recorded in source. Recheck Supabase Connect before changing connectivity.
 
-## Runtime login handoff completed
+Use a separate migration owner. Runtime privileges exclude schema CREATE/DDL, TRUNCATE, member DELETE and history UPDATE/DELETE. All deployed tables have RLS; the server role's policies make FastAPI RBAC/ownership the end-user boundary. The new personal tables were checked live: runtime SELECT/INSERT/UPDATE true, DELETE false; anon/authenticated SELECT false.
 
-The user created `oms_runtime` in the original Uttara OMS Supabase project. Verified LOGIN true, SUPERUSER/CREATEROLE/CREATEDB/REPLICATION/BYPASSRLS false. The restricted grants in `infra/supabase/runtime_permissions.sql` are prepared but NOT applied. They permit backend data operations only in `oms`, keep events/ledger/audit insert-only, allow deletion only of role grants for the existing revocation workflow, and make migration metadata read-only. Server-side RBAC remains the end-user authorization boundary; runtime policies do not provide per-user isolation. Apply only as owner after action-time approval. No credential is included. The user briefly accessed another Supabase account; no Trippy project was paused, modified, or reused, and no replacement OMS project was created.
+### Frontend
 
-## Backend live — 2026-11-20 (Asia/Seoul)
+Cloudflare Pages project uttara-oms; root `apps/web`; command `npm ci && npm run build:static`; output `out`; automatic production deployments enabled for hardening/production-foundation. Public build variables:
 
-The user entered the private runtime DB password directly in Render and launched the Free service `srv-dbvsonec6qcc73ag9t70`, initial deployment `dep-dbvsoo6c6qcc73ag9vg0`, commit `e9faeb670cbdc66208aa45c6c5bb89c8dfd48a5f`. Render reports Live. Verified https://uttara-oms-api.onrender.com/health/ready returns ready; unauthenticated /api/v1/members is rejected. Runtime grants were approved, applied and verified (schema USAGE true; schema CREATE, history UPDATE and member DELETE false). Shared session pooler host was read from the Supabase Connect dialog; login uses oms_runtime.<project-ref>, SSL required, search_path oms. No password was extracted.
+```dotenv
+NEXT_PUBLIC_API_URL=https://uttara-oms-api.onrender.com
+NEXT_PUBLIC_SUPABASE_URL=https://ahlgssvkdrbrsebkgafa.supabase.co
+NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY=<project publishable key; never service-role/private key>
+NEXT_PUBLIC_EMAIL_OTP_ENABLED=false
+```
 
-Frontend remains pending. CORS is temporarily restricted to the owned Supabase origin and must be set to the verified frontend origin before browser acceptance. Supabase Site URL/redirects and initial named administrators are also pending. Cloudflare GitHub installation currently requires explicit approval to add only uttara-oms to its repository selection. No unrelated app access was removed.
+The static builder emits no-store/security headers and CSP restricted to configured API/Auth origins. Preview hosts are separate origins; do not replace CORS with a wildcard for testing. Supabase Site URL is the canonical frontend. Google callback is `https://ahlgssvkdrbrsebkgafa.supabase.co/auth/v1/callback`. OAuth client is configured in the dedicated Google project; do not recreate working secrets.
 
-## Frontend and first administrator — 2026-11-20 (Asia/Seoul)
+Google audience was last observed External/Testing. Basic identity-only scopes have a documented test-user allowlist exception; production branding review remains separate. Do not request broader Gmail API scopes just for app login.
 
-Cloudflare Pages `uttara-oms` is deployed at https://uttara-oms.pages.dev, built from hardening/production-foundation with root apps/web, command npm ci && npm run build:static and output out. Only public API/Supabase configuration is sent to the static build. The user saved repository access and launched the frontend deployment, then applied the exact frontend CORS origin in Render and redeployed successfully.
+## Deploying the next change
 
-Google token exchange initially failed because the supplied OAuth client secret was invalid (confirmed in Supabase auth logs). The user corrected the credential privately. Google sign-in is verified working. After explicit action-time owner approval, the first authenticated Google identity received global THANA_ADMIN in a transaction that checked verified email/provider, refused existing administrators, serialized provisioning, and appended an audit event. The live UI now requests administrator MFA; do not disable this protection. User authenticator enrollment/challenge and dashboard acceptance remain pending. No member records were added.
+1. Branch from the current deployment branch, inspect concurrent changes, run the relevant checks and open a PR to that branch.
+2. For schema changes, preserve backups/keys, rehearse in isolated staging and migrate once as owner before compatible API/frontend deployment. Readiness requires the exact current revision.
+3. Merge reviewed green changes. Pages auto-builds; Render requires Manual Deploy -> Deploy latest commit or an exact verified source.
+4. Verify the actual build SHA, status, readiness, authenticated routes and browser errors. Record evidence without credentials or personal records.
+5. Do not downgrade/drop new tables to roll back user data. Old 0004-ready backend code will need a reviewed readiness compatibility plan after the 0005 migration.
 
-Prior sections are a chronological record; their statements that the frontend or runtime grant was pending describe earlier stages, not the current state. Keep all services free-only and no card on Render. A separate independent administrator is needed before approval workflows can be fully exercised.
+## Production gates still open
 
-## Automatic Google basic accounts live
+Keep the owner’s **free-only** constraint. Do not add a card, paid plans/disks/PITR/overages or usage-billed services without a new explicit instruction. Render Free sleeps after inactivity; no availability SLA is claimed.
 
-The user requested normal users to register/sign in without administrative signup approval. Release `5f6f7e91f9574ba6014162f1765ccea16ce02737` implements idempotent POST /api/v1/account/register plus self-identity GET /me and a basic account home. Accounts receive no organization role or Member record; disabled accounts cannot reactivate through registration. Existing organization APIs, independent approvals and administrator MFA remain enforced. No database migration or extra runtime grants were needed.
+Email delivery acceptance, full normal-user/leader browser acceptance, backup/restore drill and RPO/RTO, privacy/retention review, monitoring/alerting, upstream abuse controls and independent security review remain open. No complete Bengali paper-book transcription, pixel-perfect mockup match or offline sync is claimed. Initial setup created 12 wards, no invented units/member records. Do not fill production with test people or fabricated consent to demonstrate a feature.
 
-Cloudflare production build 1d75c491 and Render deployment dep-dbvtvqajnfac738edlr0 were verified live. All three GitHub workflows passed: quality 44683537033, security 44683537340 and containers 44683537012. The live administrator dashboard loaded with database-backed counts after deployment. A normal fresh Google identity still needs user acceptance testing; synthetic route tests cover first signup, duplicate/concurrent signup, role isolation, disabled identity and MFA. Google Branding homepage https://uttara-oms.pages.dev and its exact authorized domain were saved. Google remains Testing; its documented basic-identity-scope exception allows sign-in without a test allowlist, unlike broader OAuth scopes. Production branding verification remains separate release work.
+See operations.md, RELEASE_CHECKLIST.md, EMAIL_OTP_AND_PERSONAL_WORKSPACE.md and PROJECT_STATUS.md. Early versions of this file are preserved in Git history rather than presented as current setup instructions.

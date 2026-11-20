@@ -28,6 +28,7 @@ jobs:
             NEXT_PUBLIC_API_URL=http://localhost:8000
             NEXT_PUBLIC_SUPABASE_URL=https://example.supabase.co
             NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY=ci-placeholder-only
+            NEXT_PUBLIC_EMAIL_OTP_ENABLED=true
       - name: Start synthetic containers
         run: |
           docker run -d --name oms-api -p 127.0.0.1:8000:8000 \

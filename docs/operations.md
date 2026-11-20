@@ -1,5 +1,7 @@
 # Deployment and operations runbook
 
+Current live topology: Cloudflare Pages + Render Free Docker + Supabase Free. See [DEPLOYMENT_STATUS.md](DEPLOYMENT_STATUS.md) for source branch, actual provider configuration and the unfinished SMTP gate. The alternatives and production-recovery requirements below are planning guidance, not a claim that paid/private networking, PITR or separate staging has been provisioned. Keep all changes within the owner’s free-only instruction.
+
 ## Environments
 
 Use separate **development**, **staging**, **production** projects and separate Supabase/Auth and PostgreSQL resources. Each should have distinct signing keys, encryption keys, HMAC secrets, and allowed origins. Restrict production operator access.
