@@ -18,6 +18,7 @@
 - Configure an SMTP sender within the user's free-only limit. The user enters provider credentials directly; never commit them or put them in chat/SQL history. Supabase default email service is restricted and is not a public signup sender.
 - In Supabase Email templates, use `infra/supabase/email-otp.html` for **both Confirm sign up and Magic link or OTP**. Use a subject such as “Your Uttara OMS verification code”. `{{ .Token }}` is essential; a default magic link does not satisfy the code form.
 - Enable Email, preserve Confirm email, signup enabled, anonymous disabled, existing Google and TOTP. Configure rate limits and short OTP expiry without disabling verification.
+- The frontend gates the code form with `NEXT_PUBLIC_EMAIL_OTP_ENABLED` (default false). Keep it false while the sender/template setup is incomplete. Enable it in Cloudflare production build variables and rebuild only when code delivery can be tested. Google login remains available during setup.
 - Verify a real newly delivered code and returning-user code in the browser. Users enter their own codes. Verify an invalid/expired code fails, normal user sees only their records, leader AAL1 is blocked and AAL2 works. Never include codes/QR secrets in screenshots.
 
 ## Units and scope

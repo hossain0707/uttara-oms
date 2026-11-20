@@ -22,6 +22,7 @@ const items = [
 
 export default function Shell({ title, subtitle, children }: {title: string; subtitle: string; children: ReactNode}) {
   const path = usePathname();
+  const emailOtpEnabled = process.env.NEXT_PUBLIC_EMAIL_OTP_ENABLED === "true";
   const [session, setSession] = useState(false);
   const [identity, setIdentity] = useState<Identity | null>(null);
   const [pending, setPending] = useState(true);
@@ -80,10 +81,11 @@ export default function Shell({ title, subtitle, children }: {title: string; sub
   if (!identity) return <div className="center-screen"><div className="auth-card">
     <div className="auth-brand"><span className="brand-icon"><Network size={25}/></span><span>Uttara <b>OMS</b></span></div>
     <h1>{session ? (issue==="Administrator MFA required"?"Leader verification":"Access needs approval") : "Organized. Secure. Connected."}</h1>
-    <p>{session ? (issue==="Administrator MFA required"?"Your account is signed in. Complete authenticator verification to continue.":"Your account could not be opened. Check the message below or contact your administrator.") : "Use an email code to sign up or sign in. You can manage your own profile and reports. Leaders also complete authenticator verification."}</p>
+    <p>{session ? (issue==="Administrator MFA required"?"Your account is signed in. Complete authenticator verification to continue.":"Your account could not be opened. Check the message below or contact your administrator.") : (emailOtpEnabled ? "Use an email code to sign up or sign in. You can manage your own profile and reports. Leaders also complete authenticator verification." : "Sign up or sign in with Google to manage your profile and reports. Leaders also complete authenticator verification.")}</p>
     {issue && <div className="alert"><ShieldAlert size={17}/>{issue}</div>}
     {session&&issue==="Administrator MFA required"&&<MfaChallenge/>}
-    {!session&&<EmailOtpSignIn/>}
+    {!session&&emailOtpEnabled&&<EmailOtpSignIn/>}
+    {!session&&!emailOtpEnabled&&<p className="hint">Email-code sign-in is awaiting email sender setup. Google sign-in is available.</p>}
     <button className="primary-btn wide" onClick={session ? signOut : signIn}>{session ? "Sign out" : "Continue with Google"}</button>
     <span className="quiet">Sensitive information · Authorized access only</span>
   </div></div>;
