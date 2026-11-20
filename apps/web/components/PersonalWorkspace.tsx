@@ -1,5 +1,8 @@
 "use client";
 import { useEffect, useState, type FormEvent } from "react";
+import SearchSelect from './SearchSelect';
+import AddressFields from './AddressFields';
+import catalogs from '@/data/catalogs.json';
 import { api, downloadPersonalReport } from "@/lib/api";
 export const metrics = [
   { key: "prayers", label: "Prayers", unit: "prayers" },
@@ -96,7 +99,8 @@ export default function PersonalWorkspace() {
     [scope, setScope] = useState(""),
     [notice, setNotice] = useState(""),
     [busy, setBusy] = useState(false),
-    [consent, setConsent] = useState(false);
+    [consent, setConsent] = useState(false),
+    [bookGroup, setBookGroup] = useState("");
   const selected = reports.find((r) => r.month === month + "-01"),
     editable = !selected || ["DRAFT", "RETURNED"].includes(selected.status);
   async function load() {
@@ -212,14 +216,14 @@ export default function PersonalWorkspace() {
     setNotes("");
     setNotice("Day added to the form. Save your draft to keep it.");
   }
-  const field = (key: keyof Details, label: string, type = "text") => (
+  const field = (key: keyof Details, label: string, type = "text") => key === "occupation" || key === "position" ? <SearchSelect key={key} label={label} value={String(details[key] || "")} maxLength={160} items={key === "occupation" ? catalogs.occupations : catalogs.positions} onChange={value=>setDetails(d=>({...d,[key]:value}))} /> : key === "current_address" || key === "permanent_address" ? <AddressFields key={key} label={label} value={String(details[key] || "")} onChange={value=>setDetails(d=>({...d,[key]:value}))} /> : (
     <div className="form-field" key={key}>
       <label htmlFor={key}>{label}</label>
       <input
         id={key}
         className="input"
         type={type}
-        maxLength={key === "full_name" || key === "father_name" ? 200 : key === "occupation" || key === "position" ? 160 : key === "phone" ? 40 : 1000}
+        maxLength={key === "full_name" || key === "father_name" ? 200 : key === "phone" ? 40 : 1000}
         placeholder={key === "phone" ? "01XXXXXXXXX or +8801XXXXXXXXX" : undefined}
         value={String(details[key] || "")}
         onChange={(e) =>
@@ -279,9 +283,11 @@ export default function PersonalWorkspace() {
                 counts or permissions.
               </p>
               <div className="form-grid">
+                <h3 className="form-field full">1. Personal information / ব্যক্তিগত তথ্য</h3>
                 {field("full_name", "Full name")}
                 {field("father_name", "Father’s name")}
                 {field("phone", "Mobile number", "tel")}
+                <h3 className="form-field full">2. Occupation & responsibility / পেশা ও দায়িত্ব</h3>
                 {field("occupation", "Occupation")}
                 {field("position", "Responsibility / position")}
                 {field("current_address", "Current address")}
@@ -336,6 +342,7 @@ export default function PersonalWorkspace() {
                     ))}
                   </select>
                 </div>
+                <h3 className="form-field full">3. Organizational dates / সাংগঠনিক তারিখ</h3>
                 {field("joined_on", "Joining date", "date")}
                 {field("worker_since", "Worker enrollment date", "date")}
                 {field("candidate_since", "Rukon candidate date", "date")}
@@ -612,24 +619,12 @@ export default function PersonalWorkspace() {
               )}
               <h2>My reading list</h2>
               <p>Save your profile and consent first. Reading progress is saved separately from profile edits. Completely empty new book rows are ignored.</p>
+              <label htmlFor="book-topic">Book syllabus section / বিষয়</label>
+              <select id="book-topic" className="select" value={bookGroup} onChange={e=>setBookGroup(e.target.value)}><option value="">All sections / সব বিষয়</option>{[...new Set(catalogs.books.map(b=>b.group))].map(g=><option key={g} value={g}>{g}</option>)}</select>
+              <p className="hint">Titles transcribed from your supplied syllabus photos. Confirm the exact title and edition; a custom title is allowed. Reading a book does not automatically change membership category.</p>
               {details.books.map((b, i) => (
                 <div className="book-row" key={i}>
-                  <label>
-                    Book title
-                    <input
-                      className="input"
-                      maxLength={250}
-                      value={b.title}
-                      onChange={(e) =>
-                        setDetails((d) => ({
-                          ...d,
-                          books: d.books.map((x, j) =>
-                            j === i ? { ...x, title: e.target.value } : x,
-                          ),
-                        }))
-                      }
-                    />
-                  </label>
+                  <SearchSelect label={"Book title"} value={b.title} items={catalogs.books.filter(x=>!bookGroup||x.group===bookGroup)} onChange={value=>setDetails(d=>({...d,books:d.books.map((x,j)=>j===i?{...x,title:value}:x)}))} />
                   {(["total_pages", "completed_pages"] as const).map((k) => (
                     <label key={k}>
                       {k === "total_pages" ? "Total pages" : "Pages completed"}

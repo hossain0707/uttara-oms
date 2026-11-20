@@ -1,0 +1,1179 @@
+{
+  "books": [
+    {
+      "id": "book-1",
+      "name": "Imaner Haqiqat",
+      "bn": "ঈমানের হাকীকত",
+      "group": "Belief & faith / ঈমান ও আকীদা",
+      "aliases": [
+        "Imaner Haqiqat",
+        "Imaner Haqiqat"
+      ],
+      "source": "Owner-supplied report-book syllabus photos; title transcription, edition unverified"
+    },
+    {
+      "id": "book-2",
+      "name": "Mrityu Jabonikar Opare",
+      "bn": "মৃত্যু যবনিকার ওপারে",
+      "group": "Belief & faith / ঈমান ও আকীদা",
+      "aliases": [
+        "Mrityu Jabonikar Opare",
+        "Mrityu Jabonikar Opare"
+      ],
+      "source": "Owner-supplied report-book syllabus photos; title transcription, edition unverified"
+    },
+    {
+      "id": "book-3",
+      "name": "Tawhid Risalat Akhirat",
+      "bn": "তাওহীদ, রিসালাত ও আখিরাত",
+      "group": "Belief & faith / ঈমান ও আকীদা",
+      "aliases": [
+        "Tawhid Risalat Akhirat",
+        "Tawhid Risalat Akhirat"
+      ],
+      "source": "Owner-supplied report-book syllabus photos; title transcription, edition unverified"
+    },
+    {
+      "id": "book-4",
+      "name": "Al Quraner Charti Mowlik Poribhasha",
+      "bn": "আল কুরআনের চারটি মৌলিক পরিভাষা",
+      "group": "Belief & faith / ঈমান ও আকীদা",
+      "aliases": [
+        "Al Quraner Charti Mowlik Poribhasha",
+        "Al Quraner Carti Mowlik Poribhasha"
+      ],
+      "source": "Owner-supplied report-book syllabus photos; title transcription, edition unverified"
+    },
+    {
+      "id": "book-5",
+      "name": "Islami Sangskritir Marmakatha",
+      "bn": "ইসলামী সংস্কৃতির মর্মকথা",
+      "group": "Belief & faith / ঈমান ও আকীদা",
+      "aliases": [
+        "Islami Sangskritir Marmakatha",
+        "Islami Sangskritir Marmakatha"
+      ],
+      "source": "Owner-supplied report-book syllabus photos; title transcription, edition unverified"
+    },
+    {
+      "id": "book-6",
+      "name": "Sotter Sakkhya",
+      "bn": "সত্যের সাক্ষ্য",
+      "group": "Dawah / দাওয়াত ও তাবলীগ",
+      "aliases": [
+        "Sotter Sakkhya",
+        "Sotter Sakkhya"
+      ],
+      "source": "Owner-supplied report-book syllabus photos; title transcription, edition unverified"
+    },
+    {
+      "id": "book-7",
+      "name": "Allahr Dike Ahban",
+      "bn": "আল্লাহর দিকে আহ্বান",
+      "group": "Dawah / দাওয়াত ও তাবলীগ",
+      "aliases": [
+        "Allahr Dike Ahban",
+        "Allahr Dike Ahban"
+      ],
+      "source": "Owner-supplied report-book syllabus photos; title transcription, edition unverified"
+    },
+    {
+      "id": "book-8",
+      "name": "Islami Dawat O Kormoniti",
+      "bn": "ইসলামী দাওয়াত ও কর্মনীতি",
+      "group": "Dawah / দাওয়াত ও তাবলীগ",
+      "aliases": [
+        "Islami Dawat O Kormoniti",
+        "Islami Dawat O Kormoniti"
+      ],
+      "source": "Owner-supplied report-book syllabus photos; title transcription, edition unverified"
+    },
+    {
+      "id": "book-9",
+      "name": "Dawate Ilallah O Dayi Ilallah",
+      "bn": "দাওয়াতে ইলাল্লাহ ও দায়ী ইলাল্লাহ",
+      "group": "Dawah / দাওয়াত ও তাবলীগ",
+      "aliases": [
+        "Dawate Ilallah O Dayi Ilallah",
+        "Dawate Ilallah O Dayi Ilallah"
+      ],
+      "source": "Owner-supplied report-book syllabus photos; title transcription, edition unverified"
+    },
+    {
+      "id": "book-10",
+      "name": "Islamer Haqiqat",
+      "bn": "ইসলামের হাকীকত",
+      "group": "Worship / ইসলাম ও ইবাদাত",
+      "aliases": [
+        "Islamer Haqiqat",
+        "Islamer Haqiqat"
+      ],
+      "source": "Owner-supplied report-book syllabus photos; title transcription, edition unverified"
+    },
+    {
+      "id": "book-11",
+      "name": "Islam Porichiti",
+      "bn": "ইসলাম পরিচিতি",
+      "group": "Worship / ইসলাম ও ইবাদাত",
+      "aliases": [
+        "Islam Porichiti",
+        "Islam Porichiti"
+      ],
+      "source": "Owner-supplied report-book syllabus photos; title transcription, edition unverified"
+    },
+    {
+      "id": "book-12",
+      "name": "Namaz Rozar Haqiqat",
+      "bn": "নামাজ রোজার হাকীকত",
+      "group": "Worship / ইসলাম ও ইবাদাত",
+      "aliases": [
+        "Namaz Rozar Haqiqat",
+        "Namaz Rozar Haqiqat"
+      ],
+      "source": "Owner-supplied report-book syllabus photos; title transcription, edition unverified"
+    },
+    {
+      "id": "book-13",
+      "name": "Zakater Haqiqat",
+      "bn": "যাকাতের হাকীকত",
+      "group": "Worship / ইসলাম ও ইবাদাত",
+      "aliases": [
+        "Zakater Haqiqat",
+        "Zakater Haqiqat"
+      ],
+      "source": "Owner-supplied report-book syllabus photos; title transcription, edition unverified"
+    },
+    {
+      "id": "book-14",
+      "name": "Islam O Jahiliyat",
+      "bn": "ইসলাম ও জাহেলিয়াত",
+      "group": "Worship / ইসলাম ও ইবাদাত",
+      "aliases": [
+        "Islam O Jahiliyat",
+        "Islam O Jahiliyat"
+      ],
+      "source": "Owner-supplied report-book syllabus photos; title transcription, edition unverified"
+    },
+    {
+      "id": "book-15",
+      "name": "Kabira Gunah Bachai",
+      "bn": "কবীরা গুনাহ (বাছাই)",
+      "group": "Worship / ইসলাম ও ইবাদাত",
+      "aliases": [
+        "Kabira Gunah Bachai",
+        "Kabira Gunah Bachai"
+      ],
+      "source": "Owner-supplied report-book syllabus photos; title transcription, edition unverified"
+    },
+    {
+      "id": "book-16",
+      "name": "Islami Somaje Mojurer Odhikar",
+      "bn": "ইসলামী সমাজে মজুরের অধিকার",
+      "group": "Worship / ইসলাম ও ইবাদাত",
+      "aliases": [
+        "Islami Somaje Mojurer Odhikar",
+        "Islami Somaje Mojurer Odhikar"
+      ],
+      "source": "Owner-supplied report-book syllabus photos; title transcription, edition unverified"
+    },
+    {
+      "id": "book-17",
+      "name": "Hajjer Haqiqat",
+      "bn": "হজ্জের হাকীকত",
+      "group": "Worship / ইসলাম ও ইবাদাত",
+      "aliases": [
+        "Hajjer Haqiqat",
+        "Hajjer Haqiqat"
+      ],
+      "source": "Owner-supplied report-book syllabus photos; title transcription, edition unverified"
+    },
+    {
+      "id": "book-18",
+      "name": "Jihader Haqiqat",
+      "bn": "জিহাদের হাকীকত",
+      "group": "Worship / ইসলাম ও ইবাদাত",
+      "aliases": [
+        "Jihader Haqiqat",
+        "Jihader Haqiqat"
+      ],
+      "source": "Owner-supplied report-book syllabus photos; title transcription, edition unverified"
+    },
+    {
+      "id": "book-19",
+      "name": "Shantipoth",
+      "bn": "শান্তিপথ",
+      "group": "Worship / ইসলাম ও ইবাদাত",
+      "aliases": [
+        "Santipoth",
+        "Shantipoth"
+      ],
+      "source": "Owner-supplied report-book syllabus photos; title transcription, edition unverified"
+    },
+    {
+      "id": "book-20",
+      "name": "Islamer Jibon Paddhoti",
+      "bn": "ইসলামের জীবন পদ্ধতি",
+      "group": "Worship / ইসলাম ও ইবাদাত",
+      "aliases": [
+        "Islamer Jibon Paddhoti",
+        "Islamer Jibon Paddhoti"
+      ],
+      "source": "Owner-supplied report-book syllabus photos; title transcription, edition unverified"
+    },
+    {
+      "id": "book-21",
+      "name": "Islam O Adhunik Orthonaitik Motobad",
+      "bn": "ইসলাম ও আধুনিক অর্থনৈতিক মতবাদ",
+      "group": "Worship / ইসলাম ও ইবাদাত",
+      "aliases": [
+        "Islam O Adhunik Orthonaitik Motobad",
+        "Islam O Adhunik Orthonaitik Motobad"
+      ],
+      "source": "Owner-supplied report-book syllabus photos; title transcription, edition unverified"
+    },
+    {
+      "id": "book-22",
+      "name": "Islami Ortho Byabosthay Zakat",
+      "bn": "ইসলামী অর্থ ব্যবস্থায় যাকাত",
+      "group": "Worship / ইসলাম ও ইবাদাত",
+      "aliases": [
+        "Islami Ortho Byabosthay Zakat",
+        "Islami Ortho Byabosthay Zakat"
+      ],
+      "source": "Owner-supplied report-book syllabus photos; title transcription, edition unverified"
+    },
+    {
+      "id": "book-23",
+      "name": "Koborer Azab Bachai",
+      "bn": "কবরের আযাব (বাছাই)",
+      "group": "Worship / ইসলাম ও ইবাদাত",
+      "aliases": [
+        "Koborer Azab Bachai",
+        "Koborer Azab Bachai"
+      ],
+      "source": "Owner-supplied report-book syllabus photos; title transcription, edition unverified"
+    },
+    {
+      "id": "book-24",
+      "name": "Narir Bidhan",
+      "bn": "নারীর বিধান",
+      "group": "Worship / ইসলাম ও ইবাদাত",
+      "aliases": [
+        "Narir Bidhan",
+        "Narir Bidhan"
+      ],
+      "source": "Owner-supplied report-book syllabus photos; title transcription, edition unverified"
+    },
+    {
+      "id": "book-25",
+      "name": "Islam Jahiliyater Chironton Dondo",
+      "bn": "ইসলাম জাহিলিয়াতের চিরন্তন দ্বন্দ্ব",
+      "group": "Worship / ইসলাম ও ইবাদাত",
+      "aliases": [
+        "Islam Jahiliyater Chironton Dondo",
+        "Islam Jahiliyater Cironton Dondo"
+      ],
+      "source": "Owner-supplied report-book syllabus photos; title transcription, edition unverified"
+    },
+    {
+      "id": "book-26",
+      "name": "Choritro Gothoner Mowlik Upadan",
+      "bn": "চরিত্র গঠনের মৌলিক উপাদান",
+      "group": "Character / আমল-আখলাক ও মুয়ামালাত",
+      "aliases": [
+        "Choritro Gothoner Mowlik Upadan",
+        "Coritro Gothoner Mowlik Upadan"
+      ],
+      "source": "Owner-supplied report-book syllabus photos; title transcription, edition unverified"
+    },
+    {
+      "id": "book-27",
+      "name": "Allahr Noikottyo Labher Upay",
+      "bn": "আল্লাহর নৈকট্য লাভের উপায়",
+      "group": "Character / আমল-আখলাক ও মুয়ামালাত",
+      "aliases": [
+        "Allahr Noikottyo Labher Upay",
+        "Allahr Noikottyo Labher Upay"
+      ],
+      "source": "Owner-supplied report-book syllabus photos; title transcription, edition unverified"
+    },
+    {
+      "id": "book-28",
+      "name": "Islami Adorshe Zindegi",
+      "bn": "ইসলামী আদর্শে যিন্দেগী",
+      "group": "Character / আমল-আখলাক ও মুয়ামালাত",
+      "aliases": [
+        "Islami Adorshe Zindegi",
+        "Islami Adorshe Zindegi"
+      ],
+      "source": "Owner-supplied report-book syllabus photos; title transcription, edition unverified"
+    },
+    {
+      "id": "book-29",
+      "name": "Hedayat",
+      "bn": "হেদায়াত",
+      "group": "Character / আমল-আখলাক ও মুয়ামালাত",
+      "aliases": [
+        "Hedayat",
+        "Hedayat"
+      ],
+      "source": "Owner-supplied report-book syllabus photos; title transcription, edition unverified"
+    },
+    {
+      "id": "book-30",
+      "name": "Akhlaq O Muamalat",
+      "bn": "আখলাক ও মুয়ামালাত",
+      "group": "Character / আমল-আখলাক ও মুয়ামালাত",
+      "aliases": [
+        "Akhlaq O Muamalat",
+        "Akhlaq O Muamalat"
+      ],
+      "source": "Owner-supplied report-book syllabus photos; title transcription, edition unverified"
+    },
+    {
+      "id": "book-31",
+      "name": "Songothon Paddhoti Bangladesh Jamaat-e-Islami",
+      "bn": "সংগঠন পদ্ধতি, বাংলাদেশ জামায়াতে ইসলামী",
+      "group": "Organization / ইসলামী আন্দোলন ও সংগঠন",
+      "aliases": [
+        "Songothon Paddhoti Bangladesh Jamaat-e-Islami",
+        "Songothon Paddhoti Bangladesh Jamaat-e-Islami"
+      ],
+      "source": "Owner-supplied report-book syllabus photos; title transcription, edition unverified"
+    },
+    {
+      "id": "book-32",
+      "name": "Jamaate Islamir Karjobiboroni Part 1",
+      "bn": "জামায়াতে ইসলামীর কার্যবিবরণী — ১ম খণ্ড",
+      "group": "Organization / ইসলামী আন্দোলন ও সংগঠন",
+      "aliases": [
+        "Jamaate Islamir Karjobiboroni Part 1",
+        "Jamaate Islamir Karjobiboroni Part 1"
+      ],
+      "source": "Owner-supplied report-book syllabus photos; title transcription, edition unverified"
+    },
+    {
+      "id": "book-33",
+      "name": "Jamaate Islamir Karjobiboroni Parts 1 2",
+      "bn": "জামায়াতে ইসলামীর কার্যবিবরণী — ১ম ও ২য় খণ্ড",
+      "group": "Organization / ইসলামী আন্দোলন ও সংগঠন",
+      "aliases": [
+        "Jamaate Islamir Karjobiboroni Parts 1 2",
+        "Jamaate Islamir Karjobiboroni Parts 1 2"
+      ],
+      "source": "Owner-supplied report-book syllabus photos; title transcription, edition unverified"
+    },
+    {
+      "id": "book-34",
+      "name": "Islami Andolon Safoller Shortaboli",
+      "bn": "ইসলামী আন্দোলন: সাফল্যের শর্তাবলী",
+      "group": "Organization / ইসলামী আন্দোলন ও সংগঠন",
+      "aliases": [
+        "Islami Andolon Safoller Sortaboli",
+        "Islami Andolon Safoller Shortaboli"
+      ],
+      "source": "Owner-supplied report-book syllabus photos; title transcription, edition unverified"
+    },
+    {
+      "id": "book-35",
+      "name": "Islami Andolon O Songothon",
+      "bn": "ইসলামী আন্দোলন ও সংগঠন",
+      "group": "Organization / ইসলামী আন্দোলন ও সংগঠন",
+      "aliases": [
+        "Islami Andolon O Songothon",
+        "Islami Andolon O Songothon"
+      ],
+      "source": "Owner-supplied report-book syllabus photos; title transcription, edition unverified"
+    },
+    {
+      "id": "book-36",
+      "name": "Islami Andoloner Bhobisshot Kormosuchi",
+      "bn": "ইসলামী আন্দোলনের ভবিষ্যৎ কর্মসূচি",
+      "group": "Organization / ইসলামী আন্দোলন ও সংগঠন",
+      "aliases": [
+        "Islami Andoloner Bhobisshot Kormosuchi",
+        "Islami Andoloner Bhobisshot Kormosuchi"
+      ],
+      "source": "Owner-supplied report-book syllabus photos; title transcription, edition unverified"
+    },
+    {
+      "id": "book-37",
+      "name": "Islami Andolon Shomossha O Shombhabona",
+      "bn": "ইসলামী আন্দোলন: সমস্যা ও সম্ভাবনা",
+      "group": "Organization / ইসলামী আন্দোলন ও সংগঠন",
+      "aliases": [
+        "Islami Andolon Somossha O Sombhabona",
+        "Islami Andolon Shomossha O Shombhabona"
+      ],
+      "source": "Owner-supplied report-book syllabus photos; title transcription, edition unverified"
+    },
+    {
+      "id": "book-38",
+      "name": "Islami Somaj Gothoner Pothe",
+      "bn": "ইসলামী সমাজ গঠনের পথে",
+      "group": "Organization / ইসলামী আন্দোলন ও সংগঠন",
+      "aliases": [
+        "Islami Somaj Gothoner Pothe",
+        "Islami Somaj Gothoner Pothe"
+      ],
+      "source": "Owner-supplied report-book syllabus photos; title transcription, edition unverified"
+    },
+    {
+      "id": "book-39",
+      "name": "Iqamate Deen",
+      "bn": "ইকামাতে দ্বীন",
+      "group": "Organization / ইসলামী আন্দোলন ও সংগঠন",
+      "aliases": [
+        "Iqamate Deen",
+        "Iqamate Deen"
+      ],
+      "source": "Owner-supplied report-book syllabus photos; title transcription, edition unverified"
+    },
+    {
+      "id": "book-41",
+      "name": "Infaq Fi Sabilillah",
+      "bn": "ইনফাক ফি সাবিলিল্লাহ",
+      "group": "Organization / ইসলামী আন্দোলন ও সংগঠন",
+      "aliases": [
+        "Infaq Fi Sabilillah",
+        "Infaq Fi Sabilillah"
+      ],
+      "source": "Owner-supplied report-book syllabus photos; title transcription, edition unverified"
+    },
+    {
+      "id": "book-42",
+      "name": "Islami Songothon",
+      "bn": "ইসলামী সংগঠন",
+      "group": "Organization / ইসলামী আন্দোলন ও সংগঠন",
+      "aliases": [
+        "Islami Songothon",
+        "Islami Songothon"
+      ],
+      "source": "Owner-supplied report-book syllabus photos; title transcription, edition unverified"
+    },
+    {
+      "id": "book-43",
+      "name": "Deen Protishthay Mohilader Dayitto",
+      "bn": "দ্বীন প্রতিষ্ঠায় মহিলাদের দায়িত্ব",
+      "group": "Organization / ইসলামী আন্দোলন ও সংগঠন",
+      "aliases": [
+        "Deen Protishthay Mohilader Dayitto",
+        "Deen Protishthay Mohilader Dayitto"
+      ],
+      "source": "Owner-supplied report-book syllabus photos; title transcription, edition unverified"
+    },
+    {
+      "id": "book-44",
+      "name": "Islamer Rajnoitik Motobad",
+      "bn": "ইসলামের রাজনৈতিক মতবাদ",
+      "group": "Organization / ইসলামী আন্দোলন ও সংগঠন",
+      "aliases": [
+        "Islamer Rajnoitik Motobad",
+        "Islamer Rajnoitik Motobad"
+      ],
+      "source": "Owner-supplied report-book syllabus photos; title transcription, edition unverified"
+    },
+    {
+      "id": "book-45",
+      "name": "Bhanga O Gora",
+      "bn": "ভাঙা ও গড়া",
+      "group": "Organization / ইসলামী আন্দোলন ও সংগঠন",
+      "aliases": [
+        "Bhanga O Gora",
+        "Bhanga O Gora"
+      ],
+      "source": "Owner-supplied report-book syllabus photos; title transcription, edition unverified"
+    },
+    {
+      "id": "book-47",
+      "name": "Ekti Sottonishtho Doler Proyojon",
+      "bn": "একটি সত্যনিষ্ঠ দলের প্রয়োজন",
+      "group": "Organization / ইসলামী আন্দোলন ও সংগঠন",
+      "aliases": [
+        "Ekti Sottonishtho Doler Proyojon",
+        "Ekti Sottonishtho Doler Proyojon"
+      ],
+      "source": "Owner-supplied report-book syllabus photos; title transcription, edition unverified"
+    },
+    {
+      "id": "book-48",
+      "name": "Islami Andoloner Noitik Bhitti",
+      "bn": "ইসলামী আন্দোলনের নৈতিক ভিত্তি",
+      "group": "Organization / ইসলামী আন্দোলন ও সংগঠন",
+      "aliases": [
+        "Islami Andoloner Noitik Bhitti",
+        "Islami Andoloner Noitik Bhitti"
+      ],
+      "source": "Owner-supplied report-book syllabus photos; title transcription, edition unverified"
+    },
+    {
+      "id": "book-49",
+      "name": "Islamer Rajnoitik Motobader Bhitti",
+      "bn": "ইসলামের রাজনৈতিক মতবাদের ভিত্তি",
+      "group": "Organization / ইসলামী আন্দোলন ও সংগঠন",
+      "aliases": [
+        "Islamer Rajnoitik Motobader Bhitti",
+        "Islamer Rajnoitik Motobader Bhitti"
+      ],
+      "source": "Owner-supplied report-book syllabus photos; title transcription, edition unverified"
+    },
+    {
+      "id": "book-50",
+      "name": "Islam O Pashchatto Shobhotar Dondo",
+      "bn": "ইসলাম ও পাশ্চাত্য সভ্যতার দ্বন্দ্ব",
+      "group": "Organization / ইসলামী আন্দোলন ও সংগঠন",
+      "aliases": [
+        "Islam O Pashchatto Sobhotar Dondo",
+        "Islam O Pashchatto Shobhotar Dondo"
+      ],
+      "source": "Owner-supplied report-book syllabus photos; title transcription, edition unverified"
+    },
+    {
+      "id": "book-51",
+      "name": "Ekti Adorshobadi Doler Potoner Karon",
+      "bn": "একটি আদর্শবাদী দলের পতনের কারণ ও তার থেকে বাঁচার উপায়",
+      "group": "Organization / ইসলামী আন্দোলন ও সংগঠন",
+      "aliases": [
+        "Ekti Adorshobadi Doler Potoner Karon",
+        "Ekti Adorshobadi Doler Potoner Karon"
+      ],
+      "source": "Owner-supplied report-book syllabus photos; title transcription, edition unverified"
+    },
+    {
+      "id": "book-52",
+      "name": "Omuslim Nagorik O Jamaate Islami",
+      "bn": "অমুসলিম নাগরিক ও জামায়াতে ইসলামী",
+      "group": "Organization / ইসলামী আন্দোলন ও সংগঠন",
+      "aliases": [
+        "Omuslim Nagorik O Jamaate Islami",
+        "Omuslim Nagorik O Jamaate Islami"
+      ],
+      "source": "Owner-supplied report-book syllabus photos; title transcription, edition unverified"
+    },
+    {
+      "id": "book-53",
+      "name": "Sromik Songkolon",
+      "bn": "শ্রমিক সংকলন",
+      "group": "Organization / ইসলামী আন্দোলন ও সংগঠন",
+      "aliases": [
+        "Sromik Songkolon",
+        "Sromik Songkolon"
+      ],
+      "source": "Owner-supplied report-book syllabus photos; title transcription, edition unverified"
+    },
+    {
+      "id": "book-54",
+      "name": "Jamaate Islamir Rajnoitik Bhumika",
+      "bn": "জামায়াতে ইসলামীর রাজনৈতিক ভূমিকা",
+      "group": "Organization / ইসলামী আন্দোলন ও সংগঠন",
+      "aliases": [
+        "Jamaate Islamir Rajnoitik Bhumika",
+        "Jamaate Islamir Rajnoitik Bhumika"
+      ],
+      "source": "Owner-supplied report-book syllabus photos; title transcription, edition unverified"
+    },
+    {
+      "id": "book-55",
+      "name": "Islami Andoloner Poth O Patheyo",
+      "bn": "ইসলামী আন্দোলনের পথ ও পাথেয়",
+      "group": "Organization / ইসলামী আন্দোলন ও সংগঠন",
+      "aliases": [
+        "Islami Andoloner Poth O Patheyo",
+        "Islami Andoloner Poth O Patheyo"
+      ],
+      "source": "Owner-supplied report-book syllabus photos; title transcription, edition unverified"
+    },
+    {
+      "id": "book-56",
+      "name": "Dawat Amader Kaj",
+      "bn": "দাওয়াত: আমাদের কাজ",
+      "group": "Organization / ইসলামী আন্দোলন ও সংগঠন",
+      "aliases": [
+        "Dawat Amader Kaj",
+        "Dawat Amader Kaj"
+      ],
+      "source": "Owner-supplied report-book syllabus photos; title transcription, edition unverified"
+    },
+    {
+      "id": "book-57",
+      "name": "Islami Andoloner Kormider Parosporik Shomporko",
+      "bn": "ইসলামী আন্দোলনের কর্মীদের পারস্পরিক সম্পর্ক",
+      "group": "Family & society / পারিবারিক ও সামাজিক সম্পর্ক",
+      "aliases": [
+        "Islami Andoloner Kormider Parosporik Somporko",
+        "Islami Andoloner Kormider Parosporik Shomporko"
+      ],
+      "source": "Owner-supplied report-book syllabus photos; title transcription, edition unverified"
+    },
+    {
+      "id": "book-58",
+      "name": "Islami Andolonmukhi Poribar Gothon",
+      "bn": "ইসলামী আন্দোলনমুখী পরিবার গঠন",
+      "group": "Family & society / পারিবারিক ও সামাজিক সম্পর্ক",
+      "aliases": [
+        "Islami Andolonmukhi Poribar Gothon",
+        "Islami Andolonmukhi Poribar Gothon"
+      ],
+      "source": "Owner-supplied report-book syllabus photos; title transcription, edition unverified"
+    },
+    {
+      "id": "book-59",
+      "name": "Pordar Bidhan",
+      "bn": "পর্দার বিধান",
+      "group": "Family & society / পারিবারিক ও সামাজিক সম্পর্ক",
+      "aliases": [
+        "Pordar Bidhan",
+        "Pordar Bidhan"
+      ],
+      "source": "Owner-supplied report-book syllabus photos; title transcription, edition unverified"
+    },
+    {
+      "id": "book-60",
+      "name": "Somajkollan Manual",
+      "bn": "সমাজকল্যাণ ম্যানুয়েল",
+      "group": "Family & society / পারিবারিক ও সামাজিক সম্পর্ক",
+      "aliases": [
+        "Somajkollan Manual",
+        "Somajkollan Manual"
+      ],
+      "source": "Owner-supplied report-book syllabus photos; title transcription, edition unverified"
+    },
+    {
+      "id": "book-61",
+      "name": "Shami Strir Odhikar",
+      "bn": "স্বামী-স্ত্রীর অধিকার",
+      "group": "Family & society / পারিবারিক ও সামাজিক সম্পর্ক",
+      "aliases": [
+        "Sami Strir Odhikar",
+        "Shami Strir Odhikar"
+      ],
+      "source": "Owner-supplied report-book syllabus photos; title transcription, edition unverified"
+    },
+    {
+      "id": "book-63",
+      "name": "Mata Pita O Shontander Odhikar",
+      "bn": "মাতা-পিতা ও সন্তানদের অধিকার",
+      "group": "Family & society / পারিবারিক ও সামাজিক সম্পর্ক",
+      "aliases": [
+        "Mata Pita O Sontander Odhikar",
+        "Mata Pita O Shontander Odhikar"
+      ],
+      "source": "Owner-supplied report-book syllabus photos; title transcription, edition unverified"
+    },
+    {
+      "id": "book-65",
+      "name": "Muslim O Islami Choritro",
+      "bn": "মুসলিম ও ইসলামী চরিত্র",
+      "group": "Family & society / পারিবারিক ও সামাজিক সম্পর্ক",
+      "aliases": [
+        "Muslim O Islami Choritro",
+        "Muslim O Islami Coritro"
+      ],
+      "source": "Owner-supplied report-book syllabus photos; title transcription, edition unverified"
+    },
+    {
+      "id": "book-66",
+      "name": "Status of Women in Islam",
+      "bn": "স্ট্যাটাস অব উইমেন ইন ইসলাম",
+      "group": "Family & society / পারিবারিক ও সামাজিক সম্পর্ক",
+      "aliases": [
+        "Status of Women in Islam",
+        "Status of Women in Islam"
+      ],
+      "source": "Owner-supplied report-book syllabus photos; title transcription, edition unverified"
+    },
+    {
+      "id": "book-67",
+      "name": "Shofol Jiboner Porichoy",
+      "bn": "সফল জীবনের পরিচয়",
+      "group": "Family & society / পারিবারিক ও সামাজিক সম্পর্ক",
+      "aliases": [
+        "Sofol Jiboner Porichoy",
+        "Shofol Jiboner Porichoy"
+      ],
+      "source": "Owner-supplied report-book syllabus photos; title transcription, edition unverified"
+    },
+    {
+      "id": "book-68",
+      "name": "Islam O Jatiyotabad",
+      "bn": "ইসলাম ও জাতীয়তাবাদ",
+      "group": "Family & society / পারিবারিক ও সামাজিক সম্পর্ক",
+      "aliases": [
+        "Islam O Jatiyotabad",
+        "Islam O Jatiyotabad"
+      ],
+      "source": "Owner-supplied report-book syllabus photos; title transcription, edition unverified"
+    },
+    {
+      "id": "book-69",
+      "name": "Rasulullah Biplobi Jibon",
+      "bn": "রাসূলুল্লাহ (সা.) বিপ্লবী জীবন",
+      "group": "Biography & history / সীরাত ও ইতিহাস",
+      "aliases": [
+        "Rasulullah Biplobi Jibon",
+        "Rasulullah Biplobi Jibon"
+      ],
+      "source": "Owner-supplied report-book syllabus photos; title transcription, edition unverified"
+    },
+    {
+      "id": "book-70",
+      "name": "Ashabe Rasuler Jibon Kotha",
+      "bn": "আসহাবে রাসূলের জীবন কথা",
+      "group": "Biography & history / সীরাত ও ইতিহাস",
+      "aliases": [
+        "Ashabe Rasuler Jibon Kotha",
+        "Ashabe Rasuler Jibon Kotha"
+      ],
+      "source": "Owner-supplied report-book syllabus photos; title transcription, edition unverified"
+    },
+    {
+      "id": "book-71",
+      "name": "Islami Jagoroner Tin Pothikrit",
+      "bn": "ইসলামী জাগরণের তিন পথিকৃৎ",
+      "group": "Biography & history / সীরাত ও ইতিহাস",
+      "aliases": [
+        "Islami Jagoroner Tin Pothikrit",
+        "Islami Jagoroner Tin Pothikrit"
+      ],
+      "source": "Owner-supplied report-book syllabus photos; title transcription, edition unverified"
+    },
+    {
+      "id": "book-72",
+      "name": "Sirate Sarware Alam",
+      "bn": "সীরাতে সরওয়ারে আলম",
+      "group": "Biography & history / সীরাত ও ইতিহাস",
+      "aliases": [
+        "Sirate Sarware Alam",
+        "Sirate Sarware Alam"
+      ],
+      "source": "Owner-supplied report-book syllabus photos; title transcription, edition unverified"
+    },
+    {
+      "id": "book-73",
+      "name": "Sirate Ibne Hisham",
+      "bn": "সীরাতে ইবনে হিশাম",
+      "group": "Biography & history / সীরাত ও ইতিহাস",
+      "aliases": [
+        "Sirate Ibne Hisham",
+        "Sirate Ibne Hisham"
+      ],
+      "source": "Owner-supplied report-book syllabus photos; title transcription, edition unverified"
+    },
+    {
+      "id": "book-74",
+      "name": "Rasulullah Er Makkar Jibon",
+      "bn": "রাসূলুল্লাহ (সা.) এর মক্কার জীবন",
+      "group": "Biography & history / সীরাত ও ইতিহাস",
+      "aliases": [
+        "Rasulullah Er Makkar Jibon",
+        "Rasulullah Er Makkar Jibon"
+      ],
+      "source": "Owner-supplied report-book syllabus photos; title transcription, edition unverified"
+    },
+    {
+      "id": "book-75",
+      "name": "Ashabe Rasuler Jibonkotha",
+      "bn": "আসহাবে রাসূলের জীবনকথা",
+      "group": "Biography & history / সীরাত ও ইতিহাস",
+      "aliases": [
+        "Ashabe Rasuler Jibonkotha",
+        "Ashabe Rasuler Jibonkotha"
+      ],
+      "source": "Owner-supplied report-book syllabus photos; title transcription, edition unverified"
+    },
+    {
+      "id": "book-76",
+      "name": "Khilafat O Rajtontro",
+      "bn": "খেলাফত ও রাজতন্ত্র",
+      "group": "Biography & history / সীরাত ও ইতিহাস",
+      "aliases": [
+        "Khilafat O Rajtontro",
+        "Khilafat O Rajtontro"
+      ],
+      "source": "Owner-supplied report-book syllabus photos; title transcription, edition unverified"
+    },
+    {
+      "id": "book-77",
+      "name": "Polashi Theke Bangladesh",
+      "bn": "পলাশী থেকে বাংলাদেশ",
+      "group": "Biography & history / সীরাত ও ইতিহাস",
+      "aliases": [
+        "Polashi Theke Bangladesh",
+        "Polashi Theke Bangladesh"
+      ],
+      "source": "Owner-supplied report-book syllabus photos; title transcription, edition unverified"
+    },
+    {
+      "id": "book-78",
+      "name": "Jamaate Islamir Itihash Parts 1 2 3",
+      "bn": "জামায়াতে ইসলামীর ইতিহাস — ১ম, ২য় ও ৩য় খণ্ড",
+      "group": "Biography & history / সীরাত ও ইতিহাস",
+      "aliases": [
+        "Jamaate Islamir Itihash Parts 1 2 3",
+        "Jamaate Islamir Itihash Parts 1 2 3"
+      ],
+      "source": "Owner-supplied report-book syllabus photos; title transcription, edition unverified"
+    },
+    {
+      "id": "book-79",
+      "name": "Sohih Kore Al Quran Tilawat Shikkha",
+      "bn": "সহীহ করে আল কুরআন তিলাওয়াত শিক্ষা",
+      "group": "Quran / আল-কুরআন",
+      "aliases": [
+        "Sohih Kore Al Quran Tilawat Sikkha",
+        "Sohih Kore Al Quran Tilawat Shikkha"
+      ],
+      "source": "Owner-supplied report-book syllabus photos; title transcription, edition unverified"
+    },
+    {
+      "id": "book-80",
+      "name": "Al Quraner Porichoy Tafhimul Quraner Bhumika",
+      "bn": "আল কুরআনের পরিচয় (তাফহীমুল কুরআনের ভূমিকা)",
+      "group": "Quran / আল-কুরআন",
+      "aliases": [
+        "Al Quraner Porichoy Tafhimul Quraner Bhumika",
+        "Al Quraner Porichoy Tafhimul Quraner Bhumika"
+      ],
+      "source": "Owner-supplied report-book syllabus photos; title transcription, edition unverified"
+    },
+    {
+      "id": "book-81",
+      "name": "Tafhimul Quran",
+      "bn": "তাফহীমুল কুরআন",
+      "group": "Quran / আল-কুরআন",
+      "aliases": [
+        "Tafhimul Quran",
+        "Tafhimul Quran"
+      ],
+      "source": "Owner-supplied report-book syllabus photos; title transcription, edition unverified"
+    },
+    {
+      "id": "book-82",
+      "name": "Riyadus Saliheen",
+      "bn": "রিয়াদুস সালেহীন",
+      "group": "Hadith / আল-হাদীস",
+      "aliases": [
+        "Riyadus Saliheen",
+        "Riyadus Saliheen"
+      ],
+      "source": "Owner-supplied report-book syllabus photos; title transcription, edition unverified"
+    },
+    {
+      "id": "book-83",
+      "name": "Bishoybhittik Hadith Songkolon",
+      "bn": "বিষয়ভিত্তিক হাদীস সংকলন",
+      "group": "Hadith / আল-হাদীস",
+      "aliases": [
+        "Bishoybhittik Hadith Songkolon",
+        "Bishoybhittik Hadith Songkolon"
+      ],
+      "source": "Owner-supplied report-book syllabus photos; title transcription, edition unverified"
+    },
+    {
+      "id": "book-84",
+      "name": "Sunnate Rasuler Aingoto Morjada",
+      "bn": "সুন্নাতে রাসূলের আইনগত মর্যাদা",
+      "group": "Hadith / আল-হাদীস",
+      "aliases": [
+        "Sunnate Rasuler Aingoto Morjada",
+        "Sunnate Rasuler Aingoto Morjada"
+      ],
+      "source": "Owner-supplied report-book syllabus photos; title transcription, edition unverified"
+    },
+    {
+      "id": "book-85",
+      "name": "Asan Fiqh",
+      "bn": "আসান ফিকহ",
+      "group": "Fiqh / আল-ফিকহ",
+      "aliases": [
+        "Asan Fiqh",
+        "Asan Fiqh"
+      ],
+      "source": "Owner-supplied report-book syllabus photos; title transcription, edition unverified"
+    },
+    {
+      "id": "book-86",
+      "name": "Fiqhus Sunnah",
+      "bn": "ফিকহুস সুন্নাহ",
+      "group": "Fiqh / আল-ফিকহ",
+      "aliases": [
+        "Fiqhus Sunnah",
+        "Fiqhus Sunnah"
+      ],
+      "source": "Owner-supplied report-book syllabus photos; title transcription, edition unverified"
+    },
+    {
+      "id": "book-87",
+      "name": "Fiqh Muhammadi",
+      "bn": "ফিকহ মুহাম্মদী",
+      "group": "Fiqh / আল-ফিকহ",
+      "aliases": [
+        "Fiqh Muhammadi",
+        "Fiqh Muhammadi"
+      ],
+      "source": "Owner-supplied report-book syllabus photos; title transcription, edition unverified"
+    }
+  ],
+  "occupations": [
+    {
+      "id": "occupation-0",
+      "name": "Teacher",
+      "bn": "শিক্ষক",
+      "group": "Occupation / পেশা"
+    },
+    {
+      "id": "occupation-1",
+      "name": "Student",
+      "bn": "শিক্ষার্থী",
+      "group": "Occupation / পেশা"
+    },
+    {
+      "id": "occupation-2",
+      "name": "Engineer",
+      "bn": "প্রকৌশলী",
+      "group": "Occupation / পেশা"
+    },
+    {
+      "id": "occupation-3",
+      "name": "Doctor",
+      "bn": "চিকিৎসক",
+      "group": "Occupation / পেশা"
+    },
+    {
+      "id": "occupation-4",
+      "name": "Nurse",
+      "bn": "নার্স",
+      "group": "Occupation / পেশা"
+    },
+    {
+      "id": "occupation-5",
+      "name": "Business owner",
+      "bn": "ব্যবসায়ী",
+      "group": "Occupation / পেশা"
+    },
+    {
+      "id": "occupation-6",
+      "name": "Employee",
+      "bn": "চাকরিজীবী",
+      "group": "Occupation / পেশা"
+    },
+    {
+      "id": "occupation-7",
+      "name": "Government employee",
+      "bn": "সরকারি চাকরিজীবী",
+      "group": "Occupation / পেশা"
+    },
+    {
+      "id": "occupation-8",
+      "name": "Private employee",
+      "bn": "বেসরকারি চাকরিজীবী",
+      "group": "Occupation / পেশা"
+    },
+    {
+      "id": "occupation-9",
+      "name": "Lawyer",
+      "bn": "আইনজীবী",
+      "group": "Occupation / পেশা"
+    },
+    {
+      "id": "occupation-10",
+      "name": "Farmer",
+      "bn": "কৃষক",
+      "group": "Occupation / পেশা"
+    },
+    {
+      "id": "occupation-11",
+      "name": "Worker labourer",
+      "bn": "শ্রমিক",
+      "group": "Occupation / পেশা"
+    },
+    {
+      "id": "occupation-12",
+      "name": "Driver",
+      "bn": "চালক",
+      "group": "Occupation / পেশা"
+    },
+    {
+      "id": "occupation-13",
+      "name": "Freelancer",
+      "bn": "ফ্রিল্যান্সার",
+      "group": "Occupation / পেশা"
+    },
+    {
+      "id": "occupation-14",
+      "name": "IT professional",
+      "bn": "তথ্যপ্রযুক্তি পেশাজীবী",
+      "group": "Occupation / পেশা"
+    },
+    {
+      "id": "occupation-15",
+      "name": "Accountant",
+      "bn": "হিসাবরক্ষক",
+      "group": "Occupation / পেশা"
+    },
+    {
+      "id": "occupation-16",
+      "name": "Journalist",
+      "bn": "সাংবাদিক",
+      "group": "Occupation / পেশা"
+    },
+    {
+      "id": "occupation-17",
+      "name": "Homemaker",
+      "bn": "গৃহিণী / গৃহস্থালি",
+      "group": "Occupation / পেশা"
+    },
+    {
+      "id": "occupation-18",
+      "name": "Retired",
+      "bn": "অবসরপ্রাপ্ত",
+      "group": "Occupation / পেশা"
+    },
+    {
+      "id": "occupation-19",
+      "name": "Self employed",
+      "bn": "স্বনিয়োজিত",
+      "group": "Occupation / পেশা"
+    },
+    {
+      "id": "occupation-20",
+      "name": "Imam khatib",
+      "bn": "ইমাম / খতিব",
+      "group": "Occupation / পেশা"
+    },
+    {
+      "id": "occupation-21",
+      "name": "Job seeker",
+      "bn": "বেকার / চাকরিপ্রার্থী",
+      "group": "Occupation / পেশা"
+    }
+  ],
+  "positions": [
+    {
+      "id": "Thana-Responsible person",
+      "name": "Thana Responsible person",
+      "bn": "থানা দায়িত্বশীল",
+      "group": "Thana / থানা"
+    },
+    {
+      "id": "Thana-President",
+      "name": "Thana President",
+      "bn": "থানা সভাপতি",
+      "group": "Thana / থানা"
+    },
+    {
+      "id": "Thana-Secretary",
+      "name": "Thana Secretary",
+      "bn": "থানা সেক্রেটারি",
+      "group": "Thana / থানা"
+    },
+    {
+      "id": "Thana-Assistant secretary",
+      "name": "Thana Assistant secretary",
+      "bn": "থানা সহকারী সেক্রেটারি",
+      "group": "Thana / থানা"
+    },
+    {
+      "id": "Thana-Treasurer",
+      "name": "Thana Treasurer",
+      "bn": "থানা কোষাধ্যক্ষ",
+      "group": "Thana / থানা"
+    },
+    {
+      "id": "Thana-Tarbiyat responsible",
+      "name": "Thana Tarbiyat responsible",
+      "bn": "থানা তারবিয়াত দায়িত্বশীল",
+      "group": "Thana / থানা"
+    },
+    {
+      "id": "Thana-Dawah responsible",
+      "name": "Thana Dawah responsible",
+      "bn": "থানা দাওয়াত দায়িত্বশীল",
+      "group": "Thana / থানা"
+    },
+    {
+      "id": "Ward-Responsible person",
+      "name": "Ward Responsible person",
+      "bn": "ওয়ার্ড দায়িত্বশীল",
+      "group": "Ward / ওয়ার্ড"
+    },
+    {
+      "id": "Ward-President",
+      "name": "Ward President",
+      "bn": "ওয়ার্ড সভাপতি",
+      "group": "Ward / ওয়ার্ড"
+    },
+    {
+      "id": "Ward-Secretary",
+      "name": "Ward Secretary",
+      "bn": "ওয়ার্ড সেক্রেটারি",
+      "group": "Ward / ওয়ার্ড"
+    },
+    {
+      "id": "Ward-Assistant secretary",
+      "name": "Ward Assistant secretary",
+      "bn": "ওয়ার্ড সহকারী সেক্রেটারি",
+      "group": "Ward / ওয়ার্ড"
+    },
+    {
+      "id": "Ward-Treasurer",
+      "name": "Ward Treasurer",
+      "bn": "ওয়ার্ড কোষাধ্যক্ষ",
+      "group": "Ward / ওয়ার্ড"
+    },
+    {
+      "id": "Ward-Tarbiyat responsible",
+      "name": "Ward Tarbiyat responsible",
+      "bn": "ওয়ার্ড তারবিয়াত দায়িত্বশীল",
+      "group": "Ward / ওয়ার্ড"
+    },
+    {
+      "id": "Ward-Dawah responsible",
+      "name": "Ward Dawah responsible",
+      "bn": "ওয়ার্ড দাওয়াত দায়িত্বশীল",
+      "group": "Ward / ওয়ার্ড"
+    },
+    {
+      "id": "Unit-Responsible person",
+      "name": "Unit Responsible person",
+      "bn": "ইউনিট দায়িত্বশীল",
+      "group": "Unit / ইউনিট"
+    },
+    {
+      "id": "Unit-President",
+      "name": "Unit President",
+      "bn": "ইউনিট সভাপতি",
+      "group": "Unit / ইউনিট"
+    },
+    {
+      "id": "Unit-Secretary",
+      "name": "Unit Secretary",
+      "bn": "ইউনিট সেক্রেটারি",
+      "group": "Unit / ইউনিট"
+    },
+    {
+      "id": "Unit-Assistant secretary",
+      "name": "Unit Assistant secretary",
+      "bn": "ইউনিট সহকারী সেক্রেটারি",
+      "group": "Unit / ইউনিট"
+    },
+    {
+      "id": "Unit-Treasurer",
+      "name": "Unit Treasurer",
+      "bn": "ইউনিট কোষাধ্যক্ষ",
+      "group": "Unit / ইউনিট"
+    },
+    {
+      "id": "Unit-Tarbiyat responsible",
+      "name": "Unit Tarbiyat responsible",
+      "bn": "ইউনিট তারবিয়াত দায়িত্বশীল",
+      "group": "Unit / ইউনিট"
+    },
+    {
+      "id": "Unit-Dawah responsible",
+      "name": "Unit Dawah responsible",
+      "bn": "ইউনিট দাওয়াত দায়িত্বশীল",
+      "group": "Unit / ইউনিট"
+    }
+  ]
+}

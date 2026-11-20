@@ -56,3 +56,8 @@ Delivery gates: additive Alembic migration, runtime policies for the new tables,
 ## End-to-end operations follow-up — 2026-11-20
 
 P0: reproduce blank-book/profile save coupling and isolate tab saves; show actionable validation errors instead of JSON. P1: prevent uncommitted daily editor values from being omitted by report save or month changes; validate book progress and provide loading/retry/reload paths. Audit assignment user switching and save-state races. Run regression tests for profile/books, reports, assigned reviewer return/resubmit, scoped permissions and exports using synthetic data. Publish and deploy only after relevant checks; distinguish completed acceptance from missing setup such as uncreated units or reviewer assignments. Never populate real member data or consent as test fixtures.
+
+
+## Bilingual guided catalogs — 2026-11-20
+
+Add an accessible bilingual keyword suggestion control, locally bundled Bangladesh division/district/upazila/union lists with provenance/license, cascading current/permanent address helpers that preserve existing free text, and category filters for the legible owner-supplied syllabus book titles. Add occupation and descriptive responsibility suggestions to personal and official member entry/edit forms. Keep manual values, official category permissions and membership approval boundaries. No remote autocomplete or transmission of typed private addresses. Test bilingual matching, parent resets, keyboard choice, save compatibility and production builds. Ambiguous photo titles and editions are not invented.

@@ -141,3 +141,13 @@ Owner reported profile save blocked by an empty reading-list title. Confirmed sh
 ### Operations fixes ready for CI — 2026-11-20
 
 Profile saves now use saved book data, so an unfinished reading row cannot block unrelated profile edits. Reading saves retain saved profile fields, omit completely empty new rows and validate titles/page counts. Pending daily editor values cannot silently be omitted from report saves; staging clears the editor, rows can be explicitly edited, and month changes warn before discarding unsaved report edits. Added readable field validation, phone guidance, prerequisite/empty-unit messaging, reload/retry controls, target month selection, and account switching is disabled during assignment saves. Applying for access refreshes only requests instead of overwriting unsaved personal work. Local frontend: 16 tests pass; TypeScript passes. Backend: 55 tests pass, four PostgreSQL-only tests skipped locally; PostgreSQL/container verification remains CI. No live personal data/consent or organizational grants were created during these tests.
+
+
+### Guided bilingual entry in progress — 2026-11-20
+
+Implementing locally bundled bilingual geography and category-based book/occupation/responsibility suggestions. Existing encrypted profile/member field contracts remain unchanged. Structured helpers apply a formatted address only when requested, preserving saved/manual text. Suggestions do not create role grants or official categories. Geographic dataset is a versioned third-party snapshot, not a guarantee of current street/building coverage.
+
+
+### Bilingual catalog checks — 2026-11-21
+
+Implemented bilingual searchable lists, direct-place/cascading address helpers, 83 provisional topic-grouped syllabus titles, generic occupations and descriptive responsibilities in personal and official member forms. No schema/auth changes. Frontend 20 tests and TypeScript pass locally. Coverage/provenance/manual-entry limits and unverified photo editions are documented in BILINGUAL_CATALOGS.md. Deployment pending CI.
