@@ -67,3 +67,9 @@ The supplied command ends at “Clearly”. Requirements after that point were n
 Latest code/container CI: commit `d685604692c98fac3a59e2f78657d3c0c52f3b88`, Quality checks run 44563457929, Dependency security run 44563457739, Container smoke checks run 44563457858 all passed. Both Docker images, runtime HTTP endpoints, native PDF support and nonroot execution are verified in CI. The Render Free backend was deployed at https://uttara-oms-api.onrender.com on 2026-11-20 (Asia/Seoul). The user selected free-only hosting; no payment method was added.
 
 Latest deployed code: `e9faeb670cbdc66208aa45c6c5bb89c8dfd48a5f`. Quality checks 44672870065, Dependency security 44672870036, and Container smoke checks 44672869967 all succeeded. Live `/health/ready` returned `{"status":"ready"}` and unauthenticated `/api/v1/members` returned `{"detail":"Not authenticated"}`. Frontend is not deployed; this is not a completed production release.
+
+## Live deployment and initial access — 2026-11-20 (Asia/Seoul)
+
+Cloudflare Pages frontend https://uttara-oms.pages.dev is deployed and its login page was verified live. The user saved the Cloudflare repository integration and final backend CORS origin. Render redeployment `dep-dbvt47ec6qcc73ah9ucg` reported Live with HTTP 200 readiness checks. Google OAuth initially failed with invalid_client/invalid client secret; the user created and saved a corrected secret. A fresh Google-authenticated session was verified afterward.
+
+After explicit owner approval, the first verified Google identity was provisioned as an active global THANA_ADMIN in a controlled owner transaction, with an INITIAL_ADMIN_BOOTSTRAP audit event. No identity identifiers or credentials are included here. The live app now correctly blocks entry at Administrator MFA required. Authenticator enrollment is pending direct user action. A second independent administrator and the remaining release gates are still required; production acceptance is not complete.
