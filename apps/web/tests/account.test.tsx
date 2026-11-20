@@ -25,3 +25,13 @@ it("automatically registers a Google account and shows the personal workspace wi
   expect(screen.queryByText("Private workspace records")).toBeNull();
   expect(screen.queryByText("Access needs approval")).toBeNull();
 });
+
+it("keeps Google sign-in available while the email sender is unconfigured",async()=>{
+  vi.stubEnv("NEXT_PUBLIC_EMAIL_OTP_ENABLED","false");
+  vi.mocked(authClient).mockReturnValue({auth:{getSession:vi.fn().mockResolvedValue({data:{session:null}}),onAuthStateChange:vi.fn().mockReturnValue({data:{subscription:{unsubscribe:vi.fn()}}})}} as never);
+  render(<Shell title="Dashboard" subtitle="Workspace"><p>Private workspace records</p></Shell>);
+  await screen.findByRole("button",{name:"Continue with Google"});
+  expect(screen.queryByLabelText("Email address")).toBeNull();
+  expect(screen.getByText(/Email-code sign-in is awaiting email sender setup/)).toBeTruthy();
+  vi.unstubAllEnvs();
+});
