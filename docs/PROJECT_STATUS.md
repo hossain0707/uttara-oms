@@ -1,6 +1,6 @@
 # Project status
 
-Current summary (2026-11-20): live free-hosted Pages/Render/Supabase pilot, migration 0005, automatic basic Google accounts and personal workspace. Email OTP delivery is blocked by Gmail SMTP 534/5.7.9; the owner must correct the saved App Password and complete delivered-code tests. Historical entries below record earlier stages and are superseded by the latest release notes and DEPLOYMENT_STATUS.md.
+Current summary (2026-11-20): main release deployed on free Pages/Render/Supabase; owner-confirmed Google and six-digit email OTP sign-in. Operations follow-up fixes profile/book coupling, readable errors and report editing/save behavior. Historical notes below are superseded by the latest release/audit entries.
 
 **Engineering hardening implemented locally; production release BLOCKED.** Reviewed and tested on 2026-11-20 Asia/Seoul. No live deployment, production credentials or real records were used.
 
@@ -131,3 +131,13 @@ After private sender credential correction, the email send succeeded. The owner 
 ### Main release deployment — 2026-11-20
 
 PR #5 and full-release PR #1 were merged. Main application release is 1fca4f0b1cfdabbbf9b78fc5013c951a0df2c1e0. Render Free deployed that source successfully (Live, 21:33 Asia/Seoul). Cloudflare production branch was switched to main and the email-code form build flag enabled after owner-confirmed receipt and sign-in. The selected personal tab contrast is fixed in this release. Owner final acceptance remains requested; preserve free-only infrastructure and existing keys/data.
+
+
+### Operations audit in progress — 2026-11-20
+
+Owner reported profile save blocked by an empty reading-list title. Confirmed shared unsaved book state is included in profile requests; client exposes structured validation as JSON. Auditing report editor staging, month switching, reviewer assignment save races and retry behavior. Prior login/deployment success did not constitute end-to-end operation acceptance.
+
+
+### Operations fixes ready for CI — 2026-11-20
+
+Profile saves now use saved book data, so an unfinished reading row cannot block unrelated profile edits. Reading saves retain saved profile fields, omit completely empty new rows and validate titles/page counts. Pending daily editor values cannot silently be omitted from report saves; staging clears the editor, rows can be explicitly edited, and month changes warn before discarding unsaved report edits. Added readable field validation, phone guidance, prerequisite/empty-unit messaging, reload/retry controls, target month selection, and account switching is disabled during assignment saves. Applying for access refreshes only requests instead of overwriting unsaved personal work. Local frontend: 16 tests pass; TypeScript passes. Backend: 55 tests pass, four PostgreSQL-only tests skipped locally; PostgreSQL/container verification remains CI. No live personal data/consent or organizational grants were created during these tests.

@@ -42,7 +42,10 @@ export async function api<T>(path: string, options: RequestInit = {}): Promise<T
   });
   if (!response.ok) {
     let message = "Request failed (" + response.status + ")";
-    try { const detail = (await response.json()).detail; if (detail) message = typeof detail === "string" ? detail : JSON.stringify(detail); } catch {}
+    try { const detail = (await response.json()).detail; if (detail) message = typeof detail === "string" ? detail : Array.isArray(detail) ? detail.map((issue: {loc?: (string | number)[]; msg?: string}) => {
+      const location = (issue.loc || []).filter((part) => part !== "body" && part !== "details").map((part) => typeof part === "number" ? `#${part + 1}` : part.replaceAll("_", " ")).join(" → ");
+      return `${location ? location + ": " : ""}${issue.msg || "Check this value"}`;
+    }).join("; ") : "Please check your entries and try again."; } catch {}
     throw new Error(message);
   }
   return response.json() as Promise<T>;

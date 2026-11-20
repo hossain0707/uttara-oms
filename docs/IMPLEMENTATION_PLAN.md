@@ -1,6 +1,6 @@
 # Implementation plan
 
-Current follow-up (2026-11-20): finish sender setup and real email OTP acceptance; propagate the delivery flag through Docker/Compose; reconcile current deployment documentation. Baseline sections below are historical, not current deployment claims. See DEPLOYMENT_STATUS.md for the live topology.
+Current follow-up (2026-11-20): fix and verify end-to-end workspace operations after owner-reported profile/book save failure. Sender setup and returning-user email OTP acceptance are complete. Baseline sections below are historical, not current deployment claims. See DEPLOYMENT_STATUS.md for the live topology.
 
 Baseline reviewed: `9baf58a3f2117eabc4db26801b906ee6418989d0` (main), 2026-11-20 Asia/Seoul.
 Only remote branch: main; all 11 commits inspected. Latest Quality checks run 44549149392 succeeded for this SHA. No AGENTS.md found.
@@ -51,3 +51,8 @@ User requested normal users to sign up/sign in automatically. Implement idempote
 User approved implementing a usable personal profile/report/target workspace, email OTP signup/sign-in, and master-admin-controlled leader permissions. THANA_ADMIN is the existing master-administrator role; no role is automatically elevated. All organizational roles will require authenticator AAL2; basic users will not. Leader applications are self-submitted and reviewed by a master administrator, independent of the requester. Sensitive organizational changes keep existing independent approval. Personal report reviewers are explicitly assigned by the master; report data is encrypted and private to its owner and assigned reviewer. Goals have explicit units; no unconfirmed 140/300/90 target units or automatic promotion rules will be invented.
 
 Delivery gates: additive Alembic migration, runtime policies for the new tables, regression tests and CI; Supabase email provider and Token-based email templates; custom SMTP for real recipients. Supabase built-in mail is not production email delivery. Provider credentials and any credential enrollment must be entered by the user. Keep all services free-only.
+
+
+## End-to-end operations follow-up — 2026-11-20
+
+P0: reproduce blank-book/profile save coupling and isolate tab saves; show actionable validation errors instead of JSON. P1: prevent uncommitted daily editor values from being omitted by report save or month changes; validate book progress and provide loading/retry/reload paths. Audit assignment user switching and save-state races. Run regression tests for profile/books, reports, assigned reviewer return/resubmit, scoped permissions and exports using synthetic data. Publish and deploy only after relevant checks; distinguish completed acceptance from missing setup such as uncreated units or reviewer assignments. Never populate real member data or consent as test fixtures.

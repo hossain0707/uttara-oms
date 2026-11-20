@@ -145,22 +145,35 @@ export default function PersonalWorkspace() {
       setBusy(false);
     }
   }
-  async function saveProfile() {
+  async function saveProfile(reading = false) {
     await act(async () => {
-      setProfile(
-        await api<Profile>("/self/profile", {
+      if (!reading && details.phone) {
+        const phone = details.phone.replace(/[\s()\-]/g, "").replace(/^\+?880/, "0");
+        if (!/^01[3-9][0-9]{8}$/.test(phone)) throw new Error("Mobile number: use a valid Bangladeshi mobile number, such as 017XXXXXXXX or +88017XXXXXXXX.");
+      }
+      const books = reading ? details.books.filter((b) => b.title.trim() || b.total_pages || b.completed_pages) : (profile?.details.books || []);
+      if (reading) {
+        for (const [i, book] of books.entries()) {
+          if (!book.title.trim()) throw new Error(`Book ${i + 1}: enter a title or remove the unfinished entry.`);
+          if (![book.total_pages, book.completed_pages].every((n) => Number.isInteger(n) && n >= 0 && n <= 100000)) throw new Error(`Book ${i + 1}: page counts must be whole numbers from 0 to 100000.`);
+          if (book.total_pages && book.completed_pages > book.total_pages) throw new Error(`Book ${i + 1}: completed pages cannot exceed total pages.`);
+        }
+      }
+      const saved = await api<Profile>("/self/profile", {
           method: "PUT",
           body: JSON.stringify({
             expected_version: profile?.version || 0,
-            details,
+            details: reading ? { ...empty, ...Object.fromEntries(Object.entries(profile?.details || {}).filter(([k]) => k in empty)), books: books.map((b) => ({...b, title: b.title.trim()})), consent: details.consent } : { ...details, books },
           }),
-        }),
-      );
-      setNotice("Profile and reading progress saved.");
+        });
+      setProfile(saved);
+      if (reading) setDetails((d) => ({ ...d, books: saved.details.books || [] }));
+      setNotice(reading ? "Reading progress saved." : "Profile saved. Unsaved reading-list changes stay in the reading tab.");
     });
   }
   async function saveReport(submit: boolean) {
     await act(async () => {
+      if (Object.values(values).some((v) => v !== "") || notes) throw new Error("Click Add / update day before saving this report so your daily entry is included.");
       const r = await api<Report>("/self/reports", {
         method: "PUT",
         body: JSON.stringify({
@@ -195,6 +208,8 @@ export default function PersonalWorkspace() {
         a.day.localeCompare(b.day),
       ),
     );
+    setValues({});
+    setNotes("");
     setNotice("Day added to the form. Save your draft to keep it.");
   }
   const field = (key: keyof Details, label: string, type = "text") => (
@@ -204,7 +219,8 @@ export default function PersonalWorkspace() {
         id={key}
         className="input"
         type={type}
-        maxLength={1000}
+        maxLength={key === "full_name" || key === "father_name" ? 200 : key === "occupation" || key === "position" ? 160 : key === "phone" ? 40 : 1000}
+        placeholder={key === "phone" ? "01XXXXXXXXX or +8801XXXXXXXXX" : undefined}
         value={String(details[key] || "")}
         onChange={(e) =>
           setDetails((d) => ({
@@ -222,6 +238,7 @@ export default function PersonalWorkspace() {
         Your private profile, reports and targets. Organizational records
         require a separately approved role.
       </p>
+      <button disabled={busy} onClick={() => {if(window.confirm("Reload saved workspace data? Unsaved edits will be discarded.")) {setNotice(""); void load();}}}>Reload saved data</button>
       <div className="personal-tabs" role="tablist" aria-label="My workspace">
         {[
           ["profile", "My profile"],
@@ -233,7 +250,7 @@ export default function PersonalWorkspace() {
             key={id}
             role="tab"
             aria-selected={tab === id}
-            onClick={() => setTab(id)}
+            onClick={() => { setTab(id); setNotice(""); }}
           >
             {label}
           </button>
@@ -245,7 +262,7 @@ export default function PersonalWorkspace() {
         </div>
       )}
       {!profile ? (
-        <p>Loading your workspace…</p>
+        <div><p>{notice ? "Your workspace could not be loaded." : "Loading your workspace…"}</p>{notice && <button onClick={() => void load()}>Retry loading workspace</button>}</div>
       ) : (
         <>
           {tab === "profile" && (
@@ -293,6 +310,7 @@ export default function PersonalWorkspace() {
                       ))}
                   </select>
                 </div>
+                {!nodes.some((n) => n.kind === "UNIT") && <p>No active units have been configured. You can save your profile without a unit; ask an administrator to create units under the wards.</p>}
                 <div className="form-field">
                   <label htmlFor="profile-category">
                     Self-reported category
@@ -353,7 +371,9 @@ export default function PersonalWorkspace() {
                 max={today().slice(0, 7)}
                 value={month}
                 onChange={(e) => {
-                  if (e.target.value) setMonth(e.target.value);
+                  if (!e.target.value) return;
+                  const dirty = JSON.stringify(entries) !== JSON.stringify(selected?.entries || []) || summary !== (selected?.summary || "") || Object.values(values).some((v) => v !== "") || Boolean(notes);
+                  if (!dirty || window.confirm("Discard unsaved report changes and switch month?")) { setMonth(e.target.value); setNotice(""); }
                 }}
               />
               <p>
@@ -470,7 +490,7 @@ export default function PersonalWorkspace() {
                         <th key={m.key}>{m.label}</th>
                       ))}
                       <th>Notes</th>
-                      {editable && <th>Remove</th>}
+                      {editable && <th>Actions</th>}
                     </tr>
                   </thead>
                   <tbody>
@@ -483,6 +503,7 @@ export default function PersonalWorkspace() {
                         <td>{e.notes}</td>
                         {editable && (
                           <td>
+                            <button aria-label={"Edit " + e.day} onClick={() => {setDay(e.day); setNotes(e.notes); setValues(Object.fromEntries(metrics.map((m) => [m.key, e[m.key] == null ? "" : String(e[m.key])]))); setNotice("Editing " + e.day + ". Click Add / update day, then save your draft.");}}>Edit</button>
                             <button
                               aria-label={"Remove " + e.day}
                               onClick={() =>
@@ -524,7 +545,7 @@ export default function PersonalWorkspace() {
                   </label>
                   <div className="form-actions">
                     <button
-                      disabled={busy || !consent}
+                      disabled={busy || !consent || !profile.details.consent}
                       onClick={() => void saveReport(false)}
                     >
                       Save draft
@@ -534,6 +555,7 @@ export default function PersonalWorkspace() {
                       disabled={
                         busy ||
                         !consent ||
+                        !profile.details.consent ||
                         !profile.reviewer_assigned ||
                         !entries.length
                       }
@@ -542,6 +564,7 @@ export default function PersonalWorkspace() {
                       Submit for review
                     </button>
                   </div>
+                  {!profile.details.consent && <p>Save your personal profile and consent before saving a report.</p>}
                   {!profile.reviewer_assigned && (
                     <p>
                       Drafts are available now. Ask the main administrator to
@@ -555,6 +578,8 @@ export default function PersonalWorkspace() {
           {tab === "targets" && (
             <div className="panel">
               <h2>Monthly targets</h2>
+              <label htmlFor="target-month">Target reporting month</label>
+              <input id="target-month" className="input" type="month" max={today().slice(0,7)} value={month} onChange={(e) => {if(e.target.value && (JSON.stringify(entries) === JSON.stringify(selected?.entries || []) && summary === (selected?.summary || "") && !Object.values(values).some(Boolean) && !notes || window.confirm("Discard unsaved report changes and switch month?"))) setMonth(e.target.value);}} />
               <p>
                 Targets are assigned by the main administrator. Reaching them
                 never automatically changes your category.
@@ -586,6 +611,7 @@ export default function PersonalWorkspace() {
                 <p>No targets assigned yet.</p>
               )}
               <h2>My reading list</h2>
+              <p>Save your profile and consent first. Reading progress is saved separately from profile edits. Completely empty new book rows are ignored.</p>
               {details.books.map((b, i) => (
                 <div className="book-row" key={i}>
                   <label>
@@ -654,8 +680,8 @@ export default function PersonalWorkspace() {
                   Add book
                 </button>
                 <button
-                  disabled={busy || !details.consent}
-                  onClick={() => void saveProfile()}
+                  disabled={busy || !profile.details.consent}
+                  onClick={() => void saveProfile(true)}
                 >
                   Save reading progress
                 </button>
@@ -681,7 +707,7 @@ export default function PersonalWorkspace() {
                         scope_node_id: role === "THANA_VIEWER" ? null : scope,
                       }),
                     });
-                    await load();
+                    setRequests((await api<{items: {id:string;role:string;status:string}[]}>("/access/my-requests")).items);
                     setNotice("Request sent to the main administrator.");
                   });
                 }}
