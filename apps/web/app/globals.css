@@ -4,3 +4,15 @@
 @media(max-width:1190px){.cards{grid-template-columns:repeat(2,1fr)}.two-col{grid-template-columns:1fr}}
 @media(max-width:850px){.sidebar{transform:translateX(-100%);transition:transform .2s}.sidebar-open{transform:translateX(0)}.nav-backdrop{display:block;position:fixed;inset:0;border:none;background:#0006;z-index:25}.main-area{margin-left:0}.mobile-menu{display:block}.topbar{padding:0 20px}.content{padding:30px 19px 55px}.footer{padding:20px}.secure-chip{font-size:0;gap:0}.page-header h1{font-size:25px}}
 @media(max-width:520px){.cards{gap:10px}.stat-card{padding:16px}.stat-number{font-size:27px}.stat-label{font-size:11px}.two-col{gap:12px}.panel{padding:18px}.barrow{grid-template-columns:75px 1fr 30px;gap:8px}.barrow label{font-size:10px}.form-grid{grid-template-columns:1fr}.auth-card{padding:26px}.toolbar .grow{display:none}.search-field{width:100%;max-width:none}}
+
+/* Personal accounts use the same responsive workspace without organization-wide access. */
+.personal-shell{min-height:100vh;background:var(--background,#f4f8f6)}
+.personal-header{display:flex;gap:20px;align-items:center;flex-wrap:wrap;padding:20px 30px;background:white;border-bottom:1px solid #dce7e1}
+.personal-header span{margin-left:auto;overflow-wrap:anywhere}
+.personal-workspace{max-width:1150px;margin:auto}.personal-workspace h1{margin-top:0}
+.personal-tabs{display:flex;gap:8px;flex-wrap:wrap;margin:24px 0}.personal-tabs [aria-selected=true]{background:#14785d;color:white}
+.personal-workspace button,.otp-form button{cursor:pointer}.personal-workspace button:not(.primary-btn),.otp-form button:not(.primary-btn){padding:10px 14px;border:1px solid #d3dfd8;border-radius:8px;background:white}
+.personal-workspace button:disabled,.otp-form button:disabled{opacity:.5;cursor:not-allowed}
+.personal-workspace .panel>h2:not(:first-child){margin-top:28px}.consent{display:flex;gap:10px;align-items:flex-start;margin:20px 0;line-height:1.6}.consent input{margin-top:5px;flex-shrink:0}
+.book-row{display:grid;grid-template-columns:2fr 1fr 1fr auto;gap:12px;align-items:end;margin:15px 0}.target-card{border:1px solid #dce7e1;border-radius:10px;padding:18px}.target-card progress{width:100%;accent-color:#14785d}.otp-form{margin:20px 0}.otp-form .form-field{margin-bottom:15px}
+@media(max-width:600px){.personal-header{padding:16px}.personal-header span{margin-left:0}.book-row{grid-template-columns:1fr 1fr}.book-row label:first-child{grid-column:1/-1}.personal-tabs button{flex:1 1 40%}}

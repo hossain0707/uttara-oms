@@ -60,3 +60,12 @@ export async function downloadReport(extension: "xlsx" | "pdf", personal = false
   document.body.append(link); link.click(); link.remove();
   setTimeout(() => URL.revokeObjectURL(objectUrl), 1000);
 }
+
+export async function downloadPersonalReport(id:string, extension:"pdf"|"xlsx") {
+  const {data}=await authClient().auth.getSession();
+  if(!data.session?.access_token)throw new Error("Please sign in");
+  const response=await fetch(base+"/api/v1/self/reports/"+encodeURIComponent(id)+"/export/"+extension,{cache:"no-store",headers:{Authorization:"Bearer "+data.session.access_token}});
+  if(!response.ok)throw new Error("Personal export failed: "+response.status);
+  const url=URL.createObjectURL(await response.blob()),link=document.createElement("a");
+  link.href=url;link.download="my-personal-report."+extension;document.body.append(link);link.click();link.remove();setTimeout(()=>URL.revokeObjectURL(url),1000);
+}
