@@ -60,6 +60,7 @@ export default function PersonalAssignments({ users }: { users: User[] }) {
         id="assignment-user"
         className="select"
         value={user}
+        disabled={busy}
         onChange={(e) => setUser(e.target.value)}
       >
         <option value="">Select registered user</option>

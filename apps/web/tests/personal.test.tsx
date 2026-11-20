@@ -48,3 +48,49 @@ it("saves only the owner's self-reported profile and allows a separate leader ap
   expect(roles.textContent).not.toContain("Master");
   expect(roles.textContent).not.toContain("THANA_ADMIN");
 });
+
+function mockWorkspace() {
+  let saved = {version: 1, details: {full_name: 'Saved owner', consent: true, books: []}, goals: [], reviewer_assigned: false};
+  vi.mocked(api).mockImplementation(async (path, options) => {
+    if (path === '/self/profile') {
+      if (options?.method === 'PUT') saved = {...saved, version: saved.version + 1, details: JSON.parse(String(options.body)).details};
+      return saved;
+    }
+    return {items: []};
+  });
+}
+it('isolates profile saves from unfinished reading rows and ignores completely empty book rows', async () => {
+  mockWorkspace(); render(<PersonalWorkspace />); await screen.findByLabelText('Full name');
+  fireEvent.click(screen.getByRole('tab', {name:'Targets & books'}));
+  fireEvent.click(screen.getByRole('button', {name:'Add book'}));
+  fireEvent.click(screen.getByRole('tab', {name:'My profile'}));
+  fireEvent.change(screen.getByLabelText('Full name'), {target:{value:'Updated owner'}});
+  fireEvent.click(screen.getByRole('button', {name:'Save my profile'}));
+  await screen.findByText('Profile saved. Unsaved reading-list changes stay in the reading tab.');
+  const put = vi.mocked(api).mock.calls.find(([,o])=>o?.method==='PUT');
+  expect(JSON.parse(String(put?.[1]?.body)).details.books).toEqual([]);
+  fireEvent.click(screen.getByRole('tab', {name:'Targets & books'}));
+  fireEvent.click(screen.getByRole('button', {name:'Save reading progress'}));
+  await screen.findByText('Reading progress saved.');
+  expect(screen.queryByLabelText('Book title')).toBeNull();
+});
+it('requires a book title when progress has been entered', async () => {
+  mockWorkspace(); render(<PersonalWorkspace />); await screen.findByLabelText('Full name');
+  fireEvent.click(screen.getByRole('tab', {name:'Targets & books'}));
+  fireEvent.click(screen.getByRole('button', {name:'Add book'}));
+  fireEvent.change(screen.getByLabelText('Pages completed'), {target:{value:'5'}});
+  fireEvent.click(screen.getByRole('button', {name:'Save reading progress'}));
+  await screen.findByText('Book 1: enter a title or remove the unfinished entry.');
+  expect(vi.mocked(api).mock.calls.filter(([,o])=>o?.method==='PUT')).toHaveLength(0);
+});
+it('blocks report saving until pending daily values are included', async () => {
+  mockWorkspace(); render(<PersonalWorkspace />); await screen.findByLabelText('Full name');
+  fireEvent.click(screen.getByRole('tab', {name:'Daily & monthly reports'}));
+  fireEvent.change(screen.getByLabelText('Prayers (prayers)'), {target:{value:'5'}});
+  fireEvent.click(screen.getByRole('checkbox'));
+  fireEvent.click(screen.getByRole('button', {name:'Save draft'}));
+  await screen.findByText('Click Add / update day before saving this report so your daily entry is included.');
+  expect(vi.mocked(api).mock.calls.filter(([p,o])=>p==='/self/reports' && o?.method==='PUT')).toHaveLength(0);
+  fireEvent.click(screen.getByRole('button', {name:'Add / update day'}));
+  expect((screen.getByLabelText('Prayers (prayers)') as HTMLInputElement).value).toBe('');
+});
