@@ -1,6 +1,6 @@
 import uuid
 from datetime import date, datetime, timezone
-from sqlalchemy import Boolean, Date, DateTime, ForeignKey, Index, Integer, String, Text, UniqueConstraint, Uuid
+from sqlalchemy import Boolean, CheckConstraint, Date, DateTime, ForeignKey, Index, Integer, String, Text, UniqueConstraint, Uuid, text
 from sqlalchemy.orm import Mapped, mapped_column
 from .database import Base
 
@@ -21,7 +21,11 @@ class OrgNode(Base):
     code: Mapped[str] = mapped_column(String(40), nullable=False)
     name: Mapped[str] = mapped_column(String(160), nullable=False)
     active: Mapped[bool] = mapped_column(Boolean, default=True, nullable=False)
-    __table_args__ = (UniqueConstraint("parent_id", "code", name="uq_org_parent_code"),)
+    __table_args__ = (
+        UniqueConstraint("parent_id", "code", name="uq_org_parent_code"),
+        Index("uq_org_single_thana", "kind", unique=True,
+              postgresql_where=text("kind = 'THANA'"), sqlite_where=text("kind = 'THANA'")),
+    )
 
 
 class AppUser(Base):
@@ -39,7 +43,11 @@ class RoleGrant(Base):
     user_id: Mapped[uuid.UUID] = mapped_column(Uuid, ForeignKey("app_users.id"), nullable=False)
     role: Mapped[str] = mapped_column(String(24), nullable=False)
     scope_node_id: Mapped[uuid.UUID | None] = mapped_column(Uuid, ForeignKey("org_nodes.id"))
-    __table_args__ = (UniqueConstraint("user_id", "role", "scope_node_id", name="uq_role_scope"),)
+    __table_args__ = (
+        UniqueConstraint("user_id", "role", "scope_node_id", name="uq_role_scope"),
+        Index("uq_role_global", "user_id", "role", unique=True,
+              postgresql_where=text("scope_node_id IS NULL"), sqlite_where=text("scope_node_id IS NULL")),
+    )
 
 
 class Member(Base):
@@ -80,6 +88,12 @@ class ChangeRequest(Base):
     reviewed_at: Mapped[datetime | None] = mapped_column(DateTime(timezone=True))
 
 
+    __table_args__ = (
+        Index("uq_pending_member_change", "member_id", "kind", unique=True,
+              postgresql_where=text("status = 'PENDING'"), sqlite_where=text("status = 'PENDING'")),
+    )
+
+
 class MemberEvent(Base):
     __tablename__ = "member_events"
     id: Mapped[uuid.UUID] = mapped_column(Uuid, primary_key=True, default=uid)
@@ -114,3 +128,47 @@ class AccessRequest(Base):
     reviewed_by: Mapped[uuid.UUID | None] = mapped_column(Uuid, ForeignKey("app_users.id"))
     requested_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), default=now, nullable=False)
     reviewed_at: Mapped[datetime | None] = mapped_column(DateTime(timezone=True))
+
+
+class MembershipDelta(Base):
+    """Append-only active membership accounting, scoped at the time of each event."""
+    __tablename__ = "membership_deltas"
+    id: Mapped[uuid.UUID] = mapped_column(Uuid, primary_key=True, default=uid)
+    event_id: Mapped[uuid.UUID] = mapped_column(Uuid, ForeignKey("member_events.id"), nullable=False)
+    org_node_id: Mapped[uuid.UUID] = mapped_column(Uuid, ForeignKey("org_nodes.id"), nullable=False)
+    category: Mapped[str] = mapped_column(String(16), nullable=False)
+    delta: Mapped[int] = mapped_column(Integer, nullable=False)
+    occurred_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), nullable=False)
+    __table_args__ = (
+        CheckConstraint("delta IN (-1, 1)", name="ck_membership_delta_sign"),
+        CheckConstraint("category IN ('RUKON', 'WORKER', 'ASSOCIATE', 'SUPPORTER')", name="ck_membership_delta_category"),
+        UniqueConstraint("event_id", "org_node_id", "category", name="uq_membership_delta_event_scope"),
+        Index("ix_membership_delta_scope_time", "org_node_id", "occurred_at"),
+    )
+
+
+class PersonalProfile(Base):
+    __tablename__ = "personal_profiles"
+    user_id: Mapped[uuid.UUID] = mapped_column(Uuid, ForeignKey("app_users.id"), primary_key=True)
+    details_encrypted: Mapped[str | None] = mapped_column(Text)
+    goals_encrypted: Mapped[str | None] = mapped_column(Text)
+    reviewer_id: Mapped[uuid.UUID | None] = mapped_column(Uuid, ForeignKey("app_users.id"))
+    member_id: Mapped[uuid.UUID | None] = mapped_column(Uuid, ForeignKey("members.id"), unique=True)
+    version: Mapped[int] = mapped_column(Integer, default=1, nullable=False)
+    updated_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), default=now, nullable=False)
+
+
+class PersonalReport(Base):
+    __tablename__ = "personal_reports"
+    id: Mapped[uuid.UUID] = mapped_column(Uuid, primary_key=True, default=uid)
+    user_id: Mapped[uuid.UUID] = mapped_column(Uuid, ForeignKey("app_users.id"), nullable=False)
+    month: Mapped[date] = mapped_column(Date, nullable=False)
+    content_encrypted: Mapped[str] = mapped_column(Text, nullable=False)
+    status: Mapped[str] = mapped_column(String(16), default="DRAFT", nullable=False)
+    version: Mapped[int] = mapped_column(Integer, default=1, nullable=False)
+    submitted_at: Mapped[datetime | None] = mapped_column(DateTime(timezone=True))
+    reviewed_at: Mapped[datetime | None] = mapped_column(DateTime(timezone=True))
+    reviewed_by: Mapped[uuid.UUID | None] = mapped_column(Uuid, ForeignKey("app_users.id"))
+    review_note_encrypted: Mapped[str | None] = mapped_column(Text)
+    updated_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), default=now, nullable=False)
+    __table_args__ = (UniqueConstraint("user_id", "month", name="uq_personal_report_user_month"),)

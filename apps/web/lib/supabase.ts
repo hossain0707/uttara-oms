@@ -6,7 +6,7 @@ export function authClient(): SupabaseClient {
     const key = process.env.NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY;
     if (!url || !key) throw new Error("Authentication is not configured");
     instance = createClient(url, key, {
-      auth: { autoRefreshToken: true, persistSession: true, detectSessionInUrl: true },
+      auth: { flowType: "pkce", autoRefreshToken: true, persistSession: true, detectSessionInUrl: true },
     });
   }
   return instance;

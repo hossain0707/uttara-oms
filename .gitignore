@@ -13,3 +13,7 @@ coverage/
 *.db
 *.log
 .DS_Store
+
+*.tsbuildinfo
+
+apps/web/out/

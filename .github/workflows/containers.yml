@@ -1,0 +1,58 @@
+name: Container smoke checks
+on:
+  pull_request:
+  push:
+    branches: [main]
+permissions:
+  contents: read
+jobs:
+  smoke:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+      - uses: docker/setup-buildx-action@v3
+      - name: Build API image
+        uses: docker/build-push-action@v6
+        with:
+          context: apps/api
+          load: true
+          tags: uttara-api:ci
+      - name: Build web image
+        uses: docker/build-push-action@v6
+        with:
+          context: apps/web
+          load: true
+          tags: uttara-web:ci
+          build-args: |
+            NEXT_PUBLIC_API_URL=http://localhost:8000
+            NEXT_PUBLIC_SUPABASE_URL=https://example.supabase.co
+            NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY=ci-placeholder-only
+            NEXT_PUBLIC_EMAIL_OTP_ENABLED=true
+      - name: Start synthetic containers
+        run: |
+          docker run -d --name oms-api -p 127.0.0.1:8000:8000 \
+            -e DATABASE_URL=sqlite+pysqlite:// \
+            -e ENVIRONMENT=test \
+            -e SUPABASE_ISSUER=https://example.supabase.co/auth/v1 \
+            -e SUPABASE_JWKS_URL=https://example.supabase.co/auth/v1/.well-known/jwks.json \
+            -e ENCRYPTION_KEY=X6bCSnPOvr1s9bq3sXZlzJIvYj9SB9GksyD7pG_BB-c= \
+            -e PHONE_HASH_KEY=CI-TEST-ONLY-NOT-A-PRODUCTION-SECRET-123456789 \
+            uttara-api:ci
+          docker run -d --name oms-web -p 127.0.0.1:3000:3000 uttara-web:ci
+      - name: Verify HTTP and native PDF dependencies
+        run: |
+          curl --fail --retry 12 --retry-delay 2 --retry-connrefused --retry-all-errors --retry-max-time 60 http://127.0.0.1:8000/health/live
+          curl --fail --retry 12 --retry-delay 2 --retry-connrefused --retry-all-errors --retry-max-time 60 http://127.0.0.1:3000/
+          test "$(curl --silent -o /dev/null -w '%{http_code}' http://127.0.0.1:8000/health/ready)" = "503"
+          docker exec oms-api python -c "from weasyprint import HTML; assert HTML(string='<h1>Synthetic PDF check</h1>').write_pdf().startswith(b'%PDF-')"
+          test "$(docker exec oms-api id -u)" != "0"
+          test "$(docker exec oms-web id -u)" != "0"
+      - name: Container logs
+        if: failure()
+        run: |
+          docker logs oms-api || true
+          docker logs oms-web || true
+      - name: Clean up synthetic containers
+        if: always()
+        run: docker rm -f oms-api oms-web || true

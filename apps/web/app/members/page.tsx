@@ -12,6 +12,8 @@ const labels:Record<Category,string>={RUKON:"Rukon · রুকন",WORKER:"Work
 export default function PeoplePage(){
   const [members,setMembers]=useState<Member[]>([]);
   const [total,setTotal]=useState(0);
+  const [offset,setOffset]=useState(0);
+  const [status,setStatus]=useState("");
   const [units,setUnits]=useState<OrgNode[]>([]);
   const [search,setSearch]=useState("");
   const [category,setCategory]=useState("");
@@ -26,10 +28,10 @@ export default function PeoplePage(){
   const [notice,setNotice]=useState("");
   const [busy,setBusy]=useState(false);
   const load=useCallback(async()=>{try{
-    const query = new URLSearchParams({limit:"100"});if(search.trim())query.set("q",search.trim());if(category)query.set("category",category);
+    const query = new URLSearchParams({limit:"30",offset:String(offset)});if(search.trim())query.set("q",search.trim());if(category)query.set("category",category);if(status)query.set("status",status);
     const [people,org]=await Promise.all([api<{items:Member[];total:number}>("/members?"+query),api<{items:OrgNode[]}>("/organization/nodes")]);
     setMembers(people.items);setTotal(people.total);setUnits(org.items.filter(n=>n.kind==="UNIT" && n.active));
-  }catch(err){setNotice(err instanceof Error?err.message:String(err));}},[search,category]);
+  }catch(err){setNotice(err instanceof Error?err.message:String(err));}},[search,category,offset,status]);
   useEffect(()=>{void load();},[load]);
   const setField=(key:keyof NewProfile,value:string)=>setProfile(prev=>({...prev,[key]:value}));
   const create=async(e:FormEvent)=>{e.preventDefault();setBusy(true);setNotice("");
@@ -50,7 +52,7 @@ export default function PeoplePage(){
   };
   return <Shell title="People & records" subtitle="Manage authorized people profiles, searchable records, and important change requests.">
     {notice&&<div className={notice.includes("saved")||notice.includes("submitted")?"success-msg":"alert"} role="status">{notice}</div>}
-    <div className="toolbar"><input className="input search-field" value={search} onChange={e=>setSearch(e.target.value)} placeholder="Search name, member ID or full mobile number"/><select className="select" value={category} onChange={e=>setCategory(e.target.value)}><option value="">All categories</option>{Object.entries(labels).map(([k,v])=><option key={k} value={k}>{v}</option>)}</select><button className="secondary-btn" onClick={()=>void load()}><RefreshCcw size={15}/> Refresh</button><div className="grow"/><button className="primary-btn" onClick={()=>{setShowCreate(!showCreate);setEditing(null);}}><Plus size={16}/> Add person</button></div>
+    <div className="toolbar"><input className="input search-field" value={search} aria-label="Search people" onChange={e=>{setSearch(e.target.value);setOffset(0);}} placeholder="Search name, member ID or full mobile number"/><select className="select" value={category} aria-label="Filter category" onChange={e=>{setCategory(e.target.value);setOffset(0);}}><option value="">All categories</option>{Object.entries(labels).map(([k,v])=><option key={k} value={k}>{v}</option>)}</select><select aria-label="Filter status" className="select" value={status} onChange={e=>{setStatus(e.target.value);setOffset(0);}}><option value="">All statuses</option><option value="ACTIVE">Active</option><option value="INACTIVE">Inactive</option></select><button className="secondary-btn" onClick={()=>void load()}><RefreshCcw size={15}/> Refresh</button><div className="grow"/><button className="primary-btn" onClick={()=>{setShowCreate(!showCreate);setEditing(null);}}><Plus size={16}/> Add person</button></div>
     {showCreate&&<div className="panel" style={{marginBottom:20}}><div className="section-title"><h2>New person profile</h2><button className="secondary-btn" onClick={()=>setShowCreate(false)}>Close</button></div>
       <form onSubmit={create}><div className="form-grid">
         {([["member_number","Member ID"],["full_name","Full name"],["father_name","Father's name"],["phone","Mobile number"],["occupation","Occupation"],["position","Position / responsibility"],["address","Address"],["joined_on","Joined on"]] as [keyof NewProfile,string][]).map(([key,label])=><div className="form-field" key={key}><label htmlFor={key}>{label}</label><input id={key} type={key==="joined_on"?"date":"text"} className="input" value={profile[key]} onChange={e=>setField(key,e.target.value)} required={key==="member_number"||key==="full_name"}/></div>)}
@@ -61,6 +63,7 @@ export default function PeoplePage(){
     <div className="panel" style={{padding:0,overflow:"hidden"}}><div style={{padding:"23px 24px 13px"}}><h2>People directory</h2><span className="subhead">{total} matching records within your approved scope</span></div>
       {members.length?<div className="table-wrap"><table className="data-table"><thead><tr><th>Member ID</th><th>Name</th><th>Category</th><th>Mobile</th><th>Status</th><th>Actions</th></tr></thead><tbody>{members.map(m=><tr key={m.id}><td>{m.member_number}</td><td><b>{m.full_name}</b></td><td>{labels[m.category]}</td><td>{m.phone||"—"}</td><td><span className={"pill "+(m.status==="ACTIVE"?"":"muted")}>{m.status}</span></td><td><button onClick={()=>{choose(m);setShowCreate(false);}}>Open / edit</button></td></tr>)}</tbody></table></div>:<div className="empty"><Search size={28}/><strong>No matching records</strong><span>Records will appear when authorized data is added.</span></div>}
     </div>
+    <div className="toolbar" style={{marginTop:16}}><button className="secondary-btn" disabled={offset===0} onClick={()=>setOffset(Math.max(0,offset-30))}>Previous</button><span role="status">{total?`${offset+1}–${Math.min(offset+30,total)} of ${total}`:"0 records"}</span><button className="secondary-btn" disabled={offset+30>=total} onClick={()=>setOffset(offset+30)}>Next</button></div>
     {editing&&<div className="panel" style={{marginTop:20}}><div className="section-title"><h2>Edit: {editing.full_name}</h2><button className="secondary-btn" onClick={()=>setEditing(null)}>Close</button></div>
       <p className="subhead">Routine fields can be updated directly. Category, transfer and status changes require independent approval.</p>
       <form onSubmit={saveRoutine}><div className="form-grid">{([["full_name","Full name"],["father_name","Father's name"],["phone","Mobile"],["address","Address"],["occupation","Occupation"],["position","Position"]] as const).map(([key,label])=><div className="form-field" key={key}><label>{label}</label><input required={key==="full_name"} className="input" value={routine[key]} onChange={e=>setRoutine(p=>({...p,[key]:e.target.value}))}/></div>)}</div><div className="form-actions"><button className="primary-btn" disabled={busy}><Save size={15}/> Save routine details</button></div></form>

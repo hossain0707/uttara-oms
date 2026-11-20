@@ -6,9 +6,10 @@ from sqlalchemy.exc import IntegrityError
 from sqlalchemy.orm import Session
 from ..auth import Actor, current_actor
 from ..database import get_db
-from ..models import AuditLog, Member, MemberEvent, OrgNode
-from ..policies import personal_nodes, require_scope
+from ..models import AuditLog, Member, MemberEvent
+from ..policies import active_unit, lock_organization, personal_nodes, require_scope
 from ..schemas import MemberCreate, MemberRoutineUpdate
+from ..analytics import record_movement
 from ..security import decrypt, encrypt, normalize_phone, phone_digest
 
 router = APIRouter(prefix="/members", tags=["members"])
@@ -27,7 +28,8 @@ def view(m: Member) -> dict:
 
 
 def visible(db: Session, actor: Actor, member_id: UUID, write=False) -> Member:
-    m = db.get(Member, member_id)
+    m = (db.query(Member).filter(Member.id == member_id).with_for_update().one_or_none()
+         if write else db.get(Member, member_id))
     if not m:
         raise HTTPException(404, "Record not found")
     if m.org_node_id not in personal_nodes(db, actor):
@@ -70,19 +72,26 @@ def list_members(q: str | None = Query(default=None, max_length=120),
         query = query.filter(or_(*conditions))
     total = query.count()
     items = query.order_by(Member.full_name.asc(), Member.id.asc()).offset(offset).limit(limit).all()
-    return {"items": [view(m) for m in items], "total": total}
+    result = {"items": [view(m) for m in items], "total": total}
+    db.add(AuditLog(actor_id=actor.id, action="DIRECTORY_READ", target_id="members",
+                    detail=f"offset={offset};limit={limit};returned={len(items)}"))
+    db.commit()
+    return result
 
 
 @router.get("/{member_id}")
 def get_member(member_id: UUID, actor: Actor = Depends(current_actor), db: Session = Depends(get_db)):
-    return view(visible(db, actor, member_id))
+    result = view(visible(db, actor, member_id))
+    db.add(AuditLog(actor_id=actor.id, action="MEMBER_READ", target_id=str(member_id)))
+    db.commit()
+    return result
 
 
 @router.post("", status_code=201)
 def add_member(payload: MemberCreate, actor: Actor = Depends(current_actor), db: Session = Depends(get_db)):
+    lock_organization(db)
     require_scope(db, actor, payload.org_node_id, write=True)
-    unit = db.get(OrgNode, payload.org_node_id)
-    if not unit or unit.kind != "UNIT" or not unit.active:
+    if not active_unit(db, payload.org_node_id):
         raise HTTPException(422, "Choose an active unit")
     try:
         phone = normalize_phone(payload.phone)
@@ -100,7 +109,10 @@ def add_member(payload: MemberCreate, actor: Actor = Depends(current_actor), db:
     try:
         db.add(member)
         db.flush()
-        db.add(MemberEvent(member_id=member.id, action="CREATED", after="ACTIVE", actor_id=actor.id))
+        event = MemberEvent(member_id=member.id, action="CREATED", after="ACTIVE", actor_id=actor.id,
+                            created_at=member.created_at)
+        db.add(event); db.flush()
+        record_movement(db, event, None, (member.org_node_id, member.category, member.status))
         db.add(AuditLog(actor_id=actor.id, action="MEMBER_CREATED", target_id=str(member.id)))
         db.commit()
     except IntegrityError as exc:

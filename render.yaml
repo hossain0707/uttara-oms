@@ -1,0 +1,35 @@
+# Free compute only. Keep the Render workspace without a payment method.
+# Excess usage must suspend service/builds, never enable paid overages.
+services:
+  - type: web
+    name: uttara-oms-api
+    runtime: docker
+    plan: free
+    region: singapore
+    repo: https://github.com/hossain0707/uttara-oms
+    branch: hardening/production-foundation
+    autoDeployTrigger: off
+    dockerfilePath: ./apps/api/Dockerfile
+    dockerContext: ./apps/api
+    healthCheckPath: /health/ready
+    envVars:
+      - key: PORT
+        value: "8000"
+      - key: ENVIRONMENT
+        value: production
+      - key: REQUIRE_ADMIN_MFA
+        value: "true"
+      - key: JWT_AUDIENCE
+        value: authenticated
+      - key: DATABASE_URL
+        sync: false
+      - key: SUPABASE_ISSUER
+        sync: false
+      - key: SUPABASE_JWKS_URL
+        sync: false
+      - key: CORS_ORIGINS
+        sync: false
+      - key: ENCRYPTION_KEY
+        sync: false
+      - key: PHONE_HASH_KEY
+        sync: false
