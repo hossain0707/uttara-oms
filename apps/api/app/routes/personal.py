@@ -1,0 +1,546 @@
+"""Owner-only personal workspace and explicitly assigned report review."""
+
+import calendar
+import json
+from datetime import date, datetime, timezone
+from uuid import UUID
+from zoneinfo import ZoneInfo
+from typing import Literal
+from fastapi import APIRouter, Depends, HTTPException
+from pydantic import Field, model_validator
+from sqlalchemy.orm import Session
+from sqlalchemy.exc import IntegrityError
+from ..auth import Actor, account_actor, current_actor
+from ..database import get_db
+from ..models import (
+    AppUser,
+    AuditLog,
+    Member,
+    OrgNode,
+    PersonalProfile,
+    PersonalReport,
+    RoleGrant,
+)
+from ..schemas import InputModel
+from ..security import decrypt, encrypt, normalize_phone
+from ..policies import is_thana_admin, active_unit
+
+router = APIRouter(tags=["personal workspace"])
+METRICS = {
+    "prayers": "prayers",
+    "literature": "pages",
+    "organization": "minutes",
+    "quran": "pages",
+    "hadith": "items",
+}
+
+
+def unpack(value):
+    return json.loads(decrypt(value)) if value else {}
+
+
+def pack(value):
+    return encrypt(json.dumps(value, ensure_ascii=False))
+
+
+def audit(db, actor, action, target):
+    db.add(AuditLog(actor_id=actor.id, action=action, target_id=str(target)))
+
+
+def lock_user(db, user_id):
+    db.query(AppUser).filter(AppUser.id == user_id).with_for_update().one()
+
+
+class Book(InputModel):
+    title: str = Field(min_length=1, max_length=250)
+    total_pages: int = Field(default=0, ge=0, le=100000)
+    completed_pages: int = Field(default=0, ge=0, le=100000)
+
+    @model_validator(mode="after")
+    def pages(self):
+        if self.total_pages and self.completed_pages > self.total_pages:
+            raise ValueError("Completed pages exceed the book length")
+        return self
+
+
+class ProfileData(InputModel):
+    full_name: str = Field(default="", max_length=200)
+    father_name: str = Field(default="", max_length=200)
+    phone: str = Field(default="", max_length=40)
+    current_address: str = Field(default="", max_length=1000)
+    permanent_address: str = Field(default="", max_length=1000)
+    occupation: str = Field(default="", max_length=160)
+    position: str = Field(default="", max_length=160)
+    requested_unit_id: UUID | None = None
+    category: Literal["", "RUKON", "WORKER", "ASSOCIATE", "SUPPORTER"] = ""
+    joined_on: date | None = None
+    worker_since: date | None = None
+    candidate_since: date | None = None
+    oath_on: date | None = None
+    books: list[Book] = Field(default_factory=list, max_length=100)
+    consent: Literal[True]
+
+
+class ProfileSave(InputModel):
+    expected_version: int = Field(ge=0)
+    details: ProfileData
+
+
+class Goal(InputModel):
+    metric: Literal["prayers", "literature", "organization", "quran", "hadith"]
+    target: int = Field(ge=1, le=1000000)
+
+
+class Assignment(InputModel):
+    expected_version: int = Field(ge=0)
+    reviewer_id: UUID | None = None
+    member_id: UUID | None = None
+    goals: list[Goal] = Field(default_factory=list, max_length=5)
+
+    @model_validator(mode="after")
+    def unique(self):
+        if len({g.metric for g in self.goals}) != len(self.goals):
+            raise ValueError("Each metric can have only one target")
+        return self
+
+
+class Entry(InputModel):
+    day: date
+    prayers: int | None = Field(default=None, ge=0, le=100)
+    literature: int | None = Field(default=None, ge=0, le=100000)
+    organization: int | None = Field(default=None, ge=0, le=1440)
+    quran: int | None = Field(default=None, ge=0, le=100000)
+    hadith: int | None = Field(default=None, ge=0, le=100000)
+    notes: str = Field(default="", max_length=1000)
+
+
+class ReportSave(InputModel):
+    month: date
+    expected_version: int = Field(ge=0)
+    entries: list[Entry] = Field(default_factory=list, max_length=31)
+    summary: str = Field(default="", max_length=2000)
+    submit: bool = False
+    consent: Literal[True]
+
+    @model_validator(mode="after")
+    def dates(self):
+        today = datetime.now(ZoneInfo("Asia/Dhaka")).date()
+        if self.month.day != 1 or self.month > today:
+            raise ValueError("Choose the first day of a current or previous month")
+        if len({e.day for e in self.entries}) != len(self.entries):
+            raise ValueError("Only one entry per calendar day is allowed")
+        if any(
+            e.day.year != self.month.year
+            or e.day.month != self.month.month
+            or e.day > today
+            for e in self.entries
+        ):
+            raise ValueError(
+                "Entries must belong to the selected month and cannot be in the future"
+            )
+        if self.submit and not self.entries:
+            raise ValueError("Add daily entries before submitting")
+        return self
+
+
+class Review(InputModel):
+    expected_version: int = Field(ge=1)
+    decision: Literal["REVIEWED", "RETURNED"]
+    note: str = Field(min_length=1, max_length=2000)
+
+
+def profile_view(row):
+    return {
+        "version": row.version if row else 0,
+        "details": unpack(row.details_encrypted) if row else {},
+        "goals": unpack(row.goals_encrypted).get("items", []) if row else [],
+        "reviewer_assigned": bool(row and row.reviewer_id),
+        "member_linked": bool(row and row.member_id),
+    }
+
+
+def report_view(row, profile):
+    content = unpack(row.content_encrypted)
+    entries = content.get("entries", [])
+    totals = {key: sum(e.get(key) or 0 for e in entries) for key in METRICS}
+    goals = content.get(
+        "goals", unpack(profile.goals_encrypted).get("items", []) if profile else []
+    )
+    return {
+        "id": str(row.id),
+        "month": row.month.isoformat(),
+        "status": row.status,
+        "version": row.version,
+        **content,
+        "totals": totals,
+        "entered_days": len(entries),
+        "calendar_days": calendar.monthrange(row.month.year, row.month.month)[1],
+        "progress": [
+            {
+                **g,
+                "actual": totals[g["metric"]],
+                "remaining": max(0, g["target"] - totals[g["metric"]]),
+                "unit": METRICS[g["metric"]],
+            }
+            for g in goals
+        ],
+        "review_note": decrypt(row.review_note_encrypted),
+        "submitted_at": row.submitted_at.isoformat() if row.submitted_at else None,
+    }
+
+
+@router.get("/self/profile")
+def own_profile(actor: Actor = Depends(account_actor), db: Session = Depends(get_db)):
+    row = db.get(PersonalProfile, actor.id)
+    audit(db, actor, "SELF_PROFILE_READ", actor.id)
+    db.commit()
+    return profile_view(row)
+
+
+@router.put("/self/profile")
+def save_profile(
+    body: ProfileSave,
+    actor: Actor = Depends(account_actor),
+    db: Session = Depends(get_db),
+):
+    lock_user(db, actor.id)
+    row = db.get(PersonalProfile, actor.id)
+    if (row.version if row else 0) != body.expected_version:
+        raise HTTPException(409, "Profile changed; reload before saving")
+    if body.details.requested_unit_id and not active_unit(
+        db, body.details.requested_unit_id
+    ):
+        raise HTTPException(422, "Choose an active unit")
+    details = body.details.model_dump(mode="json")
+    try:
+        details["phone"] = normalize_phone(details["phone"]) or ""
+    except ValueError as exc:
+        raise HTTPException(422, str(exc)) from exc
+    details["consent_at"] = datetime.now(timezone.utc).isoformat()
+    details["consent_version"] = "personal-v1"
+    if row is None:
+        row = PersonalProfile(user_id=actor.id, version=0)
+        db.add(row)
+    row.details_encrypted = pack(details)
+    row.version += 1
+    row.updated_at = datetime.now(timezone.utc)
+    audit(db, actor, "SELF_PROFILE_UPDATED", actor.id)
+    db.commit()
+    return profile_view(row)
+
+
+@router.get("/self/organization")
+def own_org(actor: Actor = Depends(account_actor), db: Session = Depends(get_db)):
+    rows = db.query(OrgNode).filter(OrgNode.active.is_(True)).all()
+    return {
+        "items": [
+            {
+                "id": str(n.id),
+                "parent_id": str(n.parent_id) if n.parent_id else None,
+                "kind": n.kind,
+                "name": n.name,
+            }
+            for n in rows
+        ]
+    }
+
+
+@router.get("/self/reports")
+def own_reports(actor: Actor = Depends(account_actor), db: Session = Depends(get_db)):
+    profile = db.get(PersonalProfile, actor.id)
+    rows = (
+        db.query(PersonalReport)
+        .filter(PersonalReport.user_id == actor.id)
+        .order_by(PersonalReport.month.desc())
+        .limit(120)
+        .all()
+    )
+    audit(db, actor, "SELF_REPORTS_READ", actor.id)
+    db.commit()
+    return {"items": [report_view(r, profile) for r in rows], "metric_units": METRICS}
+
+
+@router.put("/self/reports")
+def save_report(
+    body: ReportSave,
+    actor: Actor = Depends(account_actor),
+    db: Session = Depends(get_db),
+):
+    lock_user(db, actor.id)
+    row = (
+        db.query(PersonalReport)
+        .filter(PersonalReport.user_id == actor.id, PersonalReport.month == body.month)
+        .one_or_none()
+    )
+    if (row.version if row else 0) != body.expected_version:
+        raise HTTPException(409, "Report changed; reload before saving")
+    if row and row.status not in {"DRAFT", "RETURNED"}:
+        raise HTTPException(409, "Submitted reports must be returned before editing")
+    profile = db.get(PersonalProfile, actor.id)
+    if not profile or not profile.details_encrypted:
+        raise HTTPException(422, "Save your profile and consent first")
+    if body.submit and not profile.reviewer_id:
+        raise HTTPException(
+            422, "Ask the main administrator to assign your reviewer before submitting"
+        )
+    if body.submit:
+        reviewer = db.get(AppUser, profile.reviewer_id)
+        if (
+            not reviewer
+            or not reviewer.active
+            or not db.query(RoleGrant).filter(RoleGrant.user_id == reviewer.id).first()
+        ):
+            raise HTTPException(
+                422,
+                "Your reviewer is unavailable; ask the main administrator to reassign",
+            )
+    if row is None:
+        row = PersonalReport(user_id=actor.id, month=body.month, version=0)
+        db.add(row)
+    row.content_encrypted = pack(
+        {
+            "entries": [e.model_dump(mode="json") for e in body.entries],
+            "summary": body.summary,
+            "consent_version": "personal-v1",
+            "goals": unpack(profile.goals_encrypted).get("items", []),
+        }
+    )
+    row.status = "SUBMITTED" if body.submit else "DRAFT"
+    row.version += 1
+    row.updated_at = datetime.now(timezone.utc)
+    if body.submit:
+        row.submitted_at = datetime.now(timezone.utc)
+    db.flush()
+    audit(db, actor, "PERSONAL_REPORT_" + row.status, row.id)
+    db.commit()
+    return report_view(row, profile)
+
+
+@router.get("/reviews")
+def review_queue(actor: Actor = Depends(current_actor), db: Session = Depends(get_db)):
+    profiles = (
+        db.query(PersonalProfile).filter(PersonalProfile.reviewer_id == actor.id).all()
+    )
+    ids = [p.user_id for p in profiles if p.user_id != actor.id]
+    reports = (
+        db.query(PersonalReport)
+        .filter(PersonalReport.user_id.in_(ids), PersonalReport.status == "SUBMITTED")
+        .order_by(PersonalReport.month)
+        .limit(200)
+        .all()
+    )
+    users = {u.id: u.email for u in db.query(AppUser).filter(AppUser.id.in_(ids)).all()}
+    audit(db, actor, "ASSIGNED_REPORT_QUEUE_READ", "reports")
+    db.commit()
+    return {
+        "items": [
+            {
+                **report_view(r, next(p for p in profiles if p.user_id == r.user_id)),
+                "email": users[r.user_id],
+                "profile": unpack(
+                    next(
+                        p for p in profiles if p.user_id == r.user_id
+                    ).details_encrypted
+                ),
+            }
+            for r in reports
+        ]
+    }
+
+
+@router.post("/reviews/{report_id}")
+def review_report(
+    report_id: UUID,
+    body: Review,
+    actor: Actor = Depends(current_actor),
+    db: Session = Depends(get_db),
+):
+    found = db.get(PersonalReport, report_id)
+    if not found:
+        raise HTTPException(404, "Report not found")
+    lock_user(db, found.user_id)
+    row = (
+        db.query(PersonalReport)
+        .filter(PersonalReport.id == report_id)
+        .populate_existing()
+        .with_for_update()
+        .one_or_none()
+    )
+    profile = db.get(PersonalProfile, row.user_id) if row else None
+    if (
+        not row
+        or not profile
+        or profile.reviewer_id != actor.id
+        or row.user_id == actor.id
+    ):
+        raise HTTPException(
+            403, "Only the assigned independent reviewer can review this report"
+        )
+    if row.status != "SUBMITTED" or row.version != body.expected_version:
+        raise HTTPException(409, "Report is no longer awaiting this review; reload")
+    row.status = body.decision
+    row.review_note_encrypted = encrypt(body.note)
+    row.reviewed_by = actor.id
+    row.reviewed_at = datetime.now(timezone.utc)
+    row.version += 1
+    audit(db, actor, "PERSONAL_REPORT_" + body.decision, row.id)
+    db.commit()
+    return {"status": row.status}
+
+
+@router.put("/access/personal/{user_id}")
+def assign_personal(
+    user_id: UUID,
+    body: Assignment,
+    actor: Actor = Depends(current_actor),
+    db: Session = Depends(get_db),
+):
+    if not is_thana_admin(actor):
+        raise HTTPException(403, "Main administrator required")
+    user = db.get(AppUser, user_id)
+    if not user or not user.active:
+        raise HTTPException(404, "Active account not found")
+    lock_user(db, user_id)
+    if body.reviewer_id:
+        reviewer = db.get(AppUser, body.reviewer_id)
+        role = db.query(RoleGrant).filter(RoleGrant.user_id == body.reviewer_id).first()
+        if (
+            body.reviewer_id == user_id
+            or not reviewer
+            or not reviewer.active
+            or not role
+        ):
+            raise HTTPException(
+                422,
+                "Assign a different active responsible person with an organizational role",
+            )
+    if body.member_id and not db.get(Member, body.member_id):
+        raise HTTPException(404, "Member not found")
+    if body.member_id:
+        linked = (
+            db.query(PersonalProfile)
+            .filter(
+                PersonalProfile.member_id == body.member_id,
+                PersonalProfile.user_id != user_id,
+            )
+            .first()
+        )
+        if linked:
+            raise HTTPException(409, "This person is linked to another account")
+    row = db.get(PersonalProfile, user_id)
+    if (row.version if row else 0) != body.expected_version:
+        raise HTTPException(409, "Profile changed; reload")
+    if row is None:
+        row = PersonalProfile(user_id=user_id, version=0)
+        db.add(row)
+    row.reviewer_id = body.reviewer_id
+    row.member_id = body.member_id
+    row.goals_encrypted = pack({"items": [g.model_dump() for g in body.goals]})
+    row.version += 1
+    audit(db, actor, "PERSONAL_ASSIGNMENT_UPDATED", user_id)
+    try:
+        db.commit()
+    except IntegrityError as exc:
+        db.rollback()
+        raise HTTPException(409, "Concurrent account linking; reload") from exc
+    return assignment_view(row)
+
+
+@router.get("/access/personal/{user_id}")
+def personal_assignment(
+    user_id: UUID, actor: Actor = Depends(current_actor), db: Session = Depends(get_db)
+):
+    if not is_thana_admin(actor):
+        raise HTTPException(403, "Main administrator required")
+    if not db.get(AppUser, user_id):
+        raise HTTPException(404, "Account not found")
+    row = db.get(PersonalProfile, user_id)
+    return assignment_view(row)
+
+
+def assignment_view(row):
+    # Management metadata only: main administrators do not automatically read private reports.
+    return {
+        "version": row.version if row else 0,
+        "reviewer_id": str(row.reviewer_id) if row and row.reviewer_id else None,
+        "member_id": str(row.member_id) if row and row.member_id else None,
+        "goals": unpack(row.goals_encrypted).get("items", []) if row else [],
+    }
+
+
+@router.get("/self/reports/{report_id}/export/{extension}")
+def export_own_report(
+    report_id: UUID,
+    extension: Literal["xlsx", "pdf"],
+    actor: Actor = Depends(account_actor),
+    db: Session = Depends(get_db),
+):
+    from io import BytesIO
+    from html import escape
+    from fastapi.responses import Response
+
+    row = db.get(PersonalReport, report_id)
+    if not row or row.user_id != actor.id:
+        raise HTTPException(404, "Personal report not found")
+    data = report_view(row, db.get(PersonalProfile, actor.id))
+    header = ["Date", *[f"{k.title()} ({v})" for k, v in METRICS.items()], "Notes"]
+    values = [
+        [
+            e["day"],
+            *[e.get(k) if e.get(k) is not None else "" for k in METRICS],
+            e.get("notes", ""),
+        ]
+        for e in data["entries"]
+    ]
+    values.append(["Total", *[data["totals"][k] for k in METRICS], ""])
+    if extension == "xlsx":
+        import xlsxwriter
+
+        output = BytesIO()
+        book = xlsxwriter.Workbook(
+            output,
+            {"in_memory": True, "strings_to_formulas": False, "strings_to_urls": False},
+        )
+        sheet = book.add_worksheet("Personal report")
+        sheet.set_column(0, 6, 22)
+        sheet.write_row(0, 0, ["Uttara OMS", data["month"], data["status"]])
+        sheet.write_row(2, 0, header)
+        for i, value in enumerate(values, 3):
+            sheet.write_row(i, 0, value)
+        sheet.write_string(len(values) + 5, 0, data.get("summary", ""))
+        sheet.write_string(len(values) + 6, 0, data.get("review_note") or "")
+        book.close()
+        result = output.getvalue()
+        media = "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
+    else:
+        from weasyprint import HTML
+
+        table = "<tr>" + "".join("<th>" + escape(h) + "</th>" for h in header) + "</tr>"
+        table += "".join(
+            "<tr>" + "".join("<td>" + escape(str(v)) + "</td>" for v in value) + "</tr>"
+            for value in values
+        )
+        html = (
+            "<style>@page{size:A4 landscape;margin:15mm}body{font:11px sans-serif}table{border-collapse:collapse;width:100%}td,th{border:1px solid #aaa;padding:6px;overflow-wrap:anywhere}</style>"
+            + "<h1>Uttara OMS — Personal report</h1><p>"
+            + escape(data["month"] + " · " + data["status"])
+            + "</p><table>"
+            + table
+            + "</table><p>"
+            + escape(data.get("summary", ""))
+            + "</p><p>"
+            + escape(data.get("review_note") or "")
+            + "</p>"
+        )
+        result = HTML(string=html).write_pdf()
+        media = "application/pdf"
+    audit(db, actor, "SELF_REPORT_EXPORTED", row.id)
+    db.commit()
+    return Response(
+        result,
+        media_type=media,
+        headers={
+            "Content-Disposition": f'attachment; filename="my-report-{row.month}.{extension}"',
+            "Cache-Control": "no-store",
+        },
+    )

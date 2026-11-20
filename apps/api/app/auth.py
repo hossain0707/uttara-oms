@@ -55,7 +55,7 @@ def account_actor(
         raise HTTPException(403, "Account has not been approved for OMS")
     grants = db.query(RoleGrant).filter(RoleGrant.user_id == user.id).all()
     mfa = claims.get("aal") == "aal2"
-    if settings().require_admin_mfa and not mfa and any(g.role == "THANA_ADMIN" for g in grants):
+    if settings().require_admin_mfa and not mfa and bool(grants):
         raise HTTPException(403, "Administrator MFA required")
     return Actor(user.id, user.email, [(g.role, g.scope_node_id) for g in grants], mfa)
 

@@ -43,3 +43,9 @@ Production completion remains blocked by explicit release gates, not by a claim 
 ## Automatic basic account onboarding
 
 User requested normal users to sign up/sign in automatically. Implement idempotent Google-backed account registration and a signed-in basic account home. No organizational grants or membership records are created. Existing inactive accounts stay disabled; organizational APIs keep role checks and administrator MFA. Verify duplicate/concurrent registration, user-metadata privilege injection, protected endpoint rejection, and the frontend first-login flow. No schema migration is needed.
+
+## Personal workspace, email OTP and master approvals
+
+User approved implementing a usable personal profile/report/target workspace, email OTP signup/sign-in, and master-admin-controlled leader permissions. THANA_ADMIN is the existing master-administrator role; no role is automatically elevated. All organizational roles will require authenticator AAL2; basic users will not. Leader applications are self-submitted and reviewed by a master administrator, independent of the requester. Sensitive organizational changes keep existing independent approval. Personal report reviewers are explicitly assigned by the master; report data is encrypted and private to its owner and assigned reviewer. Goals have explicit units; no unconfirmed 140/300/90 target units or automatic promotion rules will be invented.
+
+Delivery gates: additive Alembic migration, runtime policies for the new tables, regression tests and CI; Supabase email provider and Token-based email templates; custom SMTP for real recipients. Supabase built-in mail is not production email delivery. Provider credentials and any credential enrollment must be entered by the user. Keep all services free-only.

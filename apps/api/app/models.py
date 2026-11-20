@@ -145,3 +145,30 @@ class MembershipDelta(Base):
         UniqueConstraint("event_id", "org_node_id", "category", name="uq_membership_delta_event_scope"),
         Index("ix_membership_delta_scope_time", "org_node_id", "occurred_at"),
     )
+
+
+class PersonalProfile(Base):
+    __tablename__ = "personal_profiles"
+    user_id: Mapped[uuid.UUID] = mapped_column(Uuid, ForeignKey("app_users.id"), primary_key=True)
+    details_encrypted: Mapped[str | None] = mapped_column(Text)
+    goals_encrypted: Mapped[str | None] = mapped_column(Text)
+    reviewer_id: Mapped[uuid.UUID | None] = mapped_column(Uuid, ForeignKey("app_users.id"))
+    member_id: Mapped[uuid.UUID | None] = mapped_column(Uuid, ForeignKey("members.id"), unique=True)
+    version: Mapped[int] = mapped_column(Integer, default=1, nullable=False)
+    updated_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), default=now, nullable=False)
+
+
+class PersonalReport(Base):
+    __tablename__ = "personal_reports"
+    id: Mapped[uuid.UUID] = mapped_column(Uuid, primary_key=True, default=uid)
+    user_id: Mapped[uuid.UUID] = mapped_column(Uuid, ForeignKey("app_users.id"), nullable=False)
+    month: Mapped[date] = mapped_column(Date, nullable=False)
+    content_encrypted: Mapped[str] = mapped_column(Text, nullable=False)
+    status: Mapped[str] = mapped_column(String(16), default="DRAFT", nullable=False)
+    version: Mapped[int] = mapped_column(Integer, default=1, nullable=False)
+    submitted_at: Mapped[datetime | None] = mapped_column(DateTime(timezone=True))
+    reviewed_at: Mapped[datetime | None] = mapped_column(DateTime(timezone=True))
+    reviewed_by: Mapped[uuid.UUID | None] = mapped_column(Uuid, ForeignKey("app_users.id"))
+    review_note_encrypted: Mapped[str | None] = mapped_column(Text)
+    updated_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), default=now, nullable=False)
+    __table_args__ = (UniqueConstraint("user_id", "month", name="uq_personal_report_user_month"),)

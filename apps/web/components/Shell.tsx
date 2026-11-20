@@ -5,6 +5,8 @@ import Link from "next/link";
 import { LayoutDashboard, Users, GitBranch, ShieldCheck, FileBarChart2, LogOut, Menu, Network, ShieldAlert, UserCog } from "lucide-react";
 import { api, type Identity } from "@/lib/api";
 import MfaChallenge from "./MfaChallenge";
+import EmailOtpSignIn from "./EmailOtpSignIn";
+import PersonalWorkspace from "./PersonalWorkspace";
 import { authClient } from "@/lib/supabase";
 
 const items = [
@@ -13,6 +15,8 @@ const items = [
   { href: "/organization", label: "Organization", icon: GitBranch },
   { href: "/approvals", label: "Approvals", icon: ShieldCheck },
   { href: "/reports", label: "Reports", icon: FileBarChart2 },
+  { href: "/my", label: "My workspace", icon: Users },
+  { href: "/reviews", label: "Personal report reviews", icon: ShieldCheck },
   { href: "/access", label: "Access control", icon: UserCog },
 ];
 
@@ -32,6 +36,7 @@ export default function Shell({ title, subtitle, children }: {title: string; sub
       const check = async (signedIn: boolean) => {
         if (!active) return;
         const requestGeneration = ++generation;
+        setPending(true);
         setSession(signedIn);
         setIdentity(null);
         if (signedIn) {
@@ -47,7 +52,7 @@ export default function Shell({ title, subtitle, children }: {title: string; sub
           }
           catch (err) {if (active && requestGeneration === generation) setIssue(err instanceof Error ? err.message : "Access denied");}
         }
-        if (active) setPending(false);
+        if (active && requestGeneration === generation) setPending(false);
       };
       auth.auth.getSession().then(({data}) => check(!!data.session)).catch(err => {setIssue(String(err)); setPending(false);});
       const {data} = auth.auth.onAuthStateChange((event, current) => {
@@ -74,20 +79,15 @@ export default function Shell({ title, subtitle, children }: {title: string; sub
   if (pending) return <div className="center-screen"><div className="loading-logo"><Network size={30}/></div><p>Verifying secure session…</p></div>;
   if (!identity) return <div className="center-screen"><div className="auth-card">
     <div className="auth-brand"><span className="brand-icon"><Network size={25}/></span><span>Uttara <b>OMS</b></span></div>
-    <h1>{session ? (issue==="Administrator MFA required"?"Administrator verification":"Access needs approval") : "Organized. Secure. Connected."}</h1>
-    <p>{session ? (issue==="Administrator MFA required"?"Your account is signed in. Complete authenticator verification to continue.":"Your account could not be opened. Check the message below or contact your administrator.") : "Sign up or sign in with Google. Your basic account is created automatically. Organizational access follows your assigned role."}</p>
+    <h1>{session ? (issue==="Administrator MFA required"?"Leader verification":"Access needs approval") : "Organized. Secure. Connected."}</h1>
+    <p>{session ? (issue==="Administrator MFA required"?"Your account is signed in. Complete authenticator verification to continue.":"Your account could not be opened. Check the message below or contact your administrator.") : "Use an email code to sign up or sign in. You can manage your own profile and reports. Leaders also complete authenticator verification."}</p>
     {issue && <div className="alert"><ShieldAlert size={17}/>{issue}</div>}
     {session&&issue==="Administrator MFA required"&&<MfaChallenge/>}
+    {!session&&<EmailOtpSignIn/>}
     <button className="primary-btn wide" onClick={session ? signOut : signIn}>{session ? "Sign out" : "Continue with Google"}</button>
     <span className="quiet">Sensitive information · Authorized access only</span>
   </div></div>;
-  if (identity.roles.length===0) return <div className="center-screen"><div className="auth-card">
-    <div className="auth-brand"><span className="brand-icon"><Network size={25}/></span><span>Uttara <b>OMS</b></span></div>
-    <h1>Your account is ready</h1>
-    <p>You are signed in as <strong>{identity.email}</strong>. Your account was created automatically with Google.</p>
-    <p>An administrator can assign your ward or unit and organizational role when you need access to workspace records.</p>
-    <button className="primary-btn wide" onClick={()=>void signOut()}>Sign out</button>
-  </div></div>;
+  if (identity.roles.length===0) return <div className="personal-shell"><header className="personal-header"><strong>Uttara OMS · My workspace</strong><span>{identity.email}</span><button onClick={()=>void signOut()}>Sign out</button></header><main className="content"><PersonalWorkspace/></main></div>;
   return <div className="app-shell">
     <aside className={"sidebar " + (mobile ? "sidebar-open" : "")}>
       <Link className="sidebar-brand" href="/"><span className="brand-icon"><Network size={24}/></span><span>Uttara <b>OMS</b><small>MANAGEMENT SYSTEM</small></span></Link>

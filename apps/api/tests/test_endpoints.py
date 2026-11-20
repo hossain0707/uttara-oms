@@ -425,7 +425,7 @@ def test_registration_does_not_reactivate_disabled_account(context, monkeypatch)
         assert not db.query(AppUser).filter(AppUser.auth_sub == claims["sub"]).one().active
 
 
-@pytest.mark.parametrize("change",[{"app_metadata":{"provider":"email"}}, {"is_anonymous":True}, {"sub":"invalid"}, {"email":None}])
+@pytest.mark.parametrize("change",[{"app_metadata":{"provider":"phone"}}, {"is_anonymous":True}, {"sub":"invalid"}, {"email":None}])
 def test_registration_rejects_ineligible_identity(context, monkeypatch, change):
     claims = {**registration_claims(), **change}
     client, _, headers = real_auth(context, monkeypatch, claims)

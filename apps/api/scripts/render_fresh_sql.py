@@ -56,7 +56,7 @@ def render(schema="oms"):
             f'CREATE SCHEMA "{schema}";\nSET LOCAL search_path TO "{schema}";\n'
             + migration_sql("0002_access") + "\n" + ledger + "\n"
             + "UPDATE alembic_version SET version_num='0003_membership_ledger' WHERE version_num='0002_access';\n"
-            + migration_sql("0003_membership_ledger:0004_invariants") + "\n"
+            + migration_sql("0003_membership_ledger:0005_personal_workspace") + "\n"
             + "\n".join(nodes) + "\n" + rls + f'\nREVOKE ALL ON SCHEMA "{schema}" FROM PUBLIC;\n'
             + f'REVOKE ALL ON ALL TABLES IN SCHEMA "{schema}" FROM PUBLIC;\n'
             + f'REVOKE ALL ON ALL FUNCTIONS IN SCHEMA "{schema}" FROM PUBLIC;\nCOMMIT;\n'

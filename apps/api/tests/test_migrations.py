@@ -72,7 +72,7 @@ def test_backfill_and_schema_match(migration_db):
         assert all(count == 0 for _,count in rows)
         assert c.execute(sa.text("SELECT count(*) FROM membership_deltas")).scalar_one() == 6
         assert c.execute(sa.text("SELECT count(*) FROM members")).scalar_one() == 1
-        assert c.execute(sa.text("SELECT version_num FROM alembic_version")).scalar_one() == "0004_invariants"
+        assert c.execute(sa.text("SELECT version_num FROM alembic_version")).scalar_one() == "0005_personal_workspace"
     result = subprocess.run([sys.executable,"-m","alembic","check"], cwd=Path(__file__).resolve().parents[1],env=dict(os.environ,DATABASE_URL=url,ENVIRONMENT="test"),capture_output=True,text=True)
     assert result.returncode == 0, result.stdout+result.stderr
     if engine.dialect.name == "postgresql":
@@ -112,7 +112,7 @@ def test_fresh_sql_renderer(tmp_path):
                 c.exec_driver_sql(sql)
                 assert c.execute(sa.text(f'SELECT count(*) FROM "{schema}".org_nodes')).scalar_one() == 13
                 assert c.execute(sa.text(f'SELECT count(*) FROM "{schema}".members')).scalar_one() == 0
-                assert c.execute(sa.text(f'SELECT version_num FROM "{schema}".alembic_version')).scalar_one() == "0004_invariants"
+                assert c.execute(sa.text(f'SELECT version_num FROM "{schema}".alembic_version')).scalar_one() == "0005_personal_workspace"
                 c.commit()
         finally:
             with engine.begin() as c:
@@ -146,7 +146,7 @@ def test_runtime_permissions_enforce_database_boundary():
         with engine.begin() as c:
             c.exec_driver_sql(f'SET LOCAL ROLE "{role}"')
             assert c.exec_driver_sql(f'SELECT count(*) FROM "{schema}".org_nodes').scalar_one() == 13
-            assert c.exec_driver_sql(f'SELECT version_num FROM "{schema}".alembic_version').scalar_one() == "0004_invariants"
+            assert c.exec_driver_sql(f'SELECT version_num FROM "{schema}".alembic_version').scalar_one() == "0005_personal_workspace"
             assert c.exec_driver_sql(f'UPDATE "{schema}".org_nodes SET name=name WHERE kind=\'THANA\'').rowcount == 1
         for statement in (
             f'DELETE FROM "{schema}".members',

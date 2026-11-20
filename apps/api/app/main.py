@@ -13,17 +13,18 @@ from uuid import UUID
 from .models import AppUser, AuditLog
 from .config import settings
 from .database import get_db
-from .routes import access, approvals, members, organization, reports
+from .routes import access, approvals, members, organization, reports, personal
 
 app = FastAPI(title="Uttara OMS API", version="0.1.0",
               docs_url=None if settings().environment == "production" else "/docs",
               redoc_url=None, openapi_url=None if settings().environment == "production" else "/openapi.json")
 
 app.add_middleware(CORSMiddleware, allow_origins=settings().allowed_origins,
-                   allow_credentials=False, allow_methods=["GET", "POST", "PATCH"],
+                   allow_credentials=False, allow_methods=["GET", "POST", "PATCH", "PUT"],
                    allow_headers=["Authorization", "Content-Type"],
                    expose_headers=["Content-Disposition"])
 
+app.include_router(personal.router, prefix="/api/v1")
 app.include_router(access.router, prefix="/api/v1")
 app.include_router(members.router, prefix="/api/v1")
 app.include_router(organization.router, prefix="/api/v1")
@@ -41,7 +42,7 @@ def ready(db: Session = Depends(get_db)):
     try:
         db.execute(text("SELECT 1"))
         version = db.execute(text("SELECT version_num FROM alembic_version")).scalar_one_or_none()
-        if version != "0004_invariants":
+        if version != "0005_personal_workspace":
             return JSONResponse(status_code=503, content={"status": "not_ready"})
     except SQLAlchemyError:
         return JSONResponse(status_code=503, content={"status": "not_ready"})
@@ -67,10 +68,10 @@ def register_account(credentials: HTTPAuthorizationCredentials = Depends(bearer)
     # app_metadata is managed by Auth; user_metadata is user editable and is not trusted.
     email = claims.get("email")
     metadata = claims.get("app_metadata")
-    if (not isinstance(metadata, dict) or metadata.get("provider") != "google"
+    if (not isinstance(metadata, dict) or metadata.get("provider") not in {"google", "email"}
             or claims.get("is_anonymous") is True or not isinstance(email, str)
             or len(email) > 320 or email.count("@") != 1):
-        raise HTTPException(403, "Google sign-in is required for registration")
+        raise HTTPException(403, "Verified email or Google sign-in is required for registration")
     user = db.query(AppUser).filter(AppUser.auth_sub == subject).first()
     if user is None:
         try:
@@ -79,7 +80,7 @@ def register_account(credentials: HTTPAuthorizationCredentials = Depends(bearer)
                 db.add(user)
                 db.flush()
                 db.add(AuditLog(actor_id=user.id, action="ACCOUNT_REGISTERED",
-                                target_id=str(user.id), detail="Google basic account; no organizational role"))
+                                target_id=str(user.id), detail="Verified basic account; no organizational role"))
                 db.flush()
             db.commit()
         except IntegrityError:
