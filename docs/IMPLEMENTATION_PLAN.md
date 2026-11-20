@@ -39,3 +39,7 @@ Steps 1–4 are implemented on `hardening/production-foundation`. Local validati
 Additional work discovered during validation: patched vulnerable Python packages and transitive PostCSS; locked dependency installs; added PKCE/TOTP challenge UI; input-free validation errors; schema-aware readiness and read-only PostgreSQL reporting snapshots. Existing root/ward/unit identities and member IDs were preserved.
 
 Production completion remains blocked by explicit release gates, not by a claim that passing local tests certifies deployment. No work on requirements omitted by the truncated command is asserted.
+
+## Automatic basic account onboarding
+
+User requested normal users to sign up/sign in automatically. Implement idempotent Google-backed account registration and a signed-in basic account home. No organizational grants or membership records are created. Existing inactive accounts stay disabled; organizational APIs keep role checks and administrator MFA. Verify duplicate/concurrent registration, user-metadata privilege injection, protected endpoint rejection, and the frontend first-login flow. No schema migration is needed.

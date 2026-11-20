@@ -45,7 +45,7 @@ def jwt_claims(token: str) -> dict:
         raise HTTPException(status.HTTP_401_UNAUTHORIZED, "Invalid access token") from exc
 
 
-def current_actor(
+def account_actor(
     credentials: HTTPAuthorizationCredentials = Depends(bearer),
     db: Session = Depends(get_db),
 ) -> Actor:
@@ -54,9 +54,17 @@ def current_actor(
     if user is None:
         raise HTTPException(403, "Account has not been approved for OMS")
     grants = db.query(RoleGrant).filter(RoleGrant.user_id == user.id).all()
-    if not grants:
-        raise HTTPException(403, "No OMS role assigned")
     mfa = claims.get("aal") == "aal2"
     if settings().require_admin_mfa and not mfa and any(g.role == "THANA_ADMIN" for g in grants):
         raise HTTPException(403, "Administrator MFA required")
     return Actor(user.id, user.email, [(g.role, g.scope_node_id) for g in grants], mfa)
+
+
+def current_actor(
+    credentials: HTTPAuthorizationCredentials = Depends(bearer),
+    db: Session = Depends(get_db),
+) -> Actor:
+    actor = account_actor(credentials, db)
+    if not actor.grants:
+        raise HTTPException(403, "Organizational role required")
+    return actor

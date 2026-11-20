@@ -35,7 +35,16 @@ export default function Shell({ title, subtitle, children }: {title: string; sub
         setSession(signedIn);
         setIdentity(null);
         if (signedIn) {
-          try { const me = await api<Identity>("/me"); if (active && requestGeneration === generation) {setIdentity(me); setIssue("");} }
+          try {
+            let me: Identity;
+            try {me=await api<Identity>("/me");}
+            catch (error) {
+              if (!(error instanceof Error)||error.message!=="Account has not been approved for OMS") throw error;
+              await api("/account/register", {method:"POST"});
+              me=await api<Identity>("/me");
+            }
+            if (active && requestGeneration === generation) {setIdentity(me); setIssue("");}
+          }
           catch (err) {if (active && requestGeneration === generation) setIssue(err instanceof Error ? err.message : "Access denied");}
         }
         if (active) setPending(false);
@@ -66,11 +75,18 @@ export default function Shell({ title, subtitle, children }: {title: string; sub
   if (!identity) return <div className="center-screen"><div className="auth-card">
     <div className="auth-brand"><span className="brand-icon"><Network size={25}/></span><span>Uttara <b>OMS</b></span></div>
     <h1>{session ? (issue==="Administrator MFA required"?"Administrator verification":"Access needs approval") : "Organized. Secure. Connected."}</h1>
-    <p>{session ? (issue==="Administrator MFA required"?"Your account is signed in. Complete authenticator verification to continue.":"Your Google identity is signed in, but it is not approved for this workspace. Contact your authorized administrator.") : "A private organizational management workspace. Only explicitly approved accounts can view records."}</p>
+    <p>{session ? (issue==="Administrator MFA required"?"Your account is signed in. Complete authenticator verification to continue.":"Your account could not be opened. Check the message below or contact your administrator.") : "Sign up or sign in with Google. Your basic account is created automatically. Organizational access follows your assigned role."}</p>
     {issue && <div className="alert"><ShieldAlert size={17}/>{issue}</div>}
     {session&&issue==="Administrator MFA required"&&<MfaChallenge/>}
     <button className="primary-btn wide" onClick={session ? signOut : signIn}>{session ? "Sign out" : "Continue with Google"}</button>
     <span className="quiet">Sensitive information · Authorized access only</span>
+  </div></div>;
+  if (identity.roles.length===0) return <div className="center-screen"><div className="auth-card">
+    <div className="auth-brand"><span className="brand-icon"><Network size={25}/></span><span>Uttara <b>OMS</b></span></div>
+    <h1>Your account is ready</h1>
+    <p>You are signed in as <strong>{identity.email}</strong>. Your account was created automatically with Google.</p>
+    <p>An administrator can assign your ward or unit and organizational role when you need access to workspace records.</p>
+    <button className="primary-btn wide" onClick={()=>void signOut()}>Sign out</button>
   </div></div>;
   return <div className="app-shell">
     <aside className={"sidebar " + (mobile ? "sidebar-open" : "")}>

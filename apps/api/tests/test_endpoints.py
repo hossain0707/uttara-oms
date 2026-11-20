@@ -6,7 +6,7 @@ from fastapi.testclient import TestClient
 from sqlalchemy import create_engine, text, event
 from sqlalchemy.orm import sessionmaker
 from sqlalchemy.pool import StaticPool
-from app.auth import Actor, current_actor
+from app.auth import Actor, account_actor, current_actor
 from app.database import Base, get_db
 from app.main import app
 from app.models import AppUser, OrgNode, RoleGrant
@@ -62,6 +62,7 @@ def context():
 
     app.dependency_overrides[get_db] = override_db
     app.dependency_overrides[current_actor] = override_actor
+    app.dependency_overrides[account_actor] = override_actor
     try:
         with TestClient(app) as client:
             yield client, holder, who, unit1, unit2
@@ -377,3 +378,85 @@ def test_postgres_reporting_uses_read_only_snapshot(context):
     with patch("app.analytics._report_data", side_effect=verify_snapshot) as check:
         assert client.get("/api/v1/reports/dashboard").status_code == 200
         check.assert_called_once()
+
+
+def registration_claims(subject=None):
+    return {"sub":str(subject or uuid.uuid4()),"email":"normal@example.invalid",
+            "app_metadata":{"provider":"google"},"aal":"aal1",
+            "user_metadata":{"role":"THANA_ADMIN","scope_node_id":"all"}}
+
+
+def real_auth(context, monkeypatch, claims):
+    client, holder, *_ = context
+    app.dependency_overrides.pop(current_actor, None)
+    app.dependency_overrides.pop(account_actor, None)
+    monkeypatch.setattr("app.auth.jwt_claims", lambda _: claims)
+    monkeypatch.setattr("app.main.jwt_claims", lambda _: claims)
+    return client, holder, {"Authorization":"Bearer synthetic-token"}
+
+
+def test_google_registration_is_idempotent_and_self_only(context, monkeypatch):
+    from app.models import AuditLog, Member
+    claims = registration_claims()
+    client, holder, headers = real_auth(context, monkeypatch, claims)
+    assert client.post("/api/v1/account/register", headers=headers).status_code == 200
+    assert client.post("/api/v1/account/register", headers=headers).status_code == 200
+    profile = client.get("/api/v1/me", headers=headers)
+    assert profile.status_code == 200
+    assert profile.json()["email"] == claims["email"]
+    assert profile.json()["roles"] == []
+    for path in ("/members", "/organization/nodes", "/reports/dashboard", "/access/users", "/approvals"):
+        assert client.get("/api/v1"+path, headers=headers).status_code == 403
+    with holder["session_factory"]() as db:
+        user = db.query(AppUser).filter(AppUser.auth_sub == claims["sub"]).one()
+        assert db.query(RoleGrant).filter(RoleGrant.user_id == user.id).count() == 0
+        assert db.query(Member).count() == 0
+        assert db.query(AuditLog).filter(AuditLog.actor_id == user.id, AuditLog.action == "ACCOUNT_REGISTERED").count() == 1
+
+
+def test_registration_does_not_reactivate_disabled_account(context, monkeypatch):
+    claims = registration_claims()
+    client, holder, headers = real_auth(context, monkeypatch, claims)
+    with holder["session_factory"]() as db:
+        db.add(AppUser(auth_sub=claims["sub"],email=claims["email"],active=False)); db.commit()
+    assert client.post("/api/v1/account/register", headers=headers).status_code == 403
+    assert client.get("/api/v1/me", headers=headers).status_code == 403
+    with holder["session_factory"]() as db:
+        assert not db.query(AppUser).filter(AppUser.auth_sub == claims["sub"]).one().active
+
+
+@pytest.mark.parametrize("change",[{"app_metadata":{"provider":"email"}}, {"is_anonymous":True}, {"sub":"invalid"}, {"email":None}])
+def test_registration_rejects_ineligible_identity(context, monkeypatch, change):
+    claims = {**registration_claims(), **change}
+    client, _, headers = real_auth(context, monkeypatch, claims)
+    assert client.post("/api/v1/account/register", headers=headers).status_code in {401,403}
+
+
+def test_basic_account_flow_preserves_administrator_mfa(context, monkeypatch):
+    claims = registration_claims()
+    client, holder, headers = real_auth(context, monkeypatch, claims)
+    assert client.post("/api/v1/account/register", headers=headers).status_code == 200
+    with holder["session_factory"]() as db:
+        user = db.query(AppUser).filter(AppUser.auth_sub == claims["sub"]).one()
+        db.add(RoleGrant(user_id=user.id,role="THANA_ADMIN",scope_node_id=None)); db.commit()
+    assert client.get("/api/v1/me", headers=headers).json()["detail"] == "Administrator MFA required"
+    assert client.get("/api/v1/access/users", headers=headers).status_code == 403
+    claims["aal"] = "aal2"
+    assert client.get("/api/v1/me", headers=headers).status_code == 200
+
+
+def test_concurrent_registration_creates_one_basic_account(context, monkeypatch):
+    if not os.environ.get("TEST_DATABASE_URL"):
+        pytest.skip("Independent concurrent transactions require PostgreSQL")
+    from concurrent.futures import ThreadPoolExecutor
+    from types import SimpleNamespace
+    from app.main import register_account
+    claims = registration_claims()
+    _, holder, _ = real_auth(context, monkeypatch, claims)
+    def register():
+        with holder["session_factory"]() as db:
+            return register_account(SimpleNamespace(credentials="synthetic"), db)
+    with ThreadPoolExecutor(max_workers=2) as pool:
+        assert all(result["registered"] for result in pool.map(lambda _: register(), range(2)))
+    with holder["session_factory"]() as db:
+        assert db.query(AppUser).filter(AppUser.auth_sub==claims["sub"]).count() == 1

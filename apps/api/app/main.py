@@ -5,7 +5,12 @@ from fastapi.responses import JSONResponse
 from sqlalchemy import text
 from sqlalchemy.exc import SQLAlchemyError
 from sqlalchemy.orm import Session
-from .auth import Actor, current_actor
+from .auth import Actor, account_actor, bearer, jwt_claims
+from fastapi import HTTPException
+from fastapi.security import HTTPAuthorizationCredentials
+from sqlalchemy.exc import IntegrityError
+from uuid import UUID
+from .models import AppUser, AuditLog
 from .config import settings
 from .database import get_db
 from .routes import access, approvals, members, organization, reports
@@ -44,10 +49,47 @@ def ready(db: Session = Depends(get_db)):
 
 
 @app.get("/api/v1/me")
-def me(actor: Actor = Depends(current_actor)):
+def me(actor: Actor = Depends(account_actor)):
     return {"id": str(actor.id), "email": actor.email, "roles": [
         {"role": role, "scope_node_id": str(scope) if scope else None}
         for role, scope in actor.grants], "mfa": actor.mfa}
+
+
+@app.post("/api/v1/account/register")
+def register_account(credentials: HTTPAuthorizationCredentials = Depends(bearer),
+                     db: Session = Depends(get_db)):
+    """Idempotent basic account registration; never assigns organizational access."""
+    claims = jwt_claims(credentials.credentials)
+    try:
+        subject = str(UUID(claims["sub"]))
+    except (ValueError, TypeError, KeyError) as exc:
+        raise HTTPException(401, "Invalid account identity") from exc
+    # app_metadata is managed by Auth; user_metadata is user editable and is not trusted.
+    email = claims.get("email")
+    metadata = claims.get("app_metadata")
+    if (not isinstance(metadata, dict) or metadata.get("provider") != "google"
+            or claims.get("is_anonymous") is True or not isinstance(email, str)
+            or len(email) > 320 or email.count("@") != 1):
+        raise HTTPException(403, "Google sign-in is required for registration")
+    user = db.query(AppUser).filter(AppUser.auth_sub == subject).first()
+    if user is None:
+        try:
+            with db.begin_nested():
+                user = AppUser(auth_sub=subject, email=email, active=True)
+                db.add(user)
+                db.flush()
+                db.add(AuditLog(actor_id=user.id, action="ACCOUNT_REGISTERED",
+                                target_id=str(user.id), detail="Google basic account; no organizational role"))
+                db.flush()
+            db.commit()
+        except IntegrityError:
+            db.rollback()
+            user = db.query(AppUser).filter(AppUser.auth_sub == subject).first()
+            if user is None:
+                raise HTTPException(409, "Account registration conflict; retry")
+    if not user.active:
+        raise HTTPException(403, "Account is disabled")
+    return {"registered": True}
 
 
 @app.middleware("http")
