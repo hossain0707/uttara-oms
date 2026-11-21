@@ -8,6 +8,7 @@ from sqlalchemy.exc import IntegrityError
 from ..auth import Actor, current_actor, account_actor
 from ..database import get_db
 from ..models import AccessRequest, AppUser, AuditLog, OrgNode, RoleGrant
+from .. import security_policy as policy
 from ..policies import ROLES, is_thana_admin, lock_organization, active_unit
 
 router = APIRouter(prefix="/access", tags=["access control"])
@@ -75,9 +76,10 @@ def users(actor: Actor = Depends(current_actor), db: Session = Depends(get_db)):
     require_admin(actor)
     all_users = db.query(AppUser).order_by(AppUser.email).limit(500).all()
     all_grants = db.query(RoleGrant).all()
+    owner_uuid = policy.owner_id(db)
     return {"items": [
         {"id": str(u.id), "auth_sub": u.auth_sub, "email": u.email,
-         "active": u.active,
+         "active": u.active, "is_master_admin": str(u.id) == owner_uuid,
          "roles": [{"role": r.role, "scope_node_id": str(r.scope_node_id) if r.scope_node_id else None}
                    for r in all_grants if r.user_id == u.id]}
         for u in all_users
@@ -152,8 +154,8 @@ def decide_access(request_id: UUID, body: AccessDecision,
             if user is None:
                 user = AppUser(auth_sub=row.auth_sub, email=row.email, active=True)
                 db.add(user); db.flush()
-            else:
-                user.active = True
+            elif not user.active:
+                raise HTTPException(409, "Master Admin must reactivate this suspended account first")
             existing = db.query(RoleGrant).filter(
                 RoleGrant.user_id == user.id, RoleGrant.role == row.role,
                 RoleGrant.scope_node_id == row.scope_node_id,
@@ -170,6 +172,8 @@ def decide_access(request_id: UUID, body: AccessDecision,
             if not grant:
                 raise HTTPException(404, "Target role not found")
             if row.role == "THANA_ADMIN":
+                if policy.is_owner(db, user.id):
+                    raise HTTPException(403, "The Master Admin role is protected from removal")
                 remaining = (db.query(RoleGrant.user_id).join(AppUser, AppUser.id == RoleGrant.user_id)
                              .filter(RoleGrant.role == "THANA_ADMIN", AppUser.active.is_(True)).distinct().count())
                 if remaining <= 2:

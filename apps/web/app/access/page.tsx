@@ -8,6 +8,7 @@ import {
   XCircle,
 } from "lucide-react";
 import { authClient } from "@/lib/supabase";
+import MasterSecurity from "@/components/MasterSecurity";
 import PersonalAssignments from "@/components/PersonalAssignments";
 import Shell from "@/components/Shell";
 import { api, type OrgNode, type Identity } from "@/lib/api";
@@ -25,6 +26,7 @@ type Request = {
   reviewed_at: string | null;
 };
 type User = {
+  is_master_admin?: boolean;
   id: string;
   auth_sub: string;
   email: string;
@@ -357,7 +359,7 @@ export default function AccessPage() {
                     {u.roles.map((r, i) => (
                       <span className="pill" key={i} style={{ marginRight: 5 }}>
                         {r.role.replaceAll("_"," ")} · {nodes.find(n=>n.id===r.scope_node_id)?.name||"Thana-wide"}
-                        <button type="button" aria-label={"Remove "+r.role+" for "+u.email+" in "+(nodes.find(n=>n.id===r.scope_node_id)?.name||"Thana-wide")} disabled={busy||loading||pendingRemoval(u,r)} onClick={()=>void removePermission(u,r)}>{pendingRemoval(u,r)?"Removal pending":"Remove"}</button>
+                        {u.is_master_admin&&r.role==="THANA_ADMIN"?<span> · Protected owner</span>:<button type="button" aria-label={"Remove "+r.role+" for "+u.email+" in "+(nodes.find(n=>n.id===r.scope_node_id)?.name||"Thana-wide")} disabled={busy||loading||pendingRemoval(u,r)} onClick={()=>void removePermission(u,r)}>{pendingRemoval(u,r)?"Removal pending":"Remove"}</button>}
                       </span>
                     ))}
                     {!u.roles.length&&<span className="hint">Personal account — no administrative permissions</span>}
@@ -370,6 +372,7 @@ export default function AccessPage() {
           </table>
         </div>
       </div>
+      <MasterSecurity reviewsOnly/>
     </Shell>
   );
 }
