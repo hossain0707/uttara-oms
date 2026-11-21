@@ -5,7 +5,7 @@ import Link from "next/link";
 import { LayoutDashboard, Users, GitBranch, ShieldCheck, FileBarChart2, LogOut, Menu, Network, ShieldAlert, UserCog, BookOpen } from "lucide-react";
 import { api, type Identity } from "@/lib/api";
 import MfaChallenge from "./MfaChallenge";
-import EmailOtpSignIn from "./EmailOtpSignIn";
+import AuthScreen from "./AuthScreen";
 import PersonalWorkspace from "./PersonalWorkspace";
 import { authClient } from "@/lib/supabase";
 
@@ -23,7 +23,6 @@ const items = [
 
 export default function Shell({ title, subtitle, children }: {title: string; subtitle: string; children: ReactNode}) {
   const path = usePathname();
-  const emailOtpEnabled = process.env.NEXT_PUBLIC_EMAIL_OTP_ENABLED === "true";
   const [session, setSession] = useState(false);
   const [identity, setIdentity] = useState<Identity | null>(null);
   const [pending, setPending] = useState(true);
@@ -58,6 +57,7 @@ export default function Shell({ title, subtitle, children }: {title: string; sub
       };
       auth.auth.getSession().then(({data}) => check(!!data.session)).catch(err => {setIssue(String(err)); setPending(false);});
       const {data} = auth.auth.onAuthStateChange((event, current) => {
+        if(event === "PASSWORD_RECOVERY"){window.location.replace("/reset-password/");return;}
         if (["SIGNED_IN", "SIGNED_OUT", "MFA_CHALLENGE_VERIFIED", "TOKEN_REFRESHED"].includes(event)) {
           // Defer calls to auth.getSession until the auth-state callback releases its lock.
           setTimeout(() => {void check(!!current);}, 0);
@@ -67,27 +67,16 @@ export default function Shell({ title, subtitle, children }: {title: string; sub
     } catch (err) { setIssue(String(err)); setPending(false); }
     return () => {active = false; unsubscribe?.();};
   }, []);
-  const signIn = async () => {
-    try {
-      setIssue("");
-      const {error} = await authClient().auth.signInWithOAuth({
-        provider: "google",
-        options: {redirectTo: window.location.origin},
-      });
-      if (error) setIssue(error.message);
-    } catch (err) {setIssue(String(err));}
-  };
   const signOut = async () => {await authClient().auth.signOut(); setIdentity(null); setSession(false);};
   if (pending) return <div className="center-screen"><div className="loading-logo"><Network size={30}/></div><p>Verifying secure session…</p></div>;
+  if (!session && !identity) return <AuthScreen/>;
   if (!identity) return <div className="center-screen"><div className="auth-card">
     <div className="auth-brand"><span className="brand-icon"><Network size={25}/></span><span>Uttara <b>OMS</b></span></div>
-    <h1>{session ? (issue==="Administrator MFA required"?"Leader verification":"Access needs approval") : "Organized. Secure. Connected."}</h1>
-    <p>{session ? (issue==="Administrator MFA required"?"Your account is signed in. Complete authenticator verification to continue.":"Your account could not be opened. Check the message below or contact your administrator.") : (emailOtpEnabled ? "Use an email code to sign up or sign in. You can manage your own profile and reports. Leaders also complete authenticator verification." : "Sign up or sign in with Google to manage your profile and reports. Leaders also complete authenticator verification.")}</p>
+    <h1>{issue==="Administrator MFA required"?"Leader verification":"Access needs approval"}</h1>
+    <p>{issue==="Administrator MFA required"?"Your account is signed in. Complete authenticator verification to continue.":"Your account could not be opened. Check the message below or contact your administrator."}</p>
     {issue && <div className="alert"><ShieldAlert size={17}/>{issue}</div>}
-    {session&&issue==="Administrator MFA required"&&<MfaChallenge/>}
-    {!session&&emailOtpEnabled&&<EmailOtpSignIn/>}
-    {!session&&!emailOtpEnabled&&<p className="hint">Email-code sign-in is awaiting email sender setup. Google sign-in is available.</p>}
-    <button className="primary-btn wide" onClick={session ? signOut : signIn}>{session ? "Sign out" : "Continue with Google"}</button>
+    {issue==="Administrator MFA required"&&<MfaChallenge/>}
+    <button className="primary-btn wide" onClick={signOut}>Sign out</button>
     <span className="quiet">Sensitive information · Authorized access only</span>
   </div></div>;
   if (identity.roles.length===0) return <div className="personal-shell"><header className="personal-header"><strong>Uttara OMS · My workspace</strong><span>{identity.email}</span><button onClick={()=>void signOut()}>Sign out</button></header><main className="content"><PersonalWorkspace/></main></div>;

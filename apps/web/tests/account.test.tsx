@@ -1,5 +1,5 @@
 import {afterEach,expect,it,vi} from "vitest";
-import {cleanup,render,screen} from "@testing-library/react";
+import {cleanup,render,screen,fireEvent} from "@testing-library/react";
 import Shell from "@/components/Shell";
 import {authClient} from "@/lib/supabase";
 import {api} from "@/lib/api";
@@ -32,7 +32,9 @@ it("keeps Google sign-in available while the email sender is unconfigured",async
   render(<Shell title="Dashboard" subtitle="Workspace"><p>Private workspace records</p></Shell>);
   await screen.findByRole("button",{name:"Continue with Google"});
   expect(screen.queryByLabelText("Email address")).toBeNull();
-  expect(screen.getByText(/Email-code sign-in is awaiting email sender setup/)).toBeTruthy();
+  expect(screen.getByLabelText("Email")).toBeTruthy();
+  expect(screen.getByLabelText("Password")).toBeTruthy();
+  expect(screen.queryByRole("button",{name:"Sign in with an email code"})).toBeNull();
   vi.unstubAllEnvs();
 });
 
@@ -40,8 +42,17 @@ it("shows email code signup alongside Google only when delivery is enabled",asyn
   vi.stubEnv("NEXT_PUBLIC_EMAIL_OTP_ENABLED","true");
   vi.mocked(authClient).mockReturnValue({auth:{getSession:vi.fn().mockResolvedValue({data:{session:null}}),onAuthStateChange:vi.fn().mockReturnValue({data:{subscription:{unsubscribe:vi.fn()}}})}} as never);
   render(<Shell title="Dashboard" subtitle="Workspace"><p>Private workspace records</p></Shell>);
+  await screen.findByRole("button",{name:"Sign in with an email code"});
+  fireEvent.click(screen.getByRole("button",{name:"Sign in with an email code"}));
   await screen.findByLabelText("Email address");
   expect(screen.getByRole("button",{name:"Sign up / sign in with email"})).toBeTruthy();
   expect(screen.getByRole("button",{name:"Continue with Google"})).toBeTruthy();
   expect(screen.queryByText(/Email-code sign-in is awaiting email sender setup/)).toBeNull();
+});
+
+it('keeps a signed-in leader behind authenticator verification before showing private records',async()=>{
+ vi.mocked(authClient).mockReturnValue({auth:{getSession:vi.fn().mockResolvedValue({data:{session:{access_token:'synthetic'}}}),onAuthStateChange:vi.fn().mockReturnValue({data:{subscription:{unsubscribe:vi.fn()}}}),mfa:{listFactors:vi.fn().mockResolvedValue({data:{all:[{id:'synthetic-factor',factor_type:'totp',status:'verified'}]},error:null})}}} as never);
+ vi.mocked(api).mockRejectedValue(new Error('Administrator MFA required'));
+ render(<Shell title="Dashboard" subtitle="Workspace"><p>Private leader records</p></Shell>);
+ await screen.findByRole('heading',{name:'Leader verification'});await screen.findByLabelText('Authenticator code');expect(screen.queryByText('Private leader records')).toBeNull();expect(screen.queryByRole('button',{name:'LOGIN'})).toBeNull();
 });
