@@ -3,6 +3,8 @@ import { useEffect, useState, type FormEvent } from "react";
 import SearchSelect from './SearchSelect';
 import AddressFields from './AddressFields';
 import catalogs from '@/data/catalogs.json';
+import ProfileCard from './ProfileCard';
+import {prepareProfilePhoto} from '@/lib/profile-photo';
 import Library from './Library';
 import { api, downloadPersonalReport } from "@/lib/api";
 export const metrics = [
@@ -14,6 +16,10 @@ export const metrics = [
 ] as const;
 type Book = { title: string; total_pages: number; completed_pages: number };
 type Details = {
+  identity_type: string;
+  identity_number: string;
+  photo: string;
+  directory_sharing: boolean;
   full_name: string;
   father_name: string;
   phone: string;
@@ -58,6 +64,10 @@ type Node = {
   name: string;
 };
 const empty: Details = {
+  identity_type: "",
+  identity_number: "",
+  photo: "",
+  directory_sharing: false,
   full_name: "",
   father_name: "",
   phone: "",
@@ -82,6 +92,8 @@ const today = () =>
     day: "2-digit",
   }).format(new Date());
 export default function PersonalWorkspace() {
+  const [editingProfile, setEditingProfile] = useState(false);
+  const [showIdentity, setShowIdentity] = useState(false);
   const [tab, setTab] = useState("profile"),
     [profile, setProfile] = useState<Profile | null>(null),
     [details, setDetails] = useState<Details>(empty),
@@ -115,6 +127,7 @@ export default function PersonalWorkspace() {
         ),
       ]);
       setProfile(p);
+      setEditingProfile(!p.details.full_name);
       setDetails({
         ...empty,
         ...Object.fromEntries(
@@ -156,6 +169,7 @@ export default function PersonalWorkspace() {
   }
   async function saveProfile(reading = false) {
     await act(async () => {
+      if (!reading && (!details.full_name.trim() || !details.identity_type || !details.identity_number.trim())) throw new Error("Enter your full name and NID or passport number.");
       if (!reading && details.phone) {
         const phone = details.phone.replace(/[\s()\-]/g, "").replace(/^\+?880/, "0");
         if (!/^01[3-9][0-9]{8}$/.test(phone)) throw new Error("Mobile number: use a valid Bangladeshi mobile number, such as 017XXXXXXXX or +88017XXXXXXXX.");
@@ -171,13 +185,15 @@ export default function PersonalWorkspace() {
       const saved = await api<Profile>("/self/profile", {
           method: "PUT",
           body: JSON.stringify({
+            section: reading ? "reading" : "profile",
             expected_version: profile?.version || 0,
             details: reading ? { ...empty, ...Object.fromEntries(Object.entries(profile?.details || {}).filter(([k]) => k in empty)), books: books.map((b) => ({...b, title: b.title.trim()})), consent: details.consent } : { ...details, books },
           }),
         });
       setProfile(saved);
       if (reading) setDetails((d) => ({ ...d, books: saved.details.books || [] }));
-      setNotice(reading ? "Reading progress saved." : "Profile saved. Unsaved reading-list changes stay in the reading tab.");
+      else { setDetails(d=>({...empty,...saved.details,books:d.books}));setEditingProfile(false);setShowIdentity(false); }
+      setNotice(reading ? "Reading progress saved." : "Profile saved.");
     });
   }
   async function saveReport(submit: boolean) {
@@ -268,7 +284,7 @@ export default function PersonalWorkspace() {
       </div>
       {tab === "library" && <Library books={details.books} canAdd={!!profile?.details.consent && !busy} onAdd={book=>setDetails(d=>({...d,books:[...d.books,book]}))} onManage={()=>setTab("targets")} />}
       {notice && (
-        <div className="alert" role="status">
+        <div className={notice.includes("saved.") ? "success-msg" : "alert"} role="status">
           {notice}
         </div>
       )}
@@ -276,7 +292,8 @@ export default function PersonalWorkspace() {
         <div><p>{notice ? "Your workspace could not be loaded." : "Loading your workspace…"}</p>{notice && <button onClick={() => void load()}>Retry loading workspace</button>}</div>
       ) : (
         <>
-          {tab === "profile" && (
+          {tab === "profile" && !editingProfile && <ProfileCard privateView profile={{...profile.details,unit:nodes.find(n=>n.id===profile.details.requested_unit_id)?.name}} onEdit={()=>{setEditingProfile(true);setNotice("");}}/>}
+          {tab === "profile" && editingProfile && (
             <form
               className="panel"
               onSubmit={(e) => {
@@ -289,11 +306,17 @@ export default function PersonalWorkspace() {
                 Self-reported details do not change your official category,
                 counts or permissions.
               </p>
+              <div className="photo-editor">
+                {details.photo ? <img src={details.photo} alt="Profile photo preview"/> : <span>No photo added</span>}
+                <div><label htmlFor="profile-photo">Profile photo</label><input id="profile-photo" type="file" accept="image/jpeg,image/png,image/webp" disabled={busy} onChange={e=>{const file=e.target.files?.[0];e.target.value="";if(file)void act(async()=>{const photo=await prepareProfilePhoto(file);setDetails(d=>({...d,photo}));});}}/><p className="hint">JPG, PNG or WebP, up to 5 MB. Your photo is cropped to a square.</p>{details.photo&&<button type="button" disabled={busy} className="secondary-btn" onClick={()=>setDetails(d=>({...d,photo:""}))}>Remove photo</button>}</div>
+              </div>
               <div className="form-grid">
                 <h3 className="form-field full">1. Personal information</h3>
                 {field("full_name", "Full name")}
                 {field("father_name", "Father’s name")}
                 {field("phone", "Mobile number", "tel")}
+                <div className="form-field"><label htmlFor="identity-type">Identity document</label><select id="identity-type" className="select" required value={details.identity_type} onChange={e=>setDetails(d=>({...d,identity_type:e.target.value,identity_number:""}))}><option value="">Choose document</option><option value="NID">National ID (NID)</option><option value="PASSPORT">Passport</option></select></div>
+                <div className="form-field"><label htmlFor="identity-number">NID or passport number</label><div className="identity-input"><input id="identity-number" className="input" type={showIdentity?"text":"password"} autoComplete="off" required maxLength={30} value={details.identity_number} onChange={e=>setDetails(d=>({...d,identity_number:e.target.value}))}/><button type="button" className="secondary-btn" aria-label={showIdentity?"Hide document number":"Show document number"} onClick={()=>setShowIdentity(v=>!v)}>{showIdentity?"Hide":"Show"}</button></div><p className="hint">Stored privately. Never shown in the directory. This does not verify your identity.</p></div>
                 <h3 className="form-field full">2. Occupation & responsibility</h3>
                 {field("occupation", "Occupation")}
                 {field("position", "Responsibility / position")}
@@ -364,14 +387,13 @@ export default function PersonalWorkspace() {
                     setDetails((d) => ({ ...d, consent: e.target.checked }))
                   }
                 />{" "}
-                I consent to storing my profile and voluntary prayer, study and
+                I consent to privately storing my NID or passport number, profile photo and voluntary prayer, study and
                 organizational reports. My assigned responsible person may
                 review submitted reports and profile details. Main
                 administrators manage assignments.
               </label>
-              <button className="primary-btn" disabled={busy}>
-                Save my profile
-              </button>
+              <label className="consent"><input type="checkbox" checked={details.directory_sharing} onChange={e=>setDetails(d=>({...d,directory_sharing:e.target.checked}))}/> Show my photo with my linked organizational record to authorized users. My document number and personal reports stay private.</label>
+              <div className="profile-form-actions"><button className="primary-btn" disabled={busy}>Save my profile</button>{profile.details.full_name&&<button type="button" className="secondary-btn" disabled={busy} onClick={()=>{setDetails(d=>({...empty,...profile.details,books:d.books}));setEditingProfile(false);setShowIdentity(false);setNotice("");}}>Cancel editing</button>}</div>
             </form>
           )}
           {tab === "reports" && (

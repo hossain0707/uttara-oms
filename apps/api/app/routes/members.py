@@ -6,7 +6,7 @@ from sqlalchemy.exc import IntegrityError
 from sqlalchemy.orm import Session
 from ..auth import Actor, current_actor
 from ..database import get_db
-from ..models import AuditLog, Member, MemberEvent
+from ..models import AuditLog, Member, MemberEvent, PersonalProfile
 from ..policies import active_unit, lock_organization, personal_nodes, require_scope
 from ..schemas import MemberCreate, MemberRoutineUpdate
 from ..analytics import record_movement
@@ -15,9 +15,16 @@ from ..security import decrypt, encrypt, normalize_phone, phone_digest
 router = APIRouter(prefix="/members", tags=["members"])
 
 
-def view(m: Member) -> dict:
+def shared_photos(db, member_ids):
+    from .personal import unpack
+    rows = db.query(PersonalProfile).filter(PersonalProfile.member_id.in_(member_ids)).all()
+    return {str(p.member_id): details.get("photo", "") for p in rows
+            if (details := unpack(p.details_encrypted)).get("consent") and details.get("directory_sharing")}
+
+
+def view(m: Member, photo: str = "") -> dict:
     return {
-        "id": str(m.id), "member_number": m.member_number, "full_name": m.full_name,
+        "photo": photo, "id": str(m.id), "member_number": m.member_number, "full_name": m.full_name,
         "father_name": m.father_name, "phone": decrypt(m.phone_encrypted),
         "address": decrypt(m.address_encrypted), "occupation": m.occupation,
         "position": m.position, "category": m.category, "status": m.status,
@@ -72,7 +79,8 @@ def list_members(q: str | None = Query(default=None, max_length=120),
         query = query.filter(or_(*conditions))
     total = query.count()
     items = query.order_by(Member.full_name.asc(), Member.id.asc()).offset(offset).limit(limit).all()
-    result = {"items": [view(m) for m in items], "total": total}
+    photos = shared_photos(db, [m.id for m in items])
+    result = {"items": [view(m, photos.get(str(m.id), "")) for m in items], "total": total}
     db.add(AuditLog(actor_id=actor.id, action="DIRECTORY_READ", target_id="members",
                     detail=f"offset={offset};limit={limit};returned={len(items)}"))
     db.commit()
@@ -81,7 +89,8 @@ def list_members(q: str | None = Query(default=None, max_length=120),
 
 @router.get("/{member_id}")
 def get_member(member_id: UUID, actor: Actor = Depends(current_actor), db: Session = Depends(get_db)):
-    result = view(visible(db, actor, member_id))
+    member = visible(db, actor, member_id)
+    result = view(member, shared_photos(db, [member.id]).get(str(member.id), ""))
     db.add(AuditLog(actor_id=actor.id, action="MEMBER_READ", target_id=str(member_id)))
     db.commit()
     return result

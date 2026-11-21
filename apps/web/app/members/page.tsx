@@ -4,6 +4,7 @@ import {Plus, Search, RefreshCcw, UserRoundPlus, Save, ShieldCheck} from "lucide
 import SearchSelect from '@/components/SearchSelect';
 import AddressFields from '@/components/AddressFields';
 import catalogs from '@/data/catalogs.json';
+import ProfileCard from '@/components/ProfileCard';
 import Shell from "@/components/Shell";
 import {api, type Category, type Member, type OrgNode} from "@/lib/api";
 
@@ -23,6 +24,7 @@ export default function PeoplePage(){
   const [showCreate,setShowCreate]=useState(false);
   const [profile,setProfile]=useState<NewProfile>(blank);
   const [consented,setConsented]=useState(false);
+  const [selected,setSelected]=useState<Member|null>(null);
   const [editing,setEditing]=useState<Member|null>(null);
   const [history,setHistory]=useState<HistoryItem[]>([]);
   const [routine,setRoutine]=useState({full_name:"",father_name:"",phone:"",address:"",occupation:"",position:""});
@@ -35,6 +37,7 @@ export default function PeoplePage(){
     const [people,org]=await Promise.all([api<{items:Member[];total:number}>("/members?"+query),api<{items:OrgNode[]}>("/organization/nodes")]);
     setMembers(people.items);setTotal(people.total);setUnits(org.items.filter(n=>n.kind==="UNIT" && n.active));
   }catch(err){setNotice(err instanceof Error?err.message:String(err));}},[search,category,offset,status]);
+  useEffect(()=>{setSearch(new URLSearchParams(window.location.search).get("q")||"");},[]);
   useEffect(()=>{void load();},[load]);
   const setField=(key:keyof NewProfile,value:string)=>setProfile(prev=>({...prev,[key]:value}));
   const create=async(e:FormEvent)=>{e.preventDefault();setBusy(true);setNotice("");
@@ -45,7 +48,7 @@ export default function PeoplePage(){
   };
   const choose=(m:Member)=>{setEditing(m);setHistory([]);void api<{items:HistoryItem[]}>("/members/"+m.id+"/history").then(data=>setHistory(data.items)).catch(err=>setNotice(String(err)));setRoutine({full_name:m.full_name,father_name:m.father_name||"",phone:m.phone||"",address:m.address||"",occupation:m.occupation||"",position:m.position||""});setChangeKind("CATEGORY");setChangeValue(m.category==="WORKER"?"RUKON":"WORKER");};
   const saveRoutine=async(e:FormEvent)=>{e.preventDefault();if(!editing)return;setBusy(true);setNotice("");
-    try{await api("/members/"+editing.id,{method:"PATCH",body:JSON.stringify({...routine,expected_version:editing.version})});setEditing(null);setNotice("Routine changes saved.");await load();}
+    try{const saved=await api<Member>("/members/"+editing.id,{method:"PATCH",body:JSON.stringify({...routine,expected_version:editing.version})});setSelected({...saved,photo:editing.photo});setEditing(null);setNotice("Routine changes saved.");await load();}
     catch(err){setNotice(err instanceof Error?err.message:String(err));}finally{setBusy(false);}
   };
   const propose=async(e:FormEvent)=>{e.preventDefault();if(!editing)return;setBusy(true);setNotice("");
@@ -64,9 +67,10 @@ export default function PeoplePage(){
         <div className="form-field full"><label className="checkbox-row"><input type="checkbox" checked={consented} onChange={e=>setConsented(e.target.checked)} required/>I confirm that the person was informed about the purpose of processing their sensitive organizational information and gave valid consent under the approved privacy notice (v1). No record should be entered without this basis.</label></div>
       </div><div className="form-actions"><button className="secondary-btn" type="button" onClick={()=>setShowCreate(false)}>Cancel</button><button className="primary-btn" disabled={busy||!consented||!profile.org_node_id}><UserRoundPlus size={16}/> Save profile</button></div></form></div>}
     <div className="panel" style={{padding:0,overflow:"hidden"}}><div style={{padding:"23px 24px 13px"}}><h2>People directory</h2><span className="subhead">{total} matching records within your approved scope</span></div>
-      {members.length?<div className="table-wrap"><table className="data-table"><thead><tr><th>Member ID</th><th>Name</th><th>Category</th><th>Mobile</th><th>Status</th><th>Actions</th></tr></thead><tbody>{members.map(m=><tr key={m.id}><td>{m.member_number}</td><td><b>{m.full_name}</b></td><td>{labels[m.category]}</td><td>{m.phone||"—"}</td><td><span className={"pill "+(m.status==="ACTIVE"?"":"muted")}>{m.status}</span></td><td><button onClick={()=>{choose(m);setShowCreate(false);}}>Open / edit</button></td></tr>)}</tbody></table></div>:<div className="empty"><Search size={28}/><strong>No matching records</strong><span>Records will appear when authorized data is added.</span></div>}
+      {members.length?<div className="table-wrap"><table className="data-table"><thead><tr><th>Member ID</th><th>Name</th><th>Category</th><th>Mobile</th><th>Status</th><th>Actions</th></tr></thead><tbody>{members.map(m=><tr key={m.id}><td>{m.member_number}</td><td><div className="directory-name">{m.photo?<img className="directory-avatar" src={m.photo} alt=""/>:<UserRoundPlus size={26}/>}<b>{m.full_name}</b></div></td><td>{labels[m.category]}</td><td>{m.phone||"—"}</td><td><span className={"pill "+(m.status==="ACTIVE"?"":"muted")}>{m.status}</span></td><td><button onClick={()=>{setSelected(m);setEditing(null);setShowCreate(false);}}>View profile</button></td></tr>)}</tbody></table></div>:<div className="empty"><Search size={28}/><strong>No matching records</strong><span>Records will appear when authorized data is added.</span></div>}
     </div>
     <div className="toolbar" style={{marginTop:16}}><button className="secondary-btn" disabled={offset===0} onClick={()=>setOffset(Math.max(0,offset-30))}>Previous</button><span role="status">{total?`${offset+1}–${Math.min(offset+30,total)} of ${total}`:"0 records"}</span><button className="secondary-btn" disabled={offset+30>=total} onClick={()=>setOffset(offset+30)}>Next</button></div>
+    {selected&&!editing&&<div className="directory-preview"><div className="section-title"><h2>Profile details</h2><button className="secondary-btn" onClick={()=>setSelected(null)}>Close profile</button></div><ProfileCard profile={{...selected,current_address:selected.address,unit:units.find(n=>n.id===selected.org_node_id)?.name}} onEdit={()=>choose(selected)}/></div>}
     {editing&&<div className="panel" style={{marginTop:20}}><div className="section-title"><h2>Edit: {editing.full_name}</h2><button className="secondary-btn" onClick={()=>setEditing(null)}>Close</button></div>
       <p className="subhead">Routine fields can be updated directly. Category, transfer and status changes require independent approval.</p>
       <form onSubmit={saveRoutine}><div className="form-grid">{([["full_name","Full name"],["father_name","Father's name"],["phone","Mobile"],["address","Address"],["occupation","Occupation"],["position","Position"]] as const).map(([key,label])=>key==='occupation'||key==='position'?<SearchSelect key={key} label={label} placeholder={key==='occupation'?'e.g. Teacher':'e.g. Ward secretary'} value={routine[key]} maxLength={160} items={key==='occupation'?catalogs.occupations:catalogs.positions} onChange={v=>setRoutine(p=>({...p,[key]:v}))}/>:key==='address'?<AddressFields key={key} label={label} value={routine.address} onChange={v=>setRoutine(p=>({...p,address:v}))}/>:<div className="form-field" key={key}><label>{label}</label><input required={key==="full_name"} className="input" value={routine[key]} onChange={e=>setRoutine(p=>({...p,[key]:e.target.value}))}/></div>)}</div><div className="form-actions"><button className="primary-btn" disabled={busy}><Save size={15}/> Save routine details</button></div></form>
