@@ -61,3 +61,8 @@ P0: reproduce blank-book/profile save coupling and isolate tab saves; show actio
 ## Bilingual guided catalogs — 2026-11-20
 
 Add an accessible bilingual keyword suggestion control, locally bundled Bangladesh division/district/upazila/union lists with provenance/license, cascading current/permanent address helpers that preserve existing free text, and category filters for the legible owner-supplied syllabus book titles. Add occupation and descriptive responsibility suggestions to personal and official member entry/edit forms. Keep manual values, official category permissions and membership approval boundaries. No remote autocomplete or transmission of typed private addresses. Test bilingual matching, parent resets, keyboard choice, save compatibility and production builds. Ambiguous photo titles and editions are not invented.
+
+
+## Form wording cleanup — 2026-11-21
+
+Replace repeated language instructions with field-specific example placeholders throughout shared search/address controls and personal/member forms. Shorten address labels within their fieldset and remove duplicate translated headings. Keep bilingual matching and editable user values; examples must never prefill or save fake address data.
