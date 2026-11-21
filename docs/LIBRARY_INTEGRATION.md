@@ -8,7 +8,7 @@ Metadata was collected from the visible BJILibrary syllabus pages on 2026-11-21:
 
 Data lives in apps/web/data/library.json. Original label and source URL are retained per entry; book labels are stripped of list numbering/author suffixes for compact titles. The annual continuing-study block is explicitly separated from Seerah. English subject names and selected keyword aliases support browsing alongside original Bengali book titles. It is a reviewed snapshot, not a live synchronization service.
 
-Observed book-cover thumbnails from the library's Worker category pages are linked where available (25 of the 35 Worker links). Missing/failed images use a typographic title card, never an invented edition cover. Thumbnails remain hosted by the original library; no PDFs or full book text are copied. Image requests and outbound links use no-referrer. The static CSP img-src allows only the additional https://bjilibrary.com origin; scripts, frames and connections are not broadened. Availability and edition correspondence can change at the source.
+Observed book-cover thumbnails from the library's Worker category pages are linked where available (34 of the 35 Worker links). Missing/failed images use a typographic title card, never an invented edition cover. Thumbnails remain hosted by the original library; no PDFs or full book text are copied. Image requests and outbound links use no-referrer. The static CSP img-src allows only the additional https://bjilibrary.com origin; scripts, frames and connections are not broadened. Availability and edition correspondence can change at the source.
 
 ## Reading behavior
 
