@@ -151,3 +151,13 @@ Implementing locally bundled bilingual geography and category-based book/occupat
 ### Bilingual catalog checks — 2026-11-21
 
 Implemented bilingual searchable lists, direct-place/cascading address helpers, 83 provisional topic-grouped syllabus titles, generic occupations and descriptive responsibilities in personal and official member forms. No schema/auth changes. Frontend 20 tests and TypeScript pass locally. Coverage/provenance/manual-entry limits and unverified photo editions are documented in BILINGUAL_CATALOGS.md. Deployment pending CI.
+
+
+### Guided catalog release verified — 2026-11-21
+
+PR #8 merged to main at 9390a298d8144c8279faf09411bed86c660aeb78. Cloudflare production dd8959e2-f30b-4184-95fe-4556b441eae5 succeeded at 01:06 Asia/Seoul. Quality, dependency-security and container CI passed. Live own-profile checks confirmed Uttara search and hierarchy selection, Bengali/English occupation suggestions and Namaz book search under Worship. Temporary UI values were discarded; no user profile, consent or permission was saved. Book transcription/edition and missing street-level coverage limitations remain as documented.
+
+
+### Wording cleanup in progress — 2026-11-21
+
+Replacing language-name placeholders with examples such as Dhaka, Uttara and Teacher; simplifying repeated field labels and translated headings. Suggestions still match both languages. Address assembly uses a single name per place; manual values are preserved. No schema or permission change.

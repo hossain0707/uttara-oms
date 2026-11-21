@@ -23,17 +23,17 @@ it('supports keyboard selection and preserves a custom unlisted value',()=>{
 it('finds Uttara by keyword, fills its parents, applies only on request and clears dependent selection',()=>{
  function Form(){const [value,setValue]=useState('Existing private road');return <AddressFields label="Current address" value={value} onChange={setValue}/>}
  render(<Form/>);
- const find=screen.getByLabelText('Current address — Find any location / স্থান খুঁজুন');
+ const find=screen.getByLabelText('Find location');
  fireEvent.focus(find);fireEvent.change(find,{target:{value:'uttara model'}});
  fireEvent.click(screen.getByRole('option',{name:/উত্তরা মডেল থানা/}));
- expect((screen.getByLabelText('Current address') as HTMLTextAreaElement).value).toBe('Existing private road');
+ expect((screen.getByLabelText('Address details') as HTMLTextAreaElement).value).toBe('Existing private road');
  fireEvent.click(screen.getByRole('button',{name:'Use selected current address'}));
- expect((screen.getByLabelText('Current address') as HTMLTextAreaElement).value).toContain('Uttara Model Thana');
- expect((screen.getByLabelText('Current address') as HTMLTextAreaElement).value).toContain('Dhaka');
- const division=screen.getByLabelText('Current address — 1. Division / বিভাগ');
+ expect((screen.getByLabelText('Address details') as HTMLTextAreaElement).value).toContain('Uttara Model Thana');
+ expect((screen.getByLabelText('Address details') as HTMLTextAreaElement).value).toContain('Dhaka');
+ const division=screen.getByLabelText('Division');
  fireEvent.focus(division);fireEvent.change(division,{target:{value:'raj'}});fireEvent.click(screen.getByRole('option',{name:/রাজশাহী/}));
- expect((screen.getByLabelText('Current address — 2. District / জেলা') as HTMLInputElement).value).toBe('');
- expect((screen.getByLabelText('Current address — 3. Upazila / thana / উপজেলা / থানা') as HTMLInputElement).disabled).toBe(true);
+ expect((screen.getByLabelText('District') as HTMLInputElement).value).toBe('');
+ expect((screen.getByLabelText('Upazila / Thana') as HTMLInputElement).disabled).toBe(true);
 });
 it('bundles complete snapshot parent links and bounded catalog values without defining permission grants',()=>{
  expect(geo.divisions).toHaveLength(8);expect(geo.districts).toHaveLength(64);
