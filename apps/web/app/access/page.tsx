@@ -7,6 +7,7 @@ import {
   CheckCircle2,
   XCircle,
 } from "lucide-react";
+import { authClient } from "@/lib/supabase";
 import PersonalAssignments from "@/components/PersonalAssignments";
 import Shell from "@/components/Shell";
 import { api, type OrgNode, type Identity } from "@/lib/api";
@@ -48,7 +49,10 @@ export default function AccessPage() {
   const [scope, setScope] = useState("");
   const [message, setMessage] = useState("");
   const [busy, setBusy] = useState(false);
+  const [actionId, setActionId] = useState("");
+  const [loading, setLoading] = useState(true);
   const load = async () => {
+    setLoading(true);
     try {
       const [req, people, org, me] = await Promise.all([
         api<{ items: Request[] }>("/access/requests"),
@@ -61,11 +65,15 @@ export default function AccessPage() {
       setUsers(people.items);
       setNodes(org.items);
     } catch (err) {
-      setMessage(err instanceof Error ? err.message : String(err));
-    }
+      throw err;
+    } finally { setLoading(false); }
   };
   useEffect(() => {
-    void load();
+    let active=true;
+    const refresh=()=>void load().catch(err=>{if(active)setMessage(err instanceof Error?err.message:String(err));});
+    refresh();
+    const {data}=authClient().auth.onAuthStateChange((event)=>{if(["SIGNED_IN","MFA_CHALLENGE_VERIFIED"].includes(event))setTimeout(()=>{if(active)refresh();},0);});
+    return()=>{active=false;data.subscription.unsubscribe();};
   }, []);
   const requiresScope = role === "WARD_ADMIN" || role === "UNIT_EDITOR";
   const choices = nodes.filter(
@@ -92,7 +100,7 @@ export default function AccessPage() {
       setMessage(
         "Role change submitted. A separate Thana Administrator must approve it.",
       );
-      await load();
+      try { await load(); } catch { setMessage("Your change was saved, but the list could not be refreshed. Reload to view the latest state."); }
     } catch (err) {
       setMessage(err instanceof Error ? err.message : String(err));
     } finally {
@@ -109,25 +117,39 @@ export default function AccessPage() {
     )
       return;
     setBusy(true);
+    setActionId(id);
     setMessage("");
     try {
-      await api("/access/requests/" + id + "/decision", {
+      const saved = await api<Request>("/access/requests/" + id + "/decision", {
         method: "POST",
         body: JSON.stringify({ approve }),
       });
-      setMessage("Access decision saved and audited.");
-      await load();
+      setRequests(rows=>rows.map(r=>r.id===saved.id?saved:r));
+      setMessage(approve ? "Permission approved. The assigned role will appear below." : "Request rejected. No permission was granted.");
+      try { await load(); } catch { setMessage("Your change was saved, but the list could not be refreshed. Reload to view the latest state."); }
     } catch (err) {
       setMessage(err instanceof Error ? err.message : String(err));
     } finally {
       setBusy(false);
     }
   };
+  const pendingRemoval = (user: User, grant: User["roles"][number]) => requests.some(r=>r.status==="PENDING"&&r.operation==="REVOKE"&&r.auth_sub===user.auth_sub&&r.role===grant.role&&r.scope_node_id===grant.scope_node_id);
+  const removePermission = async (user: User, grant: User["roles"][number]) => {
+    if (!window.confirm("Request removal of " + grant.role.replaceAll("_", " ") + " for " + user.email + "? A different main administrator must approve the removal. The account and personal profile will remain.")) return;
+    setBusy(true); setActionId(user.id+grant.role+(grant.scope_node_id||"")); setMessage("");
+    try {
+      const saved=await api<Request>("/access/requests",{method:"POST",body:JSON.stringify({auth_sub:user.auth_sub,email:user.email,role:grant.role,scope_node_id:grant.scope_node_id,operation:"REVOKE"})});
+      setRequests(rows=>[saved,...rows]);setMessage("Removal requested. A different main administrator must approve it before this permission is removed.");
+      try {await load();} catch {setMessage("Removal request saved. Reload to refresh the directory.");}
+    } catch(err){setMessage(err instanceof Error?err.message:String(err));}finally{setBusy(false);}
+  };
   return (
     <Shell
       title="Access control"
       subtitle="Approve responsible-person applications and manage account permissions."
     >
+      <button type="button" className="secondary-btn" disabled={busy||loading} onClick={()=>void load().catch(err=>setMessage(err instanceof Error?err.message:String(err)))}>Refresh permissions</button>
+      {loading && <p role="status">Loading permissions…</p>}
       {message && (
         <div className="alert" role="status">
           {message}
@@ -230,7 +252,7 @@ export default function AccessPage() {
           <div className="form-actions">
             <button
               className="primary-btn"
-              disabled={busy || (requiresScope && !scope)}
+              disabled={busy || loading || (requiresScope && !scope)}
             >
               <Plus size={15} /> Submit permission request
             </button>
@@ -245,7 +267,7 @@ export default function AccessPage() {
           <h2>Pending administrative approvals</h2>
           <p className="subhead">
             Approve users’ role applications here. A requesting administrator
-            cannot approve their own permission change.
+            cannot approve a request they created. They can reject it. Removal also requires an independent review.
           </p>
         </div>
         {requests.some((r) => r.status === "PENDING") ? (
@@ -277,17 +299,20 @@ export default function AccessPage() {
                       </td>
                       <td>
                         <button
-                          disabled={busy || r.requested_by === identity?.id}
+                          disabled={busy || loading || !identity || r.requested_by === identity.id}
+                          title={r.requested_by===identity?.id?"A different main administrator must approve this request":"Approve permission change"}
                           onClick={() => void decide(r.id, true)}
                         >
                           <CheckCircle2 size={16} /> Approve
                         </button>
                         <button
-                          disabled={busy || r.requested_by === identity?.id}
+                          disabled={busy || loading}
                           onClick={() => void decide(r.id, false)}
                         >
                           <XCircle size={16} /> Reject
                         </button>
+                        {r.requested_by===identity?.id&&<p className="hint">You created this request. A different main administrator must approve it; you can reject it.</p>}
+                        {actionId===r.id&&message&&<p role="status" className="hint">{message}</p>}
                       </td>
                     </tr>
                   ))}
@@ -304,10 +329,11 @@ export default function AccessPage() {
           </div>
         )}
       </div>
+      <div className="panel" style={{marginBottom:20}}><h2>Reviewed requests</h2>{requests.filter(r=>r.status!=="PENDING").length ? <div className="table-wrap"><table className="data-table"><thead><tr><th>User</th><th>Permission</th><th>Scope</th><th>Decision</th></tr></thead><tbody>{requests.filter(r=>r.status!=="PENDING").map(r=><tr key={r.id}><td>{r.email}</td><td>{r.operation} {r.role.replaceAll("_"," ")}</td><td>{nodes.find(n=>n.id===r.scope_node_id)?.name||"Thana-wide"}</td><td><span className="pill">{r.status}</span></td></tr>)}</tbody></table></div>:<p>No reviewed requests yet.</p>}</div>
       <PersonalAssignments users={users} />
       <div className="panel" style={{ padding: 0, overflow: "hidden" }}>
         <div style={{ padding: 24 }}>
-          <h2>Approved account directory</h2>
+          <h2>Accounts and approved permissions</h2>
           <p className="subhead">
             Registered application accounts and assigned permissions.
           </p>
@@ -330,9 +356,12 @@ export default function AccessPage() {
                   <td>
                     {u.roles.map((r, i) => (
                       <span className="pill" key={i} style={{ marginRight: 5 }}>
-                        {r.role}
+                        {r.role.replaceAll("_"," ")} · {nodes.find(n=>n.id===r.scope_node_id)?.name||"Thana-wide"}
+                        <button type="button" aria-label={"Remove "+r.role+" for "+u.email+" in "+(nodes.find(n=>n.id===r.scope_node_id)?.name||"Thana-wide")} disabled={busy||loading||pendingRemoval(u,r)} onClick={()=>void removePermission(u,r)}>{pendingRemoval(u,r)?"Removal pending":"Remove"}</button>
                       </span>
                     ))}
+                    {!u.roles.length&&<span className="hint">Personal account — no administrative permissions</span>}
+                    {actionId.startsWith(u.id)&&message&&<p className="hint" role="status">{message}</p>}
                   </td>
                   <td>{u.active ? "Active" : "Inactive"}</td>
                 </tr>

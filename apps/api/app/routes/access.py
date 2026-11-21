@@ -99,11 +99,18 @@ def request_access(data: GrantRequest, actor: Actor = Depends(current_actor),
     global_role = data.role in {"THANA_ADMIN", "THANA_VIEWER"}
     if global_role and data.scope_node_id is not None:
         raise HTTPException(422, "Thana-level roles must not have a scope")
-    if not global_role:
+    if not global_role and data.operation == "GRANT":
         scope = db.get(OrgNode, data.scope_node_id) if data.scope_node_id else None
         if not active_scope(db, scope, data.role):
             raise HTTPException(422, "Select an active matching scope")
     subject = str(data.auth_sub)
+    if data.operation == "REVOKE":
+        target = db.query(AppUser).filter(AppUser.auth_sub == subject).first()
+        if not target or not db.query(RoleGrant).filter(
+            RoleGrant.user_id == target.id, RoleGrant.role == data.role,
+            RoleGrant.scope_node_id == data.scope_node_id,
+        ).first():
+            raise HTTPException(409, "This permission is no longer assigned. Refresh the account directory.")
     duplicate = db.query(AccessRequest).filter(
         AccessRequest.auth_sub == subject,
         AccessRequest.role == data.role,
@@ -133,8 +140,8 @@ def decide_access(request_id: UUID, body: AccessDecision,
         raise HTTPException(404, "Request not found")
     if row.status != "PENDING":
         raise HTTPException(409, "Request already reviewed")
-    if actor.id == row.requested_by:
-        raise HTTPException(403, "Independent administrator approval required")
+    if body.approve and actor.id == row.requested_by:
+        raise HTTPException(403, "A different main administrator must approve a request you created. You can reject it instead.")
     if body.approve:
         user = db.query(AppUser).filter(AppUser.auth_sub == row.auth_sub).with_for_update().one_or_none()
         if row.operation == "GRANT":
@@ -151,9 +158,8 @@ def decide_access(request_id: UUID, body: AccessDecision,
                 RoleGrant.user_id == user.id, RoleGrant.role == row.role,
                 RoleGrant.scope_node_id == row.scope_node_id,
             ).first()
-            if existing:
-                raise HTTPException(409, "Role already granted")
-            db.add(RoleGrant(user_id=user.id, role=row.role, scope_node_id=row.scope_node_id))
+            if not existing:
+                db.add(RoleGrant(user_id=user.id, role=row.role, scope_node_id=row.scope_node_id))
         else:
             if not user:
                 raise HTTPException(404, "Target user not found")

@@ -1,0 +1,9 @@
+# Permission action repairs — 2026-11-21
+
+The pending table previously disabled both Approve and Reject for a requesting administrator, with no visible explanation and no disabled styling. The API also refused self-rejection. The directory showed roles without scope or removal controls. Some failed actions only displayed errors above the visible table.
+
+A main administrator can now reject their own pending request; this creates no grant and remains audited. Independent approval is preserved for grants and revocations. The UI explains why self-approval is blocked and visibly dims unavailable actions. Failed decisions remain pending with inline feedback; successful decisions leave pending immediately and appear in a reviewed-history table. Duplicate grants can be independently reconciled without creating another role row. Existing version/status and organization locks remain.
+
+Granted permissions show their precise scope and only a Remove control. Remove creates an audited REVOKE request and displays Removal pending until another main administrator approves it; it never deletes the account or personal profile. Removal requests can be created for existing grants even after the associated scope becomes inactive. Nonexistent grants return a refresh instruction rather than creating meaningless removal requests. Last-administrator safeguards and MFA remain unchanged.
+
+The page reloads data after sign-in/MFA and offers Refresh permissions. Refresh errors after a successful write explicitly distinguish a saved mutation from a failed refresh. Tests use synthetic identities only: UI approve/reject/removal/error/reload behavior, API self-rejection vs prohibited self-approval, duplicate-grant reconciliation, independent removal, account retention and inactive-scope revocation. No real permissions are granted/rejected/removed during agent verification.
