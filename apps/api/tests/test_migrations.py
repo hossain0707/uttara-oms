@@ -148,7 +148,41 @@ def test_runtime_permissions_enforce_database_boundary():
             assert c.exec_driver_sql(f'SELECT count(*) FROM "{schema}".org_nodes').scalar_one() == 13
             assert c.exec_driver_sql(f'SELECT version_num FROM "{schema}".alembic_version').scalar_one() == "0005_personal_workspace"
             assert c.exec_driver_sql(f'UPDATE "{schema}".org_nodes SET name=name WHERE kind=\'THANA\'').rowcount == 1
+        # Exercise the real MFA approval handlers under the deployed SELECT/INSERT-only
+        # audit grants, rather than an administrative test connection.
+        from sqlalchemy.orm import Session
+        from app.models import AppUser, RoleGrant, AuditLog
+        from app.auth import Actor
+        from app.routes.master import ExceptionRequest, Decision, request_exception, decide
+        from app import security_policy as policy
+        owner_id, reviewer_id, target_id = (uuid.uuid4() for _ in range(3))
+        with engine.connect() as c:
+            c.exec_driver_sql(f'SET search_path TO "{schema}"')
+            c.commit()
+            with Session(bind=c) as db:
+                for uid in (owner_id, reviewer_id, target_id):
+                    db.add(AppUser(id=uid, auth_sub=str(uid), email=str(uid)+'@example.invalid', active=True))
+                db.flush()
+                for uid in (owner_id, reviewer_id, target_id):
+                    db.add(RoleGrant(user_id=uid, role="THANA_ADMIN", scope_node_id=None))
+                db.add(AuditLog(actor_id=owner_id, action=policy.OWNER_EVENT, target_id=str(owner_id), detail="Synthetic owner"))
+                db.commit()
+            c.exec_driver_sql(f'SET ROLE "{role}"')
+            c.commit()
+            try:
+                with Session(bind=c) as db:
+                    owner = Actor(owner_id, str(owner_id)+'@example.invalid', [("THANA_ADMIN", None)], True)
+                    reviewer = Actor(reviewer_id, str(reviewer_id)+'@example.invalid', [("THANA_ADMIN", None)], True)
+                    request = request_exception(ExceptionRequest(user_id=target_id, reason="Synthetic phone replacement"), owner, db)
+                    assert decide(uuid.UUID(request["id"]), Decision(approve=True), reviewer, db)["status"] == "APPROVED"
+                    assert policy.mfa_exempt(db, target_id) is True
+            finally:
+                c.rollback()
+                c.exec_driver_sql('RESET ROLE')
+                c.exec_driver_sql('RESET search_path')
+                c.commit()
         for statement in (
+            f'SELECT * FROM "{schema}".audit_logs FOR UPDATE',
             f'DELETE FROM "{schema}".members',
             f'UPDATE "{schema}".member_events SET action=action',
             f'DELETE FROM "{schema}".audit_logs',
