@@ -7,6 +7,7 @@ The owner is a separately provisioned account, not another assignable role in th
 - Owner-only sidebar: Master Admin (/master/), using the approved OMS emblem.
 - Owner sees registered accounts, actual role/scope names, account status, authenticator policy and security activity.
 - Request a 1/7/30/90-day exception, or until revoked, with a short reason. No exception is automatically created by installation.
+- Security approvals and rejections use an explicit in-page confirmation with the target account and duration; cancel submits nothing.
 - A different authenticator-verified Thana Admin approves or rejects requests in Access control. Requesters and exception recipients cannot approve their own request. Exempt administrators must still verify an authenticator to participate in security decisions.
 - Owner can revoke an exception immediately. Expiry/revocation is checked server-side on every authenticated API request; no cron, frontend-only flag or new deployment is needed.
 - Owner can suspend/reactivate other accounts with a current-state guard. Suspension blocks subsequent API requests. Keep two active Thana Admins. A routine permission grant cannot reactivate a suspended account.

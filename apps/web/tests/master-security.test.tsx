@@ -24,5 +24,15 @@ it('shows owner controls, keeps owner out of exemption choices, and submits a re
 it('shows independent approval only to other admins without owner controls',async()=>{
  fixture(false);render(<MasterSecurity reviewsOnly/>);await screen.findByRole('button',{name:'Approve'});
  expect(screen.queryByLabelText('Account')).toBeNull();fireEvent.click(screen.getByRole('button',{name:'Approve'}));
+ expect(screen.getByRole('dialog')).toBeTruthy();
+ expect(vi.mocked(api).mock.calls.some(([p])=>p==='/master/exceptions/req/decision')).toBe(false);
+ fireEvent.click(screen.getByRole('button',{name:'Confirm approval'}));
  await waitFor(()=>expect(api).toHaveBeenCalledWith('/master/exceptions/req/decision',expect.objectContaining({method:'POST',body:'{"approve":true}'})));
+});
+
+it('can cancel an approval confirmation without submitting a decision',async()=>{
+ fixture(false);render(<MasterSecurity reviewsOnly/>);fireEvent.click(await screen.findByRole('button',{name:'Approve'}));
+ fireEvent.click(screen.getByRole('button',{name:'Cancel decision'}));
+ expect(screen.queryByRole('dialog')).toBeNull();
+ expect(vi.mocked(api).mock.calls.some(([p])=>p==='/master/exceptions/req/decision')).toBe(false);
 });
