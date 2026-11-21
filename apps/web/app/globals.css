@@ -32,3 +32,5 @@
 @media(max-width:800px){.master-stats{grid-template-columns:repeat(2,1fr)}.master-banner{padding:20px}.master-banner>svg{display:none}.master-banner h2{font-size:24px}}
 
 .security-confirm{border:2px solid #28775a!important;background:#f0f8f3!important;box-shadow:0 12px 32px #174d3312}.security-confirm p{overflow-wrap:anywhere}.security-confirm .form-actions{justify-content:flex-start}
+
+.directory-source{display:block;margin-top:6px;font-size:12px;color:#607c6e}

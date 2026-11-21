@@ -11,6 +11,7 @@ export type Member = {
   position: string | null; category: Category; status: string; org_node_id: string;
   joined_on: string | null; version: number;
 };
+export type DirectoryEntry = (Member & {source:"MEMBER";self_reported:false}) | (Omit<Member,"category"> & {source:"PROFILE";self_reported:true;category:Category|""});
 export type Approval = {
   id: string; member_id: string; kind: string; proposed_value: string; status: string;
   requested_by: string; requested_at: string; reviewed_at: string | null; review_note: string | null;
