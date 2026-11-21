@@ -460,3 +460,74 @@ def test_concurrent_registration_creates_one_basic_account(context, monkeypatch)
         assert all(result["registered"] for result in pool.map(lambda _: register(), range(2)))
     with holder["session_factory"]() as db:
         assert db.query(AppUser).filter(AppUser.auth_sub==claims["sub"]).count() == 1
+
+
+def test_access_requester_can_reject_but_not_approve_own_request(context):
+    client, holder, who, unit1, _ = context
+    holder['actor'] = who['admin']
+    request = client.post('/api/v1/access/requests', json={
+        'auth_sub':str(who['editor'].id),'email':who['editor'].email,
+        'role':'WARD_ADMIN','scope_node_id':str(unit1.parent_id),
+    })
+    assert request.status_code == 201
+    rid=request.json()['id']
+    assert client.post(f'/api/v1/access/requests/{rid}/decision',json={'approve':True}).status_code == 403
+    rejected=client.post(f'/api/v1/access/requests/{rid}/decision',json={'approve':False})
+    assert rejected.status_code == 200
+    assert rejected.json()['status'] == 'REJECTED'
+    assert client.post(f'/api/v1/access/requests/{rid}/decision',json={'approve':False}).status_code == 409
+    with holder['session_factory']() as db:
+        assert db.query(RoleGrant).filter(RoleGrant.user_id==who['editor'].id,RoleGrant.role=='WARD_ADMIN').count()==0
+
+
+def test_access_approve_remove_and_duplicate_grant_preserve_account(context):
+    client,holder,who,unit1,_=context
+    target=str(who['editor'].id)
+    payload={'auth_sub':target,'email':who['editor'].email,'role':'UNIT_EDITOR','scope_node_id':str(unit1.id)}
+    holder['actor']=who['admin']
+    rid=client.post('/api/v1/access/requests',json=payload).json()['id']
+    holder['actor']=who['admin2']
+    assert client.post(f'/api/v1/access/requests/{rid}/decision',json={'approve':True}).status_code==200
+    holder['actor']=who['admin']
+    duplicate=client.post('/api/v1/access/requests',json=payload).json()['id']
+    holder['actor']=who['admin2']
+    assert client.post(f'/api/v1/access/requests/{duplicate}/decision',json={'approve':True}).status_code==200
+    with holder['session_factory']() as db:
+        assert db.query(RoleGrant).filter(RoleGrant.user_id==who['editor'].id,RoleGrant.role=='UNIT_EDITOR').count()==1
+    holder['actor']=who['admin']
+    remove=client.post('/api/v1/access/requests',json={**payload,'operation':'REVOKE'}).json()['id']
+    assert client.post(f'/api/v1/access/requests/{remove}/decision',json={'approve':True}).status_code==403
+    holder['actor']=who['admin2']
+    assert client.post(f'/api/v1/access/requests/{remove}/decision',json={'approve':True}).status_code==200
+    user=next(u for u in client.get('/api/v1/access/users').json()['items'] if u['auth_sub']==target)
+    assert user['active'] is True
+    assert user['roles']==[]
+
+
+def test_access_can_remove_permission_even_after_scope_is_inactive(context):
+    client,holder,who,unit1,_=context
+    target=who['editor']
+    with holder['session_factory']() as db:
+        db.add(RoleGrant(user_id=target.id,role='UNIT_EDITOR',scope_node_id=unit1.id))
+        db.commit()
+    holder['actor']=who['admin']
+    assert client.patch(f'/api/v1/organization/nodes/{unit1.id}',json={'active':False}).status_code==200
+    remove=client.post('/api/v1/access/requests',json={'auth_sub':str(target.id),'email':target.email,'role':'UNIT_EDITOR','scope_node_id':str(unit1.id),'operation':'REVOKE'})
+    assert remove.status_code==201,remove.text
+    holder['actor']=who['admin2']
+    assert client.post('/api/v1/access/requests/'+remove.json()['id']+'/decision',json={'approve':True}).status_code==200
+
+
+def test_access_removal_requires_existing_grant_and_preserves_two_admins(context):
+    client,holder,who,_,_=context
+    holder['actor']=who['admin']
+    payload={'auth_sub':str(who['admin2'].id),'email':who['admin2'].email,'role':'THANA_ADMIN','scope_node_id':None,'operation':'REVOKE'}
+    assert client.post('/api/v1/access/requests',json=payload).status_code==409
+    with holder['session_factory']() as db:
+        db.add_all([RoleGrant(user_id=who['admin'].id,role='THANA_ADMIN'),RoleGrant(user_id=who['admin2'].id,role='THANA_ADMIN')]);db.commit()
+    requested=client.post('/api/v1/access/requests',json=payload)
+    assert requested.status_code==201
+    holder['actor']=who['admin2']
+    response=client.post('/api/v1/access/requests/'+requested.json()['id']+'/decision',json={'approve':True})
+    assert response.status_code==409
+    assert 'Maintain two administrators' in response.json()['detail']
