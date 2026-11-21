@@ -4,6 +4,7 @@ import Link from "next/link";
 import {Eye, EyeOff, Network, ShieldCheck, Mail, ArrowLeft} from "lucide-react";
 import {authClient} from "@/lib/supabase";
 import EmailOtpSignIn from "./EmailOtpSignIn";
+import MfaChallenge from "./MfaChallenge";
 import "./AuthScreen.css";
 
 export type AuthMode = "login" | "signup" | "forgot" | "reset";
@@ -14,7 +15,7 @@ const content = {
   reset: ["Choose a new password", "Use a strong password that you don’t use elsewhere."],
 };
 export default function AuthScreen({mode="login",onAuthenticated}:{mode?:AuthMode;onAuthenticated?:()=>void}) {
-  const [email,setEmail]=useState(""),[password,setPassword]=useState(""),[confirm,setConfirm]=useState(""),[visible,setVisible]=useState(false),[busy,setBusy]=useState(false),[notice,setNotice]=useState(""),[issue,setIssue]=useState(""),[sent,setSent]=useState(false),[codeMode,setCodeMode]=useState(false),[code,setCode]=useState(""),[seconds,setSeconds]=useState(0),[resetReady,setResetReady]=useState(false),[resetLoading,setResetLoading]=useState(mode==="reset"),[updated,setUpdated]=useState(false);
+  const [email,setEmail]=useState(""),[password,setPassword]=useState(""),[confirm,setConfirm]=useState(""),[visible,setVisible]=useState(false),[busy,setBusy]=useState(false),[notice,setNotice]=useState(""),[issue,setIssue]=useState(""),[sent,setSent]=useState(false),[codeMode,setCodeMode]=useState(false),[code,setCode]=useState(""),[seconds,setSeconds]=useState(0),[resetReady,setResetReady]=useState(false),[resetLoading,setResetLoading]=useState(mode==="reset"),[updated,setUpdated]=useState(false),[resetNeedsMfa,setResetNeedsMfa]=useState(false);
   const emailEnabled=process.env.NEXT_PUBLIC_EMAIL_OTP_ENABLED==="true";
   useEffect(()=>{if(!seconds)return;const timer=setTimeout(()=>setSeconds(s=>s-1),1000);return()=>clearTimeout(timer);},[seconds]);
   useEffect(()=>{
@@ -22,8 +23,19 @@ export default function AuthScreen({mode="login",onAuthenticated}:{mode?:AuthMod
     let active=true;
     try {
       const auth=authClient().auth;
-      const {data}=auth.onAuthStateChange((event,session)=>{if(active&&event==="PASSWORD_RECOVERY"){setResetReady(!!session);setResetLoading(false);}});
-      auth.getSession().then(({data,error})=>{if(!active)return;setResetReady(!error&&!!data.session);setResetLoading(false);if(error)setIssue("This reset link could not be opened. Request a new link.");}).catch(()=>{if(active){setIssue("This reset link could not be opened. Request a new link.");setResetLoading(false);}});
+      let generation=0;
+      const check=async()=>{
+        const request=++generation;
+        try{
+          const {data,error}=await auth.getSession();
+          if(error)throw error;
+          let needsMfa=false;
+          if(data.session){const assurance=await auth.mfa.getAuthenticatorAssuranceLevel();if(assurance.error)throw assurance.error;needsMfa=assurance.data.nextLevel==="aal2"&&assurance.data.currentLevel!=="aal2";}
+          if(active&&request===generation){setResetReady(!!data.session);setResetNeedsMfa(needsMfa);setResetLoading(false);}
+        }catch{if(active&&request===generation){setResetReady(false);setIssue("This reset link could not be opened. Request a new link.");setResetLoading(false);}}
+      };
+      const {data}=auth.onAuthStateChange((event)=>{if(active&&event==="PASSWORD_RECOVERY"){setResetLoading(true);setTimeout(()=>{if(active)void check();},0);}});
+      void check();
       return()=>{active=false;data.subscription.unsubscribe();};
     } catch {setIssue("Password recovery is unavailable. Please try again.");setResetLoading(false);}
     return()=>{active=false;};
@@ -43,7 +55,7 @@ export default function AuthScreen({mode="login",onAuthenticated}:{mode?:AuthMod
       if(password!==confirm)throw new Error("The passwords don’t match. Please check them.");
     }
     if(mode==="reset"){
-      if(!resetReady)throw new Error("Open a valid password-reset link from your email first.");
+      if(!resetReady||resetNeedsMfa)throw new Error("Open a valid password-reset link from your email first.");
       const {error}=await auth.updateUser({password});if(error)throw error;
       setUpdated(true);setResetReady(false);setPassword("");setConfirm("");
       const signedOut=await auth.signOut();if(signedOut.error){setNotice("Your password was updated. Please sign out before signing in again.");return;}
@@ -61,7 +73,7 @@ export default function AuthScreen({mode="login",onAuthenticated}:{mode?:AuthMod
   const passwordField=(id:string,label:string,value:string,onChange:(s:string)=>void,confirmation=false)=><div className="auth-line"><label htmlFor={id}>{label}</label><div className="auth-password-input"><input id={id} type={visible?"text":"password"} autoComplete={mode==="login"?"current-password":"new-password"} required minLength={mode==="login"?undefined:8} maxLength={128} value={value} disabled={busy} onChange={e=>onChange(e.target.value)}/>{!confirmation&&<button type="button" className="auth-eye" aria-label={visible?"Hide password":"Show password"} aria-pressed={visible} onClick={()=>setVisible(!visible)}>{visible?<EyeOff size={18}/>:<Eye size={18}/>}</button>}</div></div>;
   return <div className="auth-scene"><section className="auth-panel" aria-labelledby="auth-title"><Link href="/" className="auth-home-brand"><span><Network size={25}/></span><div>Uttara <b>OMS</b><small>YOUR ORGANIZED WORKSPACE</small></div></Link><div className="auth-intro"><span className="auth-overline">{mode==="login"?"SIGN IN":mode==="signup"?"GET STARTED":"ACCOUNT RECOVERY"}</span><h1 id="auth-title">{content[mode][0]}</h1><p>{content[mode][1]}</p></div>
     {issue&&<p className="auth-message auth-error" role="alert">{issue}</p>}{notice&&<p className="auth-message" role="status">{notice}</p>}
-    {resetLoading?<p role="status">Checking your reset link…</p>:mode==="reset"&&(!resetReady||updated)?<div className="auth-recovery-state">{!updated&&<p>This link has expired or no recovery session is available. Request a fresh reset link.</p>}<Link href={updated?"/login/":"/forgot-password/"} className="auth-submit">{updated?"Back to sign in":"Request a new reset link"}</Link></div>:codeMode&&mode==="login"?<><EmailOtpSignIn/><button className="auth-text-button" type="button" onClick={()=>setCodeMode(false)}>Use email and password</button></>:<form onSubmit={submit} className="auth-password-form">
+    {resetLoading?<p role="status">Checking your reset link…</p>:mode==="reset"&&(!resetReady||updated)?<div className="auth-recovery-state">{!updated&&<p>This link has expired or no recovery session is available. Request a fresh reset link.</p>}<Link href={updated?"/login/":"/forgot-password/"} className="auth-submit">{updated?"Back to sign in":"Request a new reset link"}</Link></div>:mode==="reset"&&resetNeedsMfa?<MfaChallenge purpose="password-reset"/>:codeMode&&mode==="login"?<><EmailOtpSignIn/><button className="auth-text-button" type="button" onClick={()=>setCodeMode(false)}>Use email and password</button></>:<form onSubmit={submit} className="auth-password-form">
       {mode!=="reset"&&<div className="auth-line"><label htmlFor="account-email">Email</label><input id="account-email" type="email" autoComplete="email" required maxLength={254} value={email} disabled={busy||(mode==="signup"&&sent)} onChange={e=>setEmail(e.target.value)}/></div>}
       {mode==="signup"&&sent?<><div className="auth-line"><label htmlFor="signup-code">Email verification code</label><input id="signup-code" required inputMode="numeric" autoComplete="one-time-code" pattern="[0-9]{6,10}" maxLength={10} value={code} disabled={busy} onChange={e=>setCode(e.target.value.replace(/\D/g,""))}/></div><button type="submit" className="auth-submit" disabled={busy}>{busy?"Verifying…":"Verify email"}</button><button className="auth-text-button" type="button" disabled={busy||seconds>0} onClick={()=>void resend()}>Resend confirmation{seconds>0?` (${seconds}s)`:""}</button><button className="auth-text-button" type="button" disabled={busy} onClick={()=>{setSent(false);setCode("");setNotice("");}}>Use a different email</button></>:<>
       {mode!=="forgot"&&passwordField("account-password",mode==="reset"?"New password":"Password",password,setPassword)}
