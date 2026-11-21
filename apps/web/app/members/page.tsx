@@ -1,12 +1,12 @@
 "use client";
-import {useCallback, useEffect, useState, type FormEvent} from "react";
+import {useCallback, useEffect, useRef, useState, type FormEvent} from "react";
 import {Plus, Search, RefreshCcw, UserRoundPlus, Save, ShieldCheck} from "lucide-react";
 import SearchSelect from '@/components/SearchSelect';
 import AddressFields from '@/components/AddressFields';
 import catalogs from '@/data/catalogs.json';
 import ProfileCard from '@/components/ProfileCard';
 import Shell from "@/components/Shell";
-import {api, type Category, type Member, type OrgNode} from "@/lib/api";
+import {api, type Category, type Member, type OrgNode, type DirectoryEntry} from "@/lib/api";
 
 type NewProfile = {member_number:string;full_name:string;father_name:string;phone:string;address:string;occupation:string;position:string;category:Category;org_node_id:string;joined_on:string};
 const blank:NewProfile={member_number:"",full_name:"",father_name:"",phone:"",address:"",occupation:"",position:"",category:"SUPPORTER",org_node_id:"",joined_on:""};
@@ -14,17 +14,21 @@ type HistoryItem={id:string;action:string;before:string|null;after:string|null;a
 const labels:Record<Category,string>={RUKON:"Rukon · রুকন",WORKER:"Worker · কর্মী",ASSOCIATE:"Associate · সহযোগী",SUPPORTER:"Supporter · সমর্থক"};
 
 export default function PeoplePage(){
-  const [members,setMembers]=useState<Member[]>([]);
+  const [members,setMembers]=useState<DirectoryEntry[]>([]);
   const [total,setTotal]=useState(0);
   const [offset,setOffset]=useState(0);
   const [status,setStatus]=useState("");
   const [units,setUnits]=useState<OrgNode[]>([]);
   const [search,setSearch]=useState("");
+  const [committedSearch,setCommittedSearch]=useState("");
+  const [searching,setSearching]=useState(true);
+  const requestSequence=useRef(0);
+  useEffect(()=>{const timer=setTimeout(()=>setCommittedSearch(search),250);return()=>clearTimeout(timer);},[search]);
   const [category,setCategory]=useState("");
   const [showCreate,setShowCreate]=useState(false);
   const [profile,setProfile]=useState<NewProfile>(blank);
   const [consented,setConsented]=useState(false);
-  const [selected,setSelected]=useState<Member|null>(null);
+  const [selected,setSelected]=useState<DirectoryEntry|null>(null);
   const [editing,setEditing]=useState<Member|null>(null);
   const [history,setHistory]=useState<HistoryItem[]>([]);
   const [routine,setRoutine]=useState({full_name:"",father_name:"",phone:"",address:"",occupation:"",position:""});
@@ -32,11 +36,12 @@ export default function PeoplePage(){
   const [changeValue,setChangeValue]=useState("WORKER");
   const [notice,setNotice]=useState("");
   const [busy,setBusy]=useState(false);
-  const load=useCallback(async()=>{try{
-    const query = new URLSearchParams({limit:"30",offset:String(offset)});if(search.trim())query.set("q",search.trim());if(category)query.set("category",category);if(status)query.set("status",status);
-    const [people,org]=await Promise.all([api<{items:Member[];total:number}>("/members?"+query),api<{items:OrgNode[]}>("/organization/nodes")]);
-    setMembers(people.items);setTotal(people.total);setUnits(org.items.filter(n=>n.kind==="UNIT" && n.active));
-  }catch(err){setNotice(err instanceof Error?err.message:String(err));}},[search,category,offset,status]);
+  const load=useCallback(async()=>{const sequence=++requestSequence.current;setSearching(true);try{
+    const query = new URLSearchParams({limit:"30",offset:String(offset)});if(committedSearch.trim())query.set("q",committedSearch.trim());if(category)query.set("category",category);if(status)query.set("status",status);
+    const [people,org]=await Promise.all([api<{items:DirectoryEntry[];total:number}>("/directory?"+query),api<{items:OrgNode[]}>("/organization/nodes")]);
+    if(sequence!==requestSequence.current)return;
+    setNotice("");setMembers(people.items);setTotal(people.total);setUnits(org.items.filter(n=>n.kind==="UNIT" && n.active));
+  }catch(err){if(sequence===requestSequence.current)setNotice(err instanceof Error?err.message:String(err));}finally{if(sequence===requestSequence.current)setSearching(false);}},[committedSearch,category,offset,status]);
   useEffect(()=>{setSearch(new URLSearchParams(window.location.search).get("q")||"");},[]);
   useEffect(()=>{void load();},[load]);
   const setField=(key:keyof NewProfile,value:string)=>setProfile(prev=>({...prev,[key]:value}));
@@ -48,7 +53,7 @@ export default function PeoplePage(){
   };
   const choose=(m:Member)=>{setEditing(m);setHistory([]);void api<{items:HistoryItem[]}>("/members/"+m.id+"/history").then(data=>setHistory(data.items)).catch(err=>setNotice(String(err)));setRoutine({full_name:m.full_name,father_name:m.father_name||"",phone:m.phone||"",address:m.address||"",occupation:m.occupation||"",position:m.position||""});setChangeKind("CATEGORY");setChangeValue(m.category==="WORKER"?"RUKON":"WORKER");};
   const saveRoutine=async(e:FormEvent)=>{e.preventDefault();if(!editing)return;setBusy(true);setNotice("");
-    try{const saved=await api<Member>("/members/"+editing.id,{method:"PATCH",body:JSON.stringify({...routine,expected_version:editing.version})});setSelected({...saved,photo:editing.photo});setEditing(null);setNotice("Routine changes saved.");await load();}
+    try{const saved=await api<Member>("/members/"+editing.id,{method:"PATCH",body:JSON.stringify({...routine,expected_version:editing.version})});setSelected({...saved,photo:editing.photo,source:"MEMBER",self_reported:false});setEditing(null);setNotice("Routine changes saved.");await load();}
     catch(err){setNotice(err instanceof Error?err.message:String(err));}finally{setBusy(false);}
   };
   const propose=async(e:FormEvent)=>{e.preventDefault();if(!editing)return;setBusy(true);setNotice("");
@@ -58,7 +63,7 @@ export default function PeoplePage(){
   };
   return <Shell title="People & records" subtitle="Manage authorized people profiles, searchable records, and important change requests.">
     {notice&&<div className={notice.includes("saved")||notice.includes("submitted")?"success-msg":"alert"} role="status">{notice}</div>}
-    <div className="toolbar"><input className="input search-field" value={search} aria-label="Search people" onChange={e=>{setSearch(e.target.value);setOffset(0);}} placeholder="Search name, member ID or full mobile number"/><select className="select" value={category} aria-label="Filter category" onChange={e=>{setCategory(e.target.value);setOffset(0);}}><option value="">All categories</option>{Object.entries(labels).map(([k,v])=><option key={k} value={k}>{v}</option>)}</select><select aria-label="Filter status" className="select" value={status} onChange={e=>{setStatus(e.target.value);setOffset(0);}}><option value="">All statuses</option><option value="ACTIVE">Active</option><option value="INACTIVE">Inactive</option></select><button className="secondary-btn" onClick={()=>void load()}><RefreshCcw size={15}/> Refresh</button><div className="grow"/><button className="primary-btn" onClick={()=>{setShowCreate(!showCreate);setEditing(null);}}><Plus size={16}/> Add person</button></div>
+    <div className="toolbar"><input className="input search-field" value={search} aria-label="Search people" onChange={e=>{setSearch(e.target.value);setSelected(null);setOffset(0);}} placeholder="Search name, member ID or full mobile number" maxLength={120}/><select className="select" value={category} aria-label="Filter category" onChange={e=>{setCategory(e.target.value);setOffset(0);}}><option value="">All categories</option>{Object.entries(labels).map(([k,v])=><option key={k} value={k}>{v}</option>)}</select><select aria-label="Filter status" className="select" value={status} onChange={e=>{setStatus(e.target.value);setOffset(0);}}><option value="">All statuses</option><option value="ACTIVE">Active</option><option value="INACTIVE">Inactive</option></select><button className="secondary-btn" onClick={()=>void load()}><RefreshCcw size={15}/> Refresh</button><div className="grow"/><button className="primary-btn" onClick={()=>{setShowCreate(!showCreate);setEditing(null);}}><Plus size={16}/> Add person</button></div>
     {showCreate&&<div className="panel" style={{marginBottom:20}}><div className="section-title"><h2>New person profile</h2><button className="secondary-btn" onClick={()=>setShowCreate(false)}>Close</button></div>
       <form onSubmit={create}><div className="form-grid">
         {([["member_number","Member ID"],["full_name","Full name"],["father_name","Father's name"],["phone","Mobile number"],["occupation","Occupation"],["position","Position / responsibility"],["address","Address"],["joined_on","Joined on"]] as [keyof NewProfile,string][]).map(([key,label])=>key==='occupation'||key==='position'?<SearchSelect key={key} label={label} placeholder={key==='occupation'?'e.g. Teacher':'e.g. Ward secretary'} value={profile[key]} maxLength={160} items={key==='occupation'?catalogs.occupations:catalogs.positions} onChange={v=>setField(key,v)}/>:key==='address'?<AddressFields key={key} label={label} value={profile.address} onChange={v=>setField('address',v)}/>:<div className="form-field" key={key}><label htmlFor={key}>{label}</label><input id={key} type={key==="joined_on"?"date":"text"} className="input" value={profile[key]} onChange={e=>setField(key,e.target.value)} required={key==="member_number"||key==="full_name"}/></div>)}
@@ -66,11 +71,11 @@ export default function PeoplePage(){
         <div className="form-field"><label>Assigned unit</label><select required className="select" value={profile.org_node_id} onChange={e=>setField("org_node_id",e.target.value)}><option value="">Select unit</option>{units.map(n=><option value={n.id} key={n.id}>{n.name} ({n.code})</option>)}</select></div>
         <div className="form-field full"><label className="checkbox-row"><input type="checkbox" checked={consented} onChange={e=>setConsented(e.target.checked)} required/>I confirm that the person was informed about the purpose of processing their sensitive organizational information and gave valid consent under the approved privacy notice (v1). No record should be entered without this basis.</label></div>
       </div><div className="form-actions"><button className="secondary-btn" type="button" onClick={()=>setShowCreate(false)}>Cancel</button><button className="primary-btn" disabled={busy||!consented||!profile.org_node_id}><UserRoundPlus size={16}/> Save profile</button></div></form></div>}
-    <div className="panel" style={{padding:0,overflow:"hidden"}}><div style={{padding:"23px 24px 13px"}}><h2>People directory</h2><span className="subhead">{total} matching records within your approved scope</span></div>
-      {members.length?<div className="table-wrap"><table className="data-table"><thead><tr><th>Member ID</th><th>Name</th><th>Category</th><th>Mobile</th><th>Status</th><th>Actions</th></tr></thead><tbody>{members.map(m=><tr key={m.id}><td>{m.member_number}</td><td><div className="directory-name">{m.photo?<img className="directory-avatar" src={m.photo} alt=""/>:<UserRoundPlus size={26}/>}<b>{m.full_name}</b></div></td><td>{labels[m.category]}</td><td>{m.phone||"—"}</td><td><span className={"pill "+(m.status==="ACTIVE"?"":"muted")}>{m.status}</span></td><td><button onClick={()=>{setSelected(m);setEditing(null);setShowCreate(false);}}>View profile</button></td></tr>)}</tbody></table></div>:<div className="empty"><Search size={28}/><strong>No matching records</strong><span>Records will appear when authorized data is added.</span></div>}
+    <div className="panel" style={{padding:0,overflow:"hidden"}}><div style={{padding:"23px 24px 13px"}}><h2>People directory</h2><span className="subhead">{searching?"Searching…":`${total} matching profiles and records within your approved scope`}</span></div>
+      {members.length?<div className="table-wrap"><table className="data-table"><thead><tr><th>Member ID</th><th>Name</th><th>Category</th><th>Mobile</th><th>Status</th><th>Actions</th></tr></thead><tbody>{members.map(m=><tr key={m.id}><td>{m.member_number||"Personal profile"}</td><td><div className="directory-name">{m.photo?<img className="directory-avatar" src={m.photo} alt=""/>:<UserRoundPlus size={26}/>}<b>{m.full_name}</b></div></td><td>{m.category?labels[m.category]:"Not specified"}{m.source==="PROFILE"&&<small className="directory-source">Self-reported</small>}</td><td>{m.phone||"—"}</td><td><span className={"pill "+(m.status==="ACTIVE"?"":"muted")}>{m.status}</span></td><td><button onClick={()=>{setSelected(m);setEditing(null);setShowCreate(false);}}>View profile</button></td></tr>)}</tbody></table></div>:<div className="empty"><Search size={28}/><strong>{searching?"Searching profiles…":"No matching profiles"}</strong><span>Try part of the saved name. Personal profiles appear here for Thana Admins; ward and unit staff see approved linked records.</span></div>}
     </div>
     <div className="toolbar" style={{marginTop:16}}><button className="secondary-btn" disabled={offset===0} onClick={()=>setOffset(Math.max(0,offset-30))}>Previous</button><span role="status">{total?`${offset+1}–${Math.min(offset+30,total)} of ${total}`:"0 records"}</span><button className="secondary-btn" disabled={offset+30>=total} onClick={()=>setOffset(offset+30)}>Next</button></div>
-    {selected&&!editing&&<div className="directory-preview"><div className="section-title"><h2>Profile details</h2><button className="secondary-btn" onClick={()=>setSelected(null)}>Close profile</button></div><ProfileCard profile={{...selected,current_address:selected.address,unit:units.find(n=>n.id===selected.org_node_id)?.name}} onEdit={()=>choose(selected)}/></div>}
+    {selected&&!editing&&<div className="directory-preview"><div className="section-title"><h2>Profile details</h2><button className="secondary-btn" onClick={()=>setSelected(null)}>Close profile</button></div><ProfileCard profile={{...selected,current_address:selected.address,unit:units.find(n=>n.id===selected.org_node_id)?.name}} onEdit={selected.source==="MEMBER"?()=>choose(selected):undefined}/>{selected.source==="PROFILE"&&<p className="hint">Personal profile summary. This account is not linked to an official member record; its owner manages the profile in My workspace.</p>}</div>}
     {editing&&<div className="panel" style={{marginTop:20}}><div className="section-title"><h2>Edit: {editing.full_name}</h2><button className="secondary-btn" onClick={()=>setEditing(null)}>Close</button></div>
       <p className="subhead">Routine fields can be updated directly. Category, transfer and status changes require independent approval.</p>
       <form onSubmit={saveRoutine}><div className="form-grid">{([["full_name","Full name"],["father_name","Father's name"],["phone","Mobile"],["address","Address"],["occupation","Occupation"],["position","Position"]] as const).map(([key,label])=>key==='occupation'||key==='position'?<SearchSelect key={key} label={label} placeholder={key==='occupation'?'e.g. Teacher':'e.g. Ward secretary'} value={routine[key]} maxLength={160} items={key==='occupation'?catalogs.occupations:catalogs.positions} onChange={v=>setRoutine(p=>({...p,[key]:v}))}/>:key==='address'?<AddressFields key={key} label={label} value={routine.address} onChange={v=>setRoutine(p=>({...p,address:v}))}/>:<div className="form-field" key={key}><label>{label}</label><input required={key==="full_name"} className="input" value={routine[key]} onChange={e=>setRoutine(p=>({...p,[key]:e.target.value}))}/></div>)}</div><div className="form-actions"><button className="primary-btn" disabled={busy}><Save size={15}/> Save routine details</button></div></form>

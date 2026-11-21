@@ -388,11 +388,11 @@ export default function PersonalWorkspace() {
                   }
                 />{" "}
                 I consent to privately storing my NID or passport number, profile photo and voluntary prayer, study and
-                organizational reports. My assigned responsible person may
+                organizational reports. Authorized Thana administrators may find my basic profile summary. My assigned responsible person may
                 review submitted reports and profile details. Main
                 administrators manage assignments.
               </label>
-              <label className="consent"><input type="checkbox" checked={details.directory_sharing} onChange={e=>setDetails(d=>({...d,directory_sharing:e.target.checked}))}/> Show my photo with my linked organizational record to authorized users. My document number and personal reports stay private.</label>
+              <label className="consent"><input type="checkbox" checked={details.directory_sharing} onChange={e=>setDetails(d=>({...d,directory_sharing:e.target.checked}))}/> Show my photo in authorized people search. My document number and personal reports stay private.</label>
               <div className="profile-form-actions"><button className="primary-btn" disabled={busy}>Save my profile</button>{profile.details.full_name&&<button type="button" className="secondary-btn" disabled={busy} onClick={()=>{setDetails(d=>({...empty,...profile.details,books:d.books}));setEditingProfile(false);setShowIdentity(false);setNotice("");}}>Cancel editing</button>}</div>
             </form>
           )}
