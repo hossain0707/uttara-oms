@@ -21,7 +21,7 @@ const result = spawnSync(process.execPath,[require.resolve("next/dist/bin/next")
 if(result.error)throw result.error;
 if(result.status!==0)process.exit(result.status??1);
 const csp = ["default-src 'self'", "script-src 'self' 'unsafe-inline'", "style-src 'self' 'unsafe-inline'",
-  "img-src 'self' data:", `connect-src 'self' ${origins.join(" ")}`, "base-uri 'none'",
+  "img-src 'self' data: https://bjilibrary.com", `connect-src 'self' ${origins.join(" ")}`, "base-uri 'none'",
   "object-src 'none'", "frame-ancestors 'none'", "form-action 'self'"].join("; ");
 writeFileSync("out/_headers",`/*
   X-Content-Type-Options: nosniff

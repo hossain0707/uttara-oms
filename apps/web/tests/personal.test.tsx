@@ -94,3 +94,16 @@ it('blocks report saving until pending daily values are included', async () => {
   fireEvent.click(screen.getByRole('button', {name:'Add / update day'}));
   expect((screen.getByLabelText('Prayers (prayers)') as HTMLInputElement).value).toBe('');
 });
+
+it('adds a library book and saves it without overwriting unsaved profile edits',async()=>{
+ mockWorkspace();render(<PersonalWorkspace/>);await screen.findByLabelText('Full name');
+ fireEvent.change(screen.getByLabelText('Full name'),{target:{value:'Unsaved profile name'}});
+ fireEvent.click(screen.getByRole('tab',{name:'Library & syllabus'}));
+ fireEvent.click(screen.getAllByRole('button',{name:'Add to my reading'})[0]);
+ fireEvent.click(screen.getByRole('button',{name:'My reading list'}));
+ fireEvent.click(screen.getByRole('button',{name:'Save reading progress'}));
+ await screen.findByText('Reading progress saved.');
+ const put=vi.mocked(api).mock.calls.find(([,o])=>o?.method==='PUT');
+ const body=JSON.parse(String(put?.[1]?.body));expect(body.details.full_name).toBe('Saved owner');expect(body.details.books).toHaveLength(1);
+ fireEvent.click(screen.getByRole('tab',{name:'My profile'}));expect((screen.getByLabelText('Full name') as HTMLInputElement).value).toBe('Unsaved profile name');
+});
