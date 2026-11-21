@@ -2,7 +2,7 @@
 import {useEffect,useState,type FormEvent} from "react";
 import {authClient} from "@/lib/supabase";
 
-export default function MfaChallenge(){
+export default function MfaChallenge({purpose="workspace"}:{purpose?:"workspace"|"password-reset"}){
   const [factor,setFactor]=useState("");
   const [code,setCode]=useState("");
   const [qr,setQr]=useState("");
@@ -44,7 +44,7 @@ export default function MfaChallenge(){
       setCode("");setQr("");window.location.reload();
     }catch(error){setMessage(error instanceof Error?error.message:String(error));}finally{setBusy(false);}};
   return <section aria-label="Administrator verification"><h2>Verify your authenticator</h2>
-    <p className="hint">Use your six-digit authenticator code to enter the administrator workspace.</p>
+    <p className="hint">{purpose==="password-reset"?"Verify your authenticator before choosing a new password.":"Use your six-digit authenticator code to enter the administrator workspace."}</p>
     {message&&<p role="alert" className="alert">{message}</p>}
     {loaded&&!factor&&!unfinished&&<button className="secondary-btn" disabled={busy} onClick={()=>void enroll()}>Set up authenticator</button>}
     {unfinished&&!qr&&<div><p className="hint">Your earlier setup was not verified. Its private QR code cannot be shown again. Reset the unfinished setup, then set up your authenticator again.</p><button className="secondary-btn" disabled={busy} onClick={()=>void resetUnfinished()}>Reset unfinished setup</button></div>}
