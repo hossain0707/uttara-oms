@@ -1,9 +1,10 @@
 "use client";
 import {useEffect, useState, type FormEvent} from "react";
 import Link from "next/link";
-import {Eye, EyeOff, Network, ShieldCheck, Mail, ArrowLeft} from "lucide-react";
+import {Eye, EyeOff, ShieldCheck, Mail, ArrowLeft} from "lucide-react";
 import {authClient} from "@/lib/supabase";
 import EmailOtpSignIn from "./EmailOtpSignIn";
+import BrandLogo from "./BrandLogo";
 import MfaChallenge from "./MfaChallenge";
 import "./AuthScreen.css";
 
@@ -71,7 +72,7 @@ export default function AuthScreen({mode="login",onAuthenticated}:{mode?:AuthMod
   async function google(){await run(async()=>{const {error}=await authClient().auth.signInWithOAuth({provider:"google",options:{redirectTo:window.location.origin}});if(error)throw error;});}
   async function resend(){await run(async()=>{const {error}=await authClient().auth.resend({type:"signup",email:email.trim(),options:{emailRedirectTo:window.location.origin}});if(error)throw error;setSeconds(60);setNotice("A new confirmation email has been requested. Check your inbox and spam folder.");});}
   const passwordField=(id:string,label:string,value:string,onChange:(s:string)=>void,confirmation=false)=><div className="auth-line"><label htmlFor={id}>{label}</label><div className="auth-password-input"><input id={id} type={visible?"text":"password"} autoComplete={mode==="login"?"current-password":"new-password"} required minLength={mode==="login"?undefined:8} maxLength={128} value={value} disabled={busy} onChange={e=>onChange(e.target.value)}/>{!confirmation&&<button type="button" className="auth-eye" aria-label={visible?"Hide password":"Show password"} aria-pressed={visible} onClick={()=>setVisible(!visible)}>{visible?<EyeOff size={18}/>:<Eye size={18}/>}</button>}</div></div>;
-  return <div className="auth-scene"><section className="auth-panel" aria-labelledby="auth-title"><Link href="/" className="auth-home-brand"><span><Network size={25}/></span><div>Uttara <b>OMS</b><small>YOUR ORGANIZED WORKSPACE</small></div></Link><div className="auth-intro"><span className="auth-overline">{mode==="login"?"SIGN IN":mode==="signup"?"GET STARTED":"ACCOUNT RECOVERY"}</span><h1 id="auth-title">{content[mode][0]}</h1><p>{content[mode][1]}</p></div>
+  return <div className="auth-scene"><section className="auth-panel" aria-labelledby="auth-title"><Link href="/" className="auth-home-brand"><BrandLogo className="auth-emblem"/><div>Uttara <b>OMS</b><small>YOUR ORGANIZED WORKSPACE</small></div></Link><div className="auth-intro"><span className="auth-overline">{mode==="login"?"SIGN IN":mode==="signup"?"GET STARTED":"ACCOUNT RECOVERY"}</span><h1 id="auth-title">{content[mode][0]}</h1><p>{content[mode][1]}</p></div>
     {issue&&<p className="auth-message auth-error" role="alert">{issue}</p>}{notice&&<p className="auth-message" role="status">{notice}</p>}
     {resetLoading?<p role="status">Checking your reset link…</p>:mode==="reset"&&(!resetReady||updated)?<div className="auth-recovery-state">{!updated&&<p>This link has expired or no recovery session is available. Request a fresh reset link.</p>}<Link href={updated?"/login/":"/forgot-password/"} className="auth-submit">{updated?"Back to sign in":"Request a new reset link"}</Link></div>:mode==="reset"&&resetNeedsMfa?<MfaChallenge purpose="password-reset"/>:codeMode&&mode==="login"?<><EmailOtpSignIn/><button className="auth-text-button" type="button" onClick={()=>setCodeMode(false)}>Use email and password</button></>:<form onSubmit={submit} className="auth-password-form">
       {mode!=="reset"&&<div className="auth-line"><label htmlFor="account-email">Email</label><input id="account-email" type="email" autoComplete="email" required maxLength={254} value={email} disabled={busy||(mode==="signup"&&sent)} onChange={e=>setEmail(e.target.value)}/></div>}
