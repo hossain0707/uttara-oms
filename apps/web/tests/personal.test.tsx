@@ -18,13 +18,14 @@ it("saves only the owner's self-reported profile and allows a separate leader ap
     path === "/self/profile"
       ? {
           version: 1,
-          details: { full_name: "Synthetic owner", consent: true },
+          details: { full_name: "Synthetic owner", consent: true, identity_type:"NID", identity_number:"1000000000" },
           goals: [],
           reviewer_assigned: false,
         }
       : { items: [] },
   );
   render(<PersonalWorkspace />);
+  fireEvent.click(await screen.findByRole("button", {name:"Edit profile"}));
   await screen.findByLabelText("Full name");
   fireEvent.change(screen.getByLabelText("Full name"), {
     target: { value: "Updated owner" },
@@ -50,7 +51,7 @@ it("saves only the owner's self-reported profile and allows a separate leader ap
 });
 
 function mockWorkspace() {
-  let saved = {version: 1, details: {full_name: 'Saved owner', consent: true, books: []}, goals: [], reviewer_assigned: false};
+  let saved = {version: 1, details: {full_name: 'Saved owner', consent: true, books: [], identity_type:'NID', identity_number:'1000000000'}, goals: [], reviewer_assigned: false};
   vi.mocked(api).mockImplementation(async (path, options) => {
     if (path === '/self/profile') {
       if (options?.method === 'PUT') saved = {...saved, version: saved.version + 1, details: JSON.parse(String(options.body)).details};
@@ -60,13 +61,13 @@ function mockWorkspace() {
   });
 }
 it('isolates profile saves from unfinished reading rows and ignores completely empty book rows', async () => {
-  mockWorkspace(); render(<PersonalWorkspace />); await screen.findByLabelText('Full name');
+  mockWorkspace(); render(<PersonalWorkspace />); fireEvent.click(await screen.findByRole('button',{name:'Edit profile'})); await screen.findByLabelText('Full name');
   fireEvent.click(screen.getByRole('tab', {name:'Targets & books'}));
   fireEvent.click(screen.getByRole('button', {name:'Add book'}));
   fireEvent.click(screen.getByRole('tab', {name:'My profile'}));
   fireEvent.change(screen.getByLabelText('Full name'), {target:{value:'Updated owner'}});
   fireEvent.click(screen.getByRole('button', {name:'Save my profile'}));
-  await screen.findByText('Profile saved. Unsaved reading-list changes stay in the reading tab.');
+  await screen.findByText('Profile saved.');
   const put = vi.mocked(api).mock.calls.find(([,o])=>o?.method==='PUT');
   expect(JSON.parse(String(put?.[1]?.body)).details.books).toEqual([]);
   fireEvent.click(screen.getByRole('tab', {name:'Targets & books'}));
@@ -75,7 +76,7 @@ it('isolates profile saves from unfinished reading rows and ignores completely e
   expect(screen.queryByLabelText('Book title')).toBeNull();
 });
 it('requires a book title when progress has been entered', async () => {
-  mockWorkspace(); render(<PersonalWorkspace />); await screen.findByLabelText('Full name');
+  mockWorkspace(); render(<PersonalWorkspace />); fireEvent.click(await screen.findByRole('button',{name:'Edit profile'})); await screen.findByLabelText('Full name');
   fireEvent.click(screen.getByRole('tab', {name:'Targets & books'}));
   fireEvent.click(screen.getByRole('button', {name:'Add book'}));
   fireEvent.change(screen.getByLabelText('Pages completed'), {target:{value:'5'}});
@@ -84,7 +85,7 @@ it('requires a book title when progress has been entered', async () => {
   expect(vi.mocked(api).mock.calls.filter(([,o])=>o?.method==='PUT')).toHaveLength(0);
 });
 it('blocks report saving until pending daily values are included', async () => {
-  mockWorkspace(); render(<PersonalWorkspace />); await screen.findByLabelText('Full name');
+  mockWorkspace(); render(<PersonalWorkspace />); fireEvent.click(await screen.findByRole('button',{name:'Edit profile'})); await screen.findByLabelText('Full name');
   fireEvent.click(screen.getByRole('tab', {name:'Daily & monthly reports'}));
   fireEvent.change(screen.getByLabelText('Prayers (prayers)'), {target:{value:'5'}});
   fireEvent.click(screen.getByRole('checkbox'));
@@ -96,7 +97,7 @@ it('blocks report saving until pending daily values are included', async () => {
 });
 
 it('adds a library book and saves it without overwriting unsaved profile edits',async()=>{
- mockWorkspace();render(<PersonalWorkspace/>);await screen.findByLabelText('Full name');
+ mockWorkspace();render(<PersonalWorkspace/>);fireEvent.click(await screen.findByRole('button',{name:'Edit profile'})); await screen.findByLabelText('Full name');
  fireEvent.change(screen.getByLabelText('Full name'),{target:{value:'Unsaved profile name'}});
  fireEvent.click(screen.getByRole('tab',{name:'Library & syllabus'}));
  fireEvent.click(screen.getAllByRole('button',{name:'Add to my reading'})[0]);
@@ -106,4 +107,22 @@ it('adds a library book and saves it without overwriting unsaved profile edits',
  const put=vi.mocked(api).mock.calls.find(([,o])=>o?.method==='PUT');
  const body=JSON.parse(String(put?.[1]?.body));expect(body.details.full_name).toBe('Saved owner');expect(body.details.books).toHaveLength(1);
  fireEvent.click(screen.getByRole('tab',{name:'My profile'}));expect((screen.getByLabelText('Full name') as HTMLInputElement).value).toBe('Unsaved profile name');
+});
+
+it('shows a saved profile, masks identity, and allows editing or cancelling without saving', async()=>{
+ mockWorkspace();render(<PersonalWorkspace/>);
+ await screen.findByRole('heading',{name:'Saved owner'});
+ expect(screen.queryByLabelText('Full name')).toBeNull();
+ expect(screen.getByText('NID · •••• 0000')).toBeTruthy();
+ expect(screen.queryByText('1000000000')).toBeNull();
+ fireEvent.click(screen.getByRole('button',{name:'Edit profile'}));
+ fireEvent.change(screen.getByLabelText('Full name'),{target:{value:'Changed'}});
+ fireEvent.click(screen.getByRole('button',{name:'Cancel editing'}));
+ expect(screen.getByRole('heading',{name:'Saved owner'})).toBeTruthy();
+ expect(vi.mocked(api).mock.calls.filter(([,o])=>o?.method==='PUT')).toHaveLength(0);
+ fireEvent.click(screen.getByRole('button',{name:'Edit profile'}));
+ fireEvent.change(screen.getByLabelText('Full name'),{target:{value:'Changed'}});
+ fireEvent.click(screen.getByRole('button',{name:'Save my profile'}));
+ await screen.findByRole('heading',{name:'Changed'});
+ expect(screen.queryByLabelText('Full name')).toBeNull();
 });

@@ -17,6 +17,7 @@ export default function Home() {
   const [error,setError] = useState("");
   const [start,setStart] = useState("");
   const [end,setEnd] = useState("");
+  const [personSearch,setPersonSearch] = useState("");
   const [query,setQuery] = useState("");
   const [loading,setLoading] = useState(false);
   useEffect(()=>{let active=true;setLoading(true);setError("");setData(null);
@@ -27,6 +28,7 @@ export default function Home() {
     if(start)params.set("start_date",start);if(end)params.set("end_date",end);setQuery(params.toString());};
   const max = Math.max(1,...categories.map(c=>data?.by_category[c.key] || 0));
   return <Shell title="Overview" subtitle="A clear, real-time view of authorized organizational records.">
+    <form className="toolbar dashboard-search" action="/members/"><input className="input" name="q" aria-label="Search people by name or member ID" placeholder="Search people by name, member ID or mobile" value={personSearch} onChange={e=>setPersonSearch(e.target.value)}/><button className="secondary-btn" type="submit">Find profile</button></form>
     {error && <div className="alert" role="alert">{error}</div>}
     <form className="toolbar" onSubmit={filter}>
       <label>From <input aria-label="Start date" className="input" type="date" value={start} onChange={e=>setStart(e.target.value)}/></label>

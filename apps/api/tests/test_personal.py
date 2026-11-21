@@ -13,6 +13,7 @@ def test_private_reports_and_independent_review(context):
         "expected_version": 0,
         "details": {
             "full_name": "Private synthetic profile",
+            "identity_type": "NID", "identity_number": "1000000000",
             "phone": "01700000009",
             "category": "WORKER",
             "consent": True,
@@ -91,7 +92,10 @@ def test_private_reports_and_independent_review(context):
     }
     assert c.post(f"/api/v1/reviews/{rid}", json=decision).status_code == 403
     h["actor"] = w["reviewer"]
-    assert len(c.get("/api/v1/reviews").json()["items"]) == 1
+    queue = c.get("/api/v1/reviews").json()["items"]
+    assert len(queue) == 1
+    assert "identity_number" not in queue[0]["profile"]
+    assert "identity_type" not in queue[0]["profile"]
     assert c.post(f"/api/v1/reviews/{rid}", json=decision).status_code == 200
     assert c.post(f"/api/v1/reviews/{rid}", json=decision).status_code == 409
     h["actor"] = owner
@@ -228,7 +232,7 @@ def test_personal_exports_owner_only_and_spreadsheet_text(context):
             "/api/v1/self/profile",
             json={
                 "expected_version": 0,
-                "details": {"full_name": "Synthetic", "consent": True},
+                "details": {"full_name": "Synthetic", "consent": True, "identity_type":"NID", "identity_number":"1000000000"},
             },
         ).status_code
         == 200
@@ -259,3 +263,52 @@ def test_personal_exports_owner_only_and_spreadsheet_text(context):
     h["actor"] = w["admin"]
     assert c.get(f"/api/v1/self/reports/{rid}/export/xlsx").status_code == 404
     assert c.get(f"/api/v1/self/reports/{rid}/export/pdf").status_code == 404
+
+
+def test_profile_identity_photo_and_directory_privacy(context):
+    import base64
+    from io import BytesIO
+    from PIL import Image
+    from test_endpoints import make_body
+    from app.routes.personal import unpack
+
+    c, h, w, unit, _ = context
+    image = BytesIO()
+    Image.new("RGB", (40, 40), "green").save(image, format="JPEG")
+    photo = "data:image/jpeg;base64," + base64.b64encode(image.getvalue()).decode()
+    details = {"full_name": "Synthetic owner", "identity_type": "NID",
+               "identity_number": "১০০০০০০০০০", "photo": photo, "consent": True}
+    assert c.put("/api/v1/self/profile", json={"expected_version": 0, "details": {"consent": True}}).status_code == 422
+    assert c.put("/api/v1/self/profile", json={"expected_version": 0, "details": {**details, "identity_number": "123"}}).status_code == 422
+    assert c.put("/api/v1/self/profile", json={"expected_version": 0, "details": {**details, "photo": "data:image/svg+xml;base64,PHN2Zz4="}}).status_code == 422
+    saved = c.put("/api/v1/self/profile", json={"expected_version": 0, "details": details})
+    assert saved.status_code == 200, saved.text
+    assert saved.json()["details"]["identity_number"] == "1000000000"
+    member = c.post("/api/v1/members", json=make_body(unit.id)).json()
+    with h["session_factory"]() as db:
+        profile = db.get(PersonalProfile, w["editor"].id)
+        assert "1000000000" not in profile.details_encrypted
+        assert "data:image" not in profile.details_encrypted
+        profile.member_id = UUID(member["id"])
+        db.commit()
+    assert c.get("/api/v1/members").json()["items"][0]["photo"] == ""
+    # Sharing is explicit, restricted to an independently linked record and existing scope.
+    shared = c.put("/api/v1/self/profile", json={"expected_version": 1, "details": {**details, "directory_sharing": True}})
+    assert shared.status_code == 200
+    directory = c.get("/api/v1/members").json()
+    assert directory["items"][0]["photo"].startswith("data:image/jpeg;base64,")
+    assert "identity_number" not in str(directory)
+    assert "1000000000" not in str(directory)
+    assert "identity_number" not in c.get(f'/api/v1/members/{member["id"]}').text
+    h["actor"] = w["outsider"]
+    assert c.get("/api/v1/members").json()["items"] == []
+    assert c.get(f'/api/v1/members/{member["id"]}').status_code == 403
+    h["actor"] = w["editor"]
+    # Reading-only saves cannot overwrite identification or opt in to sharing.
+    reading = c.put("/api/v1/self/profile", json={"expected_version": 2, "section": "reading", "details": {"consent": True, "books": [{"title": "Synthetic book"}]}})
+    assert reading.status_code == 200, reading.text
+    assert reading.json()["details"]["identity_number"] == "1000000000"
+    assert reading.json()["details"]["directory_sharing"] is True
+    revoked = c.put("/api/v1/self/profile", json={"expected_version": 3, "details": {**details, "directory_sharing": False}})
+    assert revoked.status_code == 200
+    assert c.get("/api/v1/members").json()["items"][0]["photo"] == ""

@@ -1,5 +1,10 @@
 """Owner-only personal workspace and explicitly assigned report review."""
 
+import base64
+import binascii
+import re
+from io import BytesIO
+from PIL import Image, UnidentifiedImageError
 import calendar
 import json
 from datetime import date, datetime, timezone
@@ -64,6 +69,10 @@ class Book(InputModel):
 
 
 class ProfileData(InputModel):
+    identity_type: Literal["", "NID", "PASSPORT"] = ""
+    identity_number: str = Field(default="", max_length=30)
+    photo: str = Field(default="", max_length=160000)
+    directory_sharing: bool = False
     full_name: str = Field(default="", max_length=200)
     father_name: str = Field(default="", max_length=200)
     phone: str = Field(default="", max_length=40)
@@ -81,7 +90,41 @@ class ProfileData(InputModel):
     consent: Literal[True]
 
 
+    @model_validator(mode="after")
+    def identity_and_photo(self):
+        self.identity_number = self.identity_number.translate(str.maketrans("০১২৩৪৫৬৭৮৯", "0123456789")).strip().replace(" ", "").upper()
+        if bool(self.identity_type) != bool(self.identity_number):
+            raise ValueError("Choose NID or passport and enter its number")
+        if self.identity_type == "NID" and not re.fullmatch(r"(?:[0-9]{10}|[0-9]{13}|[0-9]{17})", self.identity_number):
+            raise ValueError("NID must contain 10, 13 or 17 digits")
+        if self.identity_type == "PASSPORT" and not re.fullmatch(r"[A-Z0-9]{5,20}", self.identity_number):
+            raise ValueError("Passport number must contain 5–20 letters or digits")
+        if self.photo:
+            if not self.photo.startswith("data:image/jpeg;base64,"):
+                raise ValueError("Choose a JPEG profile photo")
+            try:
+                raw = base64.b64decode(self.photo.split(",", 1)[1], validate=True)
+                if len(raw) > 110000:
+                    raise ValueError("Profile photo is too large")
+                with Image.open(BytesIO(raw)) as image:
+                    if image.format != "JPEG" or not (1 <= image.width <= 512 and 1 <= image.height <= 512):
+                        raise ValueError("Profile photo must be a JPEG up to 512 pixels")
+                    image.load()
+                    # Re-encode rather than persist EXIF, location or appended data.
+                    output = BytesIO()
+                    clean = image.convert("RGB")
+                    clean.thumbnail((384, 384))
+                    clean.save(output, format="JPEG", quality=82)
+                    if len(output.getvalue()) > 110000:
+                        raise ValueError("Profile photo is too large")
+                self.photo = "data:image/jpeg;base64," + base64.b64encode(output.getvalue()).decode()
+            except (binascii.Error, OSError, UnidentifiedImageError, Image.DecompressionBombError) as exc:
+                raise ValueError("Choose a valid JPEG profile photo") from exc
+        return self
+
+
 class ProfileSave(InputModel):
+    section: Literal["profile", "reading"] = "profile"
     expected_version: int = Field(ge=0)
     details: ProfileData
 
@@ -159,6 +202,12 @@ def profile_view(row):
     }
 
 
+def reviewer_profile(row):
+    # Identity documents are private to the owner, including in review responses.
+    return {k: v for k, v in unpack(row.details_encrypted).items()
+            if k not in {"identity_number", "identity_type"}}
+
+
 def report_view(row, profile):
     content = unpack(row.content_encrypted)
     entries = content.get("entries", [])
@@ -212,12 +261,20 @@ def save_profile(
     ):
         raise HTTPException(422, "Choose an active unit")
     details = body.details.model_dump(mode="json")
+    if body.section == "reading":
+        previous = unpack(row.details_encrypted) if row else {}
+        if not previous.get("consent"):
+            raise HTTPException(422, "Save your profile and consent first")
+        details = {**previous, "books": details["books"]}
+    elif not details["full_name"].strip() or not details["identity_number"]:
+        raise HTTPException(422, "Enter your full name and NID or passport number")
     try:
         details["phone"] = normalize_phone(details["phone"]) or ""
     except ValueError as exc:
         raise HTTPException(422, str(exc)) from exc
-    details["consent_at"] = datetime.now(timezone.utc).isoformat()
-    details["consent_version"] = "personal-v1"
+    if body.section == "profile":
+        details["consent_at"] = datetime.now(timezone.utc).isoformat()
+        details["consent_version"] = "personal-v2"
     if row is None:
         row = PersonalProfile(user_id=actor.id, version=0)
         db.add(row)
@@ -337,11 +394,7 @@ def review_queue(actor: Actor = Depends(current_actor), db: Session = Depends(ge
             {
                 **report_view(r, next(p for p in profiles if p.user_id == r.user_id)),
                 "email": users[r.user_id],
-                "profile": unpack(
-                    next(
-                        p for p in profiles if p.user_id == r.user_id
-                    ).details_encrypted
-                ),
+                "profile": reviewer_profile(next(p for p in profiles if p.user_id == r.user_id)),
             }
             for r in reports
         ]

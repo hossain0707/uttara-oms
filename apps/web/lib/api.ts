@@ -5,6 +5,7 @@ export type Identity = { id: string; email: string; roles: Role[]; mfa: boolean 
 export type OrgNode = { id: string; parent_id: string | null; kind: "THANA" | "WARD" | "UNIT"; name: string; code: string; active: boolean };
 export type Category = "RUKON" | "WORKER" | "ASSOCIATE" | "SUPPORTER";
 export type Member = {
+  photo?: string;
   id: string; member_number: string; full_name: string; father_name: string | null;
   phone: string | null; address: string | null; occupation: string | null;
   position: string | null; category: Category; status: string; org_node_id: string;
