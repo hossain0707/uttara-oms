@@ -1,7 +1,7 @@
 import { authClient } from "./supabase";
 
 export type Role = { role: string; scope_node_id: string | null };
-export type Identity = { id: string; email: string; roles: Role[]; mfa: boolean };
+export type Identity = { id: string; email: string; roles: Role[]; mfa: boolean; is_master_admin?: boolean };
 export type OrgNode = { id: string; parent_id: string | null; kind: "THANA" | "WARD" | "UNIT"; name: string; code: string; active: boolean };
 export type Category = "RUKON" | "WORKER" | "ASSOCIATE" | "SUPPORTER";
 export type Member = {

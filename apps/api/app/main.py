@@ -13,7 +13,7 @@ from uuid import UUID
 from .models import AppUser, AuditLog
 from .config import settings
 from .database import get_db
-from .routes import access, approvals, members, organization, reports, personal
+from .routes import access, approvals, members, organization, reports, personal, master
 
 app = FastAPI(title="Uttara OMS API", version="0.1.0",
               docs_url=None if settings().environment == "production" else "/docs",
@@ -24,6 +24,7 @@ app.add_middleware(CORSMiddleware, allow_origins=settings().allowed_origins,
                    allow_headers=["Authorization", "Content-Type"],
                    expose_headers=["Content-Disposition"])
 
+app.include_router(master.router, prefix="/api/v1")
 app.include_router(personal.router, prefix="/api/v1")
 app.include_router(access.router, prefix="/api/v1")
 app.include_router(members.router, prefix="/api/v1")
@@ -51,7 +52,7 @@ def ready(db: Session = Depends(get_db)):
 
 @app.get("/api/v1/me")
 def me(actor: Actor = Depends(account_actor)):
-    return {"id": str(actor.id), "email": actor.email, "roles": [
+    return {"id": str(actor.id), "email": actor.email, "is_master_admin": actor.is_master_admin, "roles": [
         {"role": role, "scope_node_id": str(scope) if scope else None}
         for role, scope in actor.grants], "mfa": actor.mfa}
 

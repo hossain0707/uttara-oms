@@ -8,6 +8,7 @@ from sqlalchemy.orm import Session
 from .config import settings
 from .database import get_db
 from .models import AppUser, RoleGrant
+from . import security_policy as policy
 
 bearer = HTTPBearer(auto_error=True)
 
@@ -18,6 +19,7 @@ class Actor:
     email: str
     grants: list[tuple[str, UUID | None]]
     mfa: bool
+    is_master_admin: bool = False
 
 
 @lru_cache(maxsize=4)
@@ -55,9 +57,10 @@ def account_actor(
         raise HTTPException(403, "Account has not been approved for OMS")
     grants = db.query(RoleGrant).filter(RoleGrant.user_id == user.id).all()
     mfa = claims.get("aal") == "aal2"
-    if settings().require_admin_mfa and not mfa and bool(grants):
+    master = policy.is_owner(db, user.id) and any(g.role == "THANA_ADMIN" and g.scope_node_id is None for g in grants)
+    if (settings().require_admin_mfa or master) and not mfa and bool(grants) and (master or not policy.mfa_exempt(db, user.id)):
         raise HTTPException(403, "Administrator MFA required")
-    return Actor(user.id, user.email, [(g.role, g.scope_node_id) for g in grants], mfa)
+    return Actor(user.id, user.email, [(g.role, g.scope_node_id) for g in grants], mfa, master)
 
 
 def current_actor(
