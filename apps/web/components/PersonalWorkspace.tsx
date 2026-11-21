@@ -3,6 +3,7 @@ import { useEffect, useState, type FormEvent } from "react";
 import SearchSelect from './SearchSelect';
 import AddressFields from './AddressFields';
 import catalogs from '@/data/catalogs.json';
+import Library from './Library';
 import { api, downloadPersonalReport } from "@/lib/api";
 export const metrics = [
   { key: "prayers", label: "Prayers", unit: "prayers" },
@@ -128,7 +129,11 @@ export default function PersonalWorkspace() {
     }
   }
   useEffect(() => {
+    const openLibrary = () => { if (window.location.hash === "#library") setTab("library"); };
+    openLibrary();
+    window.addEventListener("hashchange", openLibrary);
     void load();
+    return () => window.removeEventListener("hashchange", openLibrary);
   }, []);
   useEffect(() => {
     const r = reports.find((r) => r.month === month + "-01");
@@ -248,6 +253,7 @@ export default function PersonalWorkspace() {
           ["profile", "My profile"],
           ["reports", "Daily & monthly reports"],
           ["targets", "Targets & books"],
+          ["library", "Library & syllabus"],
           ["access", "Request permissions"],
         ].map(([id, label]) => (
           <button
@@ -260,6 +266,7 @@ export default function PersonalWorkspace() {
           </button>
         ))}
       </div>
+      {tab === "library" && <Library books={details.books} canAdd={!!profile?.details.consent && !busy} onAdd={book=>setDetails(d=>({...d,books:[...d.books,book]}))} onManage={()=>setTab("targets")} />}
       {notice && (
         <div className="alert" role="status">
           {notice}

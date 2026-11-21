@@ -1,0 +1,3109 @@
+{
+  "checked_on": "2026-11-21",
+  "tracks": [
+    {
+      "id": "worker",
+      "name": "Worker syllabus",
+      "url": "https://bjilibrary.com/worker-syllabus",
+      "entries": [
+        {
+          "alternative": false,
+          "label": "খ) তাফহীমুল কুরআন সারসংক্ষেপ আমপারার তাফসীর – অধ্যাপক গোলাম আযম (রাহি)।",
+          "scope": false,
+          "section": "আল কুরআন",
+          "url": "https://bjilibrary.com/6527",
+          "title": "তাফহীমুল কুরআন সারসংক্ষেপ আমপারার তাফসীর",
+          "cover": "https://bjilibrary.com/wp-content/uploads/2024/03/tafheemul_quran_ampara-750x994.jpg"
+        },
+        {
+          "alternative": false,
+          "label": "গ) কুরআন বুঝা সহজ – অধ্যাপক গোলাম আযম (রাহি)।",
+          "scope": false,
+          "section": "আল কুরআন",
+          "url": "https://bjilibrary.com/94",
+          "title": "কুরআন বুঝা সহজ",
+          "cover": "https://bjilibrary.com/wp-content/uploads/2013/12/Slide1.jpg"
+        },
+        {
+          "alternative": true,
+          "label": "৪০ হাদিস ঈমাম নববী",
+          "scope": false,
+          "section": "আল হাদিস",
+          "url": "https://bjilibrary.com/6671",
+          "title": "৪০ হাদিস ঈমাম নববী",
+          "cover": "https://bjilibrary.com/wp-content/uploads/2024/07/1-1-750x1158.jpg"
+        },
+        {
+          "alternative": true,
+          "label": "হাদিসের আলোকে মানবজীবন ১ম খন্ড",
+          "scope": false,
+          "section": "আল হাদিস",
+          "url": "https://bjilibrary.com/1877",
+          "title": "হাদিসের আলোকে মানবজীবন ১ম খন্ড",
+          "cover": null
+        },
+        {
+          "alternative": true,
+          "label": "রাহে আমল ১ম খন্ড",
+          "scope": false,
+          "section": "আল হাদিস",
+          "url": "https://bjilibrary.com/1836",
+          "title": "রাহে আমল ১ম খন্ড",
+          "cover": null
+        },
+        {
+          "alternative": true,
+          "label": "আসান ফিকাহ",
+          "scope": true,
+          "section": "আল ফিকাহ",
+          "url": "https://bjilibrary.com/1846",
+          "title": "আসান ফিকাহ",
+          "cover": "https://bjilibrary.com/wp-content/uploads/2014/05/10_asan_fekah_01-750x390.jpg"
+        },
+        {
+          "alternative": true,
+          "label": "ফিকাহ মুহাম্মদী",
+          "scope": true,
+          "section": "আল ফিকাহ",
+          "url": "https://bjilibrary.com/6677",
+          "title": "ফিকাহ মুহাম্মদী",
+          "cover": "https://bjilibrary.com/wp-content/uploads/2024/07/1-3-750x1138.jpg"
+        },
+        {
+          "alternative": false,
+          "label": "১। সত্যের সাক্ষ্য – সাইয়েদ আবুল আ’লা মওদূদী (রাহি)।",
+          "scope": false,
+          "section": "দাওয়াত ও তাবলিগ",
+          "url": "https://bjilibrary.com/157",
+          "title": "সত্যের সাক্ষ্য",
+          "cover": null
+        },
+        {
+          "alternative": false,
+          "label": "২। কালেমায়ে তাইয়্যেবা – মাওলানা আব্দুর রহীম (রাহি)।",
+          "scope": false,
+          "section": "দাওয়াত ও তাবলিগ",
+          "url": "https://bjilibrary.com/6533",
+          "title": "কালেমায়ে তাইয়্যেবা",
+          "cover": "https://bjilibrary.com/wp-content/uploads/2024/03/kalema_taiyeba-750x1199.jpg"
+        },
+        {
+          "alternative": false,
+          "label": "৩। আল্লাহর দিকে আহ্বান – অধ্যাপক এ কে এম নাজির আহমদ (রাহি.)।",
+          "scope": false,
+          "section": "দাওয়াত ও তাবলিগ",
+          "url": "https://bjilibrary.com/1114",
+          "title": "আল্লাহর দিকে আহ্বান",
+          "cover": "https://bjilibrary.com/wp-content/uploads/2014/03/41_allahr_dike_ahoban-750x384.jpg"
+        },
+        {
+          "alternative": false,
+          "label": "৪। পরিচিতি, বাংলাদেশ জামায়াতে ইসলামী।",
+          "scope": false,
+          "section": "আন্দোলন ও সংগঠন",
+          "url": "https://bjilibrary.com/7323",
+          "title": "পরিচিতি, বাংলাদেশ জামায়াতে ইসলামী।",
+          "cover": "https://bjilibrary.com/wp-content/uploads/2025/09/porichiti-750x1196.jpg"
+        },
+        {
+          "alternative": false,
+          "label": "৫। জামায়াতে ইসলামীর বৈশিষ্ট্য – অধ্যাপক গোলাম আযম (রাহি.)।",
+          "scope": false,
+          "section": "আন্দোলন ও সংগঠন",
+          "url": "https://bjilibrary.com/6530",
+          "title": "জামায়াতে ইসলামীর বৈশিষ্ট্য",
+          "cover": "https://bjilibrary.com/wp-content/uploads/2024/03/jaamayate_islamir_boisistho.jpg"
+        },
+        {
+          "alternative": false,
+          "label": "৬। সংগঠন পদ্ধতি, বাংলাদেশ জামায়াতে ইসলামী ।",
+          "scope": false,
+          "section": "আন্দোলন ও সংগঠন",
+          "url": "https://bjilibrary.com/5405",
+          "title": "সংগঠন পদ্ধতি, বাংলাদেশ জামায়াতে ইসলামী ।",
+          "cover": null
+        },
+        {
+          "alternative": false,
+          "label": "৭। ইকামাতে দ্বীন – অধ্যাপক গোলাম আযম (রাহি.)।",
+          "scope": false,
+          "section": "আন্দোলন ও সংগঠন",
+          "url": "https://bjilibrary.com/191",
+          "title": "ইকামাতে দ্বীন",
+          "cover": "https://bjilibrary.com/wp-content/uploads/2013/12/57_ikamate_din-750x384.jpg"
+        },
+        {
+          "alternative": false,
+          "label": "৮। ইসলামী আন্দোলনের কর্মীদের প্রাথমিক পুঁজি – অধ্যাপক গোলাম আযম (রাহি.)।",
+          "scope": false,
+          "section": "আন্দোলন ও সংগঠন",
+          "url": "https://bjilibrary.com/5445",
+          "title": "ইসলামী আন্দোলনের কর্মীদের প্রাথমিক পুঁজি",
+          "cover": "https://bjilibrary.com/wp-content/uploads/2019/12/59_islami_andoloner_kormider_prathomik_puji-750x384.jpg"
+        },
+        {
+          "alternative": false,
+          "label": "৯। ইনফাক ফি সাবিলিল্লাহ – মাওলানা মতিউর রহমান নিজামী (রাহি)।",
+          "scope": false,
+          "section": "আন্দোলন ও সংগঠন",
+          "url": "https://bjilibrary.com/5453",
+          "title": "ইনফাক ফি সাবিলিল্লাহ",
+          "cover": "https://bjilibrary.com/wp-content/uploads/2019/12/61_infak_fee_sabilillah-750x384.jpg"
+        },
+        {
+          "alternative": false,
+          "label": "১০। মুসলিম নারীর নিকট ইসলামের দাবি – সাইয়েদ আবুল আ’লা মওদূদী (রাহি)।",
+          "scope": false,
+          "section": "আন্দোলন ও সংগঠন",
+          "url": "https://bjilibrary.com/5618",
+          "title": "মুসলিম নারীর নিকট ইসলামের দাবি",
+          "cover": "https://bjilibrary.com/wp-content/uploads/2020/01/Muslim-Narir-kache-dabi-750x390.jpg"
+        },
+        {
+          "alternative": false,
+          "label": "১১। ঈমানের হাকীকত – সাইয়েদ আবুল আ’লা মওদূদী (রাহি)।",
+          "scope": false,
+          "section": "ইসলাম ও ইবাদাত",
+          "url": "https://bjilibrary.com/70",
+          "title": "ঈমানের হাকীকত",
+          "cover": null
+        },
+        {
+          "alternative": false,
+          "label": "১২। ইসলামের হাকীকত – সাইয়েদ আবুল আ’লা মওদূদী (রাহি)।",
+          "scope": false,
+          "section": "ইসলাম ও ইবাদাত",
+          "url": "https://bjilibrary.com/4366",
+          "title": "ইসলামের হাকীকত",
+          "cover": "https://bjilibrary.com/wp-content/uploads/2019/10/13_islamer_haqiqat-750x390.jpg"
+        },
+        {
+          "alternative": false,
+          "label": "১৩। নামাজ রোযার হাকীকত – সাইয়েদ আবুল আ’লা মওদূদী (রাহি)।",
+          "scope": false,
+          "section": "ইসলাম ও ইবাদাত",
+          "url": "https://bjilibrary.com/196",
+          "title": "নামাজ রোযার হাকীকত",
+          "cover": null
+        },
+        {
+          "alternative": false,
+          "label": "১৪। জিহাদের হাকীকত – সাইয়েদ আবুল আ’লা মওদূদী (রাহি)।",
+          "scope": false,
+          "section": "ইসলাম ও ইবাদাত",
+          "url": "https://bjilibrary.com/5052",
+          "title": "জিহাদের হাকীকত",
+          "cover": "https://bjilibrary.com/wp-content/uploads/2019/11/18_jihader_hakikot-1-750x384.jpg"
+        },
+        {
+          "alternative": false,
+          "label": "১৫। শান্তি পথ – সাইয়েদ আবুল আ’লা মওদূদী (রাহি)।",
+          "scope": false,
+          "section": "ইসলাম ও ইবাদাত",
+          "url": "https://bjilibrary.com/5230",
+          "title": "শান্তি পথ",
+          "cover": "https://bjilibrary.com/wp-content/uploads/2019/11/21_shanti_path-750x384.jpg"
+        },
+        {
+          "alternative": false,
+          "label": "১৬। ইসলামের সহজ পরিচয় – অধ্যাপক গোলাম আযম (রাহি.)।",
+          "scope": false,
+          "section": "ইসলাম ও ইবাদাত",
+          "url": "https://bjilibrary.com/500",
+          "title": "ইসলামের সহজ পরিচয়",
+          "cover": null
+        },
+        {
+          "alternative": false,
+          "label": "১৭। হেদায়াত – সাইয়েদ আবুল আ’লা মওদূদী (রাহি)।",
+          "scope": false,
+          "section": "ইসলাম ও ইবাদাত",
+          "url": "https://bjilibrary.com/235",
+          "title": "হেদায়াত",
+          "cover": "https://bjilibrary.com/wp-content/uploads/2014/01/51_hedayat-750x384.jpg"
+        },
+        {
+          "alternative": false,
+          "label": "১৮। ইমাম হাসান আল বান্নার অজিফা",
+          "scope": false,
+          "section": "ইসলাম ও ইবাদাত",
+          "url": "https://bjilibrary.com/6686",
+          "title": "ইমাম হাসান আল বান্নার অজিফা",
+          "cover": "https://bjilibrary.com/wp-content/uploads/2024/07/1-6-750x1148.jpg"
+        },
+        {
+          "alternative": false,
+          "label": "১৯। আদর্শ মানব মুহম্মদ (সা.) – অধ্যাপক এ.কে.এম নাজির আহমদ (রাহি)।",
+          "scope": false,
+          "section": "সিরাত ও ইতিহাস",
+          "url": "https://bjilibrary.com/5663",
+          "title": "আদর্শ মানব মুহম্মদ (সা.)",
+          "cover": "https://bjilibrary.com/wp-content/uploads/2020/01/3-750x411.jpg"
+        },
+        {
+          "alternative": false,
+          "label": "২০। আমরা সেই সে জাতি (১ম খন্ড) – আবুল আসাদ",
+          "scope": false,
+          "section": "সিরাত ও ইতিহাস",
+          "url": "https://bjilibrary.com/5874",
+          "title": "আমরা সেই সে জাতি (১ম খন্ড)",
+          "cover": "https://bjilibrary.com/wp-content/uploads/2020/04/Capture-40-750x440.jpg"
+        },
+        {
+          "alternative": false,
+          "label": "২১ । মাওলানা মওদূদীকে যেমন দেখেছি – অধ্যাপক গোলাম আযম (রাহি.)।",
+          "scope": false,
+          "section": "সিরাত ও ইতিহাস",
+          "url": "https://bjilibrary.com/6537",
+          "title": "মাওলানা মওদূদীকে যেমন দেখেছি",
+          "cover": "https://bjilibrary.com/wp-content/uploads/2024/03/maulana_maududi_r_ke_jemon_dekhechi.jpg"
+        },
+        {
+          "alternative": false,
+          "label": "২২। পলাশী থেকে বাংলাদেশ – অধ্যাপক গোলাম আযম (রাহি.)।",
+          "scope": false,
+          "section": "সিরাত ও ইতিহাস",
+          "url": "https://bjilibrary.com/322",
+          "title": "পলাশী থেকে বাংলাদেশ",
+          "cover": null
+        },
+        {
+          "alternative": false,
+          "label": "২৩। জামায়াতে ইসলামীর ইতিকথা – অধ্যাপক এ.কে.এম নাজির আহমদ (রাহি)।",
+          "scope": false,
+          "section": "সিরাত ও ইতিহাস",
+          "url": "https://bjilibrary.com/6708",
+          "title": "জামায়াতে ইসলামীর ইতিকথা",
+          "cover": "https://bjilibrary.com/wp-content/uploads/2024/07/1-13-750x1144.jpg"
+        },
+        {
+          "alternative": false,
+          "label": "২৪। মাতা-পিতা ও সন্তানের অধিকার – আল্লামা ইউসুফ ইসলাহী (রাহি)।",
+          "scope": false,
+          "section": "পারিবারিক ও সামাজিক জীবন",
+          "url": "https://bjilibrary.com/4514",
+          "title": "মাতা-পিতা ও সন্তানের অধিকার",
+          "cover": null
+        },
+        {
+          "alternative": false,
+          "label": "২৫। মুসলমানদের দৈনন্দিন জীবন – আব্দুল খালেক (রাহি)।",
+          "scope": false,
+          "section": "পারিবারিক ও সামাজিক জীবন",
+          "url": "https://bjilibrary.com/5310",
+          "title": "মুসলমানদের দৈনন্দিন জীবন",
+          "cover": "https://bjilibrary.com/wp-content/uploads/2019/12/40_musolmander_doinondin_jibon-750x384.jpg"
+        },
+        {
+          "alternative": false,
+          "label": "২৬। পর্দার আসল রূপ – অধ্যাপক এ কে এম নাজির আহমদ (রাহি)।",
+          "scope": false,
+          "section": "পারিবারিক ও সামাজিক জীবন",
+          "url": "https://bjilibrary.com/4327",
+          "title": "পর্দার আসল রূপ",
+          "cover": null
+        },
+        {
+          "alternative": false,
+          "label": "২৭। মুসলিম প্যারেন্টিং – ডঃ মুহাম্মদ আব্দুল বারী।",
+          "scope": false,
+          "section": "পারিবারিক ও সামাজিক জীবন",
+          "url": "https://bjilibrary.com/6714",
+          "title": "মুসলিম প্যারেন্টিং",
+          "cover": "https://bjilibrary.com/wp-content/uploads/2024/07/1-15-750x1143.jpg"
+        },
+        {
+          "alternative": false,
+          "label": "২৮। অর্থনৈতিক সমস্যার সমাধান – অধ্যাপক গোলাম আযম (রাহি)।",
+          "scope": false,
+          "section": "পারিবারিক ও সামাজিক জীবন",
+          "url": "https://bjilibrary.com/7073",
+          "title": "অর্থনৈতিক সমস্যার সমাধান",
+          "cover": "https://bjilibrary.com/wp-content/uploads/2025/08/20250813111807970-Copy-750x1192.jpg"
+        }
+      ]
+    },
+    {
+      "id": "rukon-a",
+      "name": "Rukon syllabus A",
+      "url": "https://bjilibrary.com/member-syllabus/general-member-syllabus",
+      "entries": [
+        {
+          "alternative": false,
+          "label": "খ) আল কুরআনের পরিচয় (তাফহীমুল কুরআনের ভূমিকা)।",
+          "scope": false,
+          "section": "আল-কুরআন",
+          "url": "https://bjilibrary.com/4891",
+          "title": "আল কুরআনের পরিচয় (তাফহীমুল কুরআনের ভূমিকা)।",
+          "cover": null
+        },
+        {
+          "alternative": false,
+          "label": "গ) তাফহীমুল কুরআন ৩০তম পারা এবং তাফহীমুল কুরআন থেকে",
+          "scope": false,
+          "section": "আল-কুরআন",
+          "url": "https://bjilibrary.com/1778",
+          "title": "তাফহীমুল কুরআন ৩০তম পারা এবং তাফহীমুল কুরআন থেকে",
+          "cover": null
+        },
+        {
+          "alternative": true,
+          "label": "রিয়াদুস সালেহীন, ১ম ও ২য় খণ্ড (বাংলাদেশ ইসলামিক সেন্টার কর্তৃক প্রকাশিত)",
+          "scope": false,
+          "section": "আল-হাদিস",
+          "url": "https://bjilibrary.com/1866",
+          "title": "রিয়াদুস সালেহীন, ১ম ও ২য় খণ্ড (বাংলাদেশ ইসলামিক সেন্টার কর্তৃক প্রকাশিত)",
+          "cover": null
+        },
+        {
+          "alternative": true,
+          "label": "হাদিসের আলোকে মানব জীবন ১ম খন্ড – মাওলানা আবুল কালাম মুহাম্মাদ ইউসুফ",
+          "scope": false,
+          "section": "আল-হাদিস",
+          "url": "https://bjilibrary.com/1877",
+          "title": "হাদিসের আলোকে মানব জীবন ১ম খন্ড",
+          "cover": null
+        },
+        {
+          "alternative": true,
+          "label": "রাহে আমল ১ম খন্ড ।",
+          "scope": false,
+          "section": "আল-হাদিস",
+          "url": "https://bjilibrary.com/1836",
+          "title": "রাহে আমল ১ম খন্ড ।",
+          "cover": null
+        },
+        {
+          "alternative": true,
+          "label": "আসান ফিকাহ ১ম খন্ড",
+          "scope": true,
+          "section": "আল ফিক্‌হ",
+          "url": "https://bjilibrary.com/1846",
+          "title": "আসান ফিকাহ ১ম খন্ড",
+          "cover": "https://bjilibrary.com/wp-content/uploads/2014/05/10_asan_fekah_01-750x390.jpg"
+        },
+        {
+          "alternative": true,
+          "label": "ফিকহ্ মুহাম্মাদী",
+          "scope": true,
+          "section": "আল ফিক্‌হ",
+          "url": "https://bjilibrary.com/6677",
+          "title": "ফিকহ্ মুহাম্মাদী",
+          "cover": "https://bjilibrary.com/wp-content/uploads/2024/07/1-3-750x1138.jpg"
+        },
+        {
+          "alternative": true,
+          "label": "ফিক্‌হুস সুন্নাহ : (কিতাবুত তাহারাত ও কিতাবুস সালাত অধ্যায়)।",
+          "scope": true,
+          "section": "আল ফিক্‌হ",
+          "url": "https://bjilibrary.com/6555",
+          "title": "ফিক্‌হুস সুন্নাহ : (কিতাবুত তাহারাত ও কিতাবুস সালাত অধ্যায়)।",
+          "cover": null
+        },
+        {
+          "alternative": false,
+          "label": "১। ঈমানের হাকীকত – সাইয়েদ আবুল আ’লা মওদূদী (রাহি.)।",
+          "scope": false,
+          "section": "ঈমান ও আক্বীদাহ",
+          "url": "https://bjilibrary.com/70",
+          "title": "ঈমানের হাকীকত",
+          "cover": null
+        },
+        {
+          "alternative": false,
+          "label": "২। মৃত্যু যবনিকার ওপারে – আব্বাস আলী খান (রাহি.)।",
+          "scope": false,
+          "section": "ঈমান ও আক্বীদাহ",
+          "url": "https://bjilibrary.com/1945",
+          "title": "মৃত্যু যবনিকার ওপারে",
+          "cover": null
+        },
+        {
+          "alternative": false,
+          "label": "৩। সত্যের সাক্ষ্য – সাইয়েদ আবুল আ’লা মওদূদী (রাহি.)।",
+          "scope": false,
+          "section": "দাওয়াত ও তাবলিগ",
+          "url": "https://bjilibrary.com/157",
+          "title": "সত্যের সাক্ষ্য",
+          "cover": null
+        },
+        {
+          "alternative": false,
+          "label": "৪। ইসলামী দাওয়াত ও কর্মনীতি – সাইয়েদ আবুল আ’লা মওদূদী (রাহি.)।",
+          "scope": false,
+          "section": "দাওয়াত ও তাবলিগ",
+          "url": "https://bjilibrary.com/378",
+          "title": "ইসলামী দাওয়াত ও কর্মনীতি",
+          "cover": null
+        },
+        {
+          "alternative": false,
+          "label": "৫। আল্লাহর দিকে আহ্বান – অধ্যাপক এ.কে.এম নাজির আহমদ (রাহি.)।",
+          "scope": false,
+          "section": "দাওয়াত ও তাবলিগ",
+          "url": "https://bjilibrary.com/1114",
+          "title": "আল্লাহর দিকে আহ্বান",
+          "cover": "https://bjilibrary.com/wp-content/uploads/2014/03/41_allahr_dike_ahoban-750x384.jpg"
+        },
+        {
+          "alternative": false,
+          "label": "৬। ইসলামের হাকীকত – সাইয়েদ আবুল আ’লা মওদূদী (রাহি.)।",
+          "scope": false,
+          "section": "ইসলাম ও ইবাদাত",
+          "url": "https://bjilibrary.com/4366",
+          "title": "ইসলামের হাকীকত",
+          "cover": "https://bjilibrary.com/wp-content/uploads/2019/10/13_islamer_haqiqat-750x390.jpg"
+        },
+        {
+          "alternative": false,
+          "label": "৭। ইসলাম পরিচিতি – সাইয়েদ আবুল আ’লা মওদূদী (রাহি.)।",
+          "scope": false,
+          "section": "ইসলাম ও ইবাদাত",
+          "url": "https://bjilibrary.com/130",
+          "title": "ইসলাম পরিচিতি",
+          "cover": null
+        },
+        {
+          "alternative": false,
+          "label": "৮। নামাজ রোযার হাকীকত – সাইয়েদ আবুল আ’লা মওদূদী (রাহি.)।",
+          "scope": false,
+          "section": "ইসলাম ও ইবাদাত",
+          "url": "https://bjilibrary.com/196",
+          "title": "নামাজ রোযার হাকীকত",
+          "cover": null
+        },
+        {
+          "alternative": false,
+          "label": "৯। ইসলাম ও জাহেলিয়াত – সাইয়েদ আবুল আ’লা মওদূদী (রাহি.)।",
+          "scope": false,
+          "section": "ইসলাম ও ইবাদাত",
+          "url": "https://bjilibrary.com/363",
+          "title": "ইসলাম ও জাহেলিয়াত",
+          "cover": null
+        },
+        {
+          "alternative": false,
+          "label": "১০। কবীরা গুনাহ (বিআইসি) – ইমাম শামসুদ্দীন আয যাহাবী (রাহি.)।",
+          "scope": false,
+          "section": "ইসলাম ও ইবাদাত",
+          "url": "https://bjilibrary.com/4324",
+          "title": "কবীরা গুনাহ (বিআইসি)",
+          "cover": null
+        },
+        {
+          "alternative": false,
+          "label": "১১। ইসলামী সমাজে মজুরের অধিকার – মওলানা মুহাম্মাদ আবদুর রহীম (রহ)।",
+          "scope": false,
+          "section": "ইসলাম ও ইবাদাত",
+          "url": "https://bjilibrary.com/39",
+          "title": "ইসলামী সমাজে মজুরের অধিকার",
+          "cover": null
+        },
+        {
+          "alternative": false,
+          "label": "১২। চরিত্র গঠনের মৌলিক উপাদান – নঈম সিদ্দিকী (রাহি.)।",
+          "scope": false,
+          "section": "আমল-আখলাক ও মুয়ামালাত",
+          "url": "https://bjilibrary.com/117",
+          "title": "চরিত্র গঠনের মৌলিক উপাদান",
+          "cover": null
+        },
+        {
+          "alternative": false,
+          "label": "১৩। আল্লাহর নৈকট্য লাভের উপায় – মাওলানা মতিউর রহমান নিজামী (রাহি.)।",
+          "scope": false,
+          "section": "আমল-আখলাক ও মুয়ামালাত",
+          "url": "https://bjilibrary.com/5302",
+          "title": "আল্লাহর নৈকট্য লাভের উপায়",
+          "cover": null
+        },
+        {
+          "alternative": false,
+          "label": "১৪। ইসলামী আদাবে জিন্দেগী – মাওলানা মতিউর রহমান নিজামী (রাহি.)।",
+          "scope": false,
+          "section": "আমল-আখলাক ও মুয়ামালাত",
+          "url": "https://bjilibrary.com/6695",
+          "title": "ইসলামী আদাবে জিন্দেগী",
+          "cover": null
+        },
+        {
+          "alternative": false,
+          "label": "১৫। হেদায়াত – সাইয়েদ আবুল আ’লা মওদূদী (রাহি.)।",
+          "scope": false,
+          "section": "আমল-আখলাক ও মুয়ামালাত",
+          "url": "https://bjilibrary.com/235",
+          "title": "হেদায়াত",
+          "cover": "https://bjilibrary.com/wp-content/uploads/2014/01/51_hedayat-750x384.jpg"
+        },
+        {
+          "alternative": false,
+          "label": "১৬। গঠনতন্ত্র, বাংলাদেশ জামায়াতে ইসলামী।",
+          "scope": false,
+          "section": "ইসলামী আন্দোলন ও সংগঠন",
+          "url": "https://bjilibrary.com/5400",
+          "title": "গঠনতন্ত্র, বাংলাদেশ জামায়াতে ইসলামী।",
+          "cover": null
+        },
+        {
+          "alternative": false,
+          "label": "১৭। সংগঠন পদ্ধতি, বাংলাদেশ জামায়াতে ইসলামী।",
+          "scope": false,
+          "section": "ইসলামী আন্দোলন ও সংগঠন",
+          "url": "https://bjilibrary.com/5405",
+          "title": "সংগঠন পদ্ধতি, বাংলাদেশ জামায়াতে ইসলামী।",
+          "cover": null
+        },
+        {
+          "alternative": false,
+          "label": "১৮। জামায়াতে ইসলামীর কার্যবিবরণী – ১ম খণ্ড।",
+          "scope": false,
+          "section": "ইসলামী আন্দোলন ও সংগঠন",
+          "url": "https://bjilibrary.com/5333",
+          "title": "জামায়াতে ইসলামীর কার্যবিবরণী",
+          "cover": null
+        },
+        {
+          "alternative": false,
+          "label": "১৯। ইসলামী রাষ্ট্র কীভাবে প্রতিষ্ঠিত হয় (ই: বিপ্লবের পথ) – সাইয়েদ আবুল আ’লা মওদূদী (রাহি.)।",
+          "scope": false,
+          "section": "ইসলামী আন্দোলন ও সংগঠন",
+          "url": "https://bjilibrary.com/144",
+          "title": "ইসলামী রাষ্ট্র কীভাবে প্রতিষ্ঠিত হয় (ই: বিপ্লবের পথ)",
+          "cover": null
+        },
+        {
+          "alternative": false,
+          "label": "২০। ইসলামী আন্দোলন:সাফল্যের শর্তাবলী – সাইয়েদ আবুল আ’লা মওদূদী (রাহি.)।",
+          "scope": false,
+          "section": "ইসলামী আন্দোলন ও সংগঠন",
+          "url": "https://bjilibrary.com/152",
+          "title": "ইসলামী আন্দোলন:সাফল্যের শর্তাবলী",
+          "cover": null
+        },
+        {
+          "alternative": false,
+          "label": "২১। ইসলামী আন্দোলনের পথে আল্লাহর সাহায্য পাওয়ার উপযুক্ত হওয়াই আমাদের কাজ – মকবুল আহমাদ (রাহি.)।",
+          "scope": false,
+          "section": "ইসলামী আন্দোলন ও সংগঠন",
+          "url": "https://bjilibrary.com/6478",
+          "title": "ইসলামী আন্দোলনের পথে আল্লাহর সাহায্য পাওয়ার উপযুক্ত হওয়াই আমাদের কাজ",
+          "cover": null
+        },
+        {
+          "alternative": false,
+          "label": "২২। ইকামাতে দ্বীন – অধ্যাপক গোলাম আযম (রাহি.)।",
+          "scope": false,
+          "section": "ইসলামী আন্দোলন ও সংগঠন",
+          "url": "https://bjilibrary.com/191",
+          "title": "ইকামাতে দ্বীন",
+          "cover": "https://bjilibrary.com/wp-content/uploads/2013/12/57_ikamate_din-750x384.jpg"
+        },
+        {
+          "alternative": false,
+          "label": "২৩। রুকনিয়াতের আসল চেতনা – অধ্যাপক গোলাম আযম (রাহি.)।",
+          "scope": false,
+          "section": "ইসলামী আন্দোলন ও সংগঠন",
+          "url": "https://bjilibrary.com/5297",
+          "title": "রুকনিয়াতের আসল চেতনা",
+          "cover": null
+        },
+        {
+          "alternative": false,
+          "label": "২৪। ইনফাক ফি সাবিলিল্লাহ – মাওলানা মতিউর রহমান নিজামী (রাহি.)।",
+          "scope": false,
+          "section": "ইসলামী আন্দোলন ও সংগঠন",
+          "url": "https://bjilibrary.com/5453",
+          "title": "ইনফাক ফি সাবিলিল্লাহ",
+          "cover": "https://bjilibrary.com/wp-content/uploads/2019/12/61_infak_fee_sabilillah-750x384.jpg"
+        },
+        {
+          "alternative": false,
+          "label": "২৫। ইসলামী আন্দোলন ও সংগঠন – মাওলানা মতিউর রহমান নিজামী (রাহি.)।",
+          "scope": false,
+          "section": "ইসলামী আন্দোলন ও সংগঠন",
+          "url": "https://bjilibrary.com/269",
+          "title": "ইসলামী আন্দোলন ও সংগঠন",
+          "cover": null
+        },
+        {
+          "alternative": false,
+          "label": "২৬। ইসলামী সংগঠন – অধ্যাপক এ. কে. এম. নাজির আহমদ (রাহি.)।",
+          "scope": false,
+          "section": "ইসলামী আন্দোলন ও সংগঠন",
+          "url": "https://bjilibrary.com/718",
+          "title": "ইসলামী সংগঠন",
+          "cover": null
+        },
+        {
+          "alternative": false,
+          "label": "২৭। দ্বীন প্রতিষ্ঠায় মহিলাদের দায়িত্ব – শামসুন্নাহার নিজামী।",
+          "scope": false,
+          "section": "ইসলামী আন্দোলন ও সংগঠন",
+          "url": "https://bjilibrary.com/5657",
+          "title": "দ্বীন প্রতিষ্ঠায় মহিলাদের দায়িত্ব",
+          "cover": null
+        },
+        {
+          "alternative": false,
+          "label": "২৮। ইসলামের রাজনৈতিক মতবাদ – সাইয়েদ আবুল আ’লা মওদূদী (রাহি.)।",
+          "scope": false,
+          "section": "ইসলামী আন্দোলন ও সংগঠন",
+          "url": "https://bjilibrary.com/453",
+          "title": "ইসলামের রাজনৈতিক মতবাদ",
+          "cover": null
+        },
+        {
+          "alternative": false,
+          "label": "২৯। ভাঙ্গা ও গড়া – সাইয়েদ আবুল আ’লা মওদূদী (রাহি.)।",
+          "scope": false,
+          "section": "ইসলামী আন্দোলন ও সংগঠন",
+          "url": "https://bjilibrary.com/226",
+          "title": "ভাঙ্গা ও গড়া",
+          "cover": null
+        },
+        {
+          "alternative": false,
+          "label": "৩০। ইসলামী আন্দোলনের কর্মীদের পারস্পরিক সম্পর্ক – খুররম জাহ্ মুরাদ (রাহি.)।",
+          "scope": false,
+          "section": "পারিবারিক জীবন ও সামাজিক সম্পর্ক",
+          "url": "https://bjilibrary.com/161",
+          "title": "ইসলামী আন্দোলনের কর্মীদের পারস্পরিক সম্পর্ক",
+          "cover": null
+        },
+        {
+          "alternative": false,
+          "label": "৩১। ইসলামী আন্দোলনমুখী পরিবার গঠন – অধ্যাপক মো: ইউসুফ আলী (রাহি.)।",
+          "scope": false,
+          "section": "পারিবারিক জীবন ও সামাজিক সম্পর্ক",
+          "url": "https://bjilibrary.com/6245",
+          "title": "ইসলামী আন্দোলনমুখী পরিবার গঠন",
+          "cover": null
+        },
+        {
+          "alternative": false,
+          "label": "৩২। পর্দার বিধান – সাইয়েদ আবুল আ’লা মওদূদী (রাহি.)।",
+          "scope": false,
+          "section": "পারিবারিক জীবন ও সামাজিক সম্পর্ক",
+          "url": "https://bjilibrary.com/6917",
+          "title": "পর্দার বিধান",
+          "cover": null
+        },
+        {
+          "alternative": false,
+          "label": "৩৩। সমাজকল্যাণ ম্যানুয়েল – জামায়াত প্রকাশনী।",
+          "scope": false,
+          "section": "পারিবারিক জীবন ও সামাজিক সম্পর্ক",
+          "url": "https://bjilibrary.com/6911",
+          "title": "সমাজকল্যাণ ম্যানুয়েল",
+          "cover": null
+        },
+        {
+          "alternative": false,
+          "label": "৩৪। রাসূলুল্লাহর (সা.) বিপ্লবী জীবন – আবু সলীম মুহাম্মদ আবদুল হাই (রাহি.)।",
+          "scope": false,
+          "section": "সিরাত ও ইতিহাস",
+          "url": "https://bjilibrary.com/172",
+          "title": "রাসূলুল্লাহর (সা.) বিপ্লবী জীবন",
+          "cover": null
+        },
+        {
+          "alternative": false,
+          "label": "৩৫। আসহাবে রাসূলের জীবন কথা – ড. মুহাম্মাদ আবদুল মাবুদ ১ম ও ৫ম খণ্ড, (বাংলাদেশ ইসলামিক সেন্টার কর্তৃক প্রকাশিত)।",
+          "scope": false,
+          "section": "সিরাত ও ইতিহাস",
+          "url": "https://bjilibrary.com/1700",
+          "title": "আসহাবে রাসূলের জীবন কথা",
+          "cover": null
+        },
+        {
+          "alternative": false,
+          "label": "৩৬। ইসলামী জাগরণের তিন পথিকৃত – অধ্যাপক এ.কে.এম নাজির আহমদ (রাহি.)।",
+          "scope": false,
+          "section": "সিরাত ও ইতিহাস",
+          "url": "https://bjilibrary.com/537",
+          "title": "ইসলামী জাগরণের তিন পথিকৃত",
+          "cover": null
+        }
+      ]
+    },
+    {
+      "id": "rukon-b",
+      "name": "Rukon syllabus B",
+      "url": "https://bjilibrary.com/member-syllabus/educated-member-syllabus",
+      "entries": [
+        {
+          "alternative": false,
+          "label": "খ) আল কুরআনের মর্মকথা (তাফহীমুল কুরআনের ভূমিকা) – সাইয়েদ আবুল আ’লা মওদূদী (রাহি)।",
+          "scope": false,
+          "section": "আল – কুরআন",
+          "url": "https://bjilibrary.com/4891",
+          "title": "আল কুরআনের মর্মকথা (তাফহীমুল কুরআনের ভূমিকা)",
+          "cover": null
+        },
+        {
+          "alternative": false,
+          "label": "গ) তাফহীমুল কুরআন সূরা আল ফাতিহা থেকে সূরা আন’আম (১ম, ২য়, ৩য় খন্ড), সূরা হাশর থেকে সূরা নাস (১৭, ১৮, ১৯ খন্ড), সূরা আল-আনফাল (চতুর্থ খন্ড), আত্‌-তাওবা (৫ম খন্ড), আল-হাজ্জ (৮ম খন্ড), আন-নূর (৯ম খন্ড), আল-আনকাবুত, লুকমান (১১শ খন্ড), আল-আহযাব (১২শ খন্ড), হামীম আস সাজদা (১৪শ খন্ড), মুহাম্মাদ, আল-ফাতহ, আল-হুজুরাত (১৫শ খন্ড) এবং আল হাদিদ (১৬শ খন্ড)।",
+          "scope": false,
+          "section": "আল – কুরআন",
+          "url": "https://bjilibrary.com/1778",
+          "title": "তাফহীমুল কুরআন সূরা আল ফাতিহা থেকে সূরা আন’আম (১ম, ২য়, ৩য় খন্ড), সূরা হাশর থেকে সূরা নাস (১৭, ১৮, ১৯ খন্ড), সূরা আল-আনফাল (চতুর্থ খন্ড), আত্‌-তাওবা (৫ম খন্ড), আল-হাজ্জ (৮ম খন্ড), আন-নূর (৯ম খন্ড), আল-আনকাবুত, লুকমান (১১শ খন্ড), আল-আহযাব (১২শ খন্ড),",
+          "cover": null
+        },
+        {
+          "alternative": true,
+          "label": "রিয়াদুস সালেহীন ১ম, ২য়, ৩য় ও ৪র্থ খন্ড (বাংলাদেশ ইসলামিক সেন্টার কর্তৃক প্রকাশিত)",
+          "scope": false,
+          "section": "আল – হাদীস",
+          "url": "https://bjilibrary.com/1866",
+          "title": "রিয়াদুস সালেহীন ১ম, ২য়, ৩য় ও ৪র্থ খন্ড (বাংলাদেশ ইসলামিক সেন্টার কর্তৃক প্রকাশিত)",
+          "cover": null
+        },
+        {
+          "alternative": true,
+          "label": "হাদিস শরীফ ১ম ও ২য় খন্ড- মাওলানা মুহাম্মাদ আবদুর রহীম।",
+          "scope": false,
+          "section": "আল – হাদীস",
+          "url": "https://bjilibrary.com/1871",
+          "title": "হাদিস শরীফ ১ম ও ২য় খন্ড- মাওলানা মুহাম্মাদ আবদুর রহীম।",
+          "cover": null
+        },
+        {
+          "alternative": true,
+          "label": "সুন্নাতে রাসূলের আইনগত মর্যাদা – সাইয়েদ আবুল আ’লা মওদূদী (রাহি)।",
+          "scope": false,
+          "section": "আল – হাদীস",
+          "url": "https://bjilibrary.com/1786",
+          "title": "সুন্নাতে রাসূলের আইনগত মর্যাদা",
+          "cover": null
+        },
+        {
+          "alternative": true,
+          "label": "আসান ফিকাহ ১ম ও ২য় খন্ড",
+          "scope": false,
+          "section": "আল-ফিকহ",
+          "url": "https://bjilibrary.com/1846",
+          "title": "আসান ফিকাহ ১ম ও ২য় খন্ড",
+          "cover": "https://bjilibrary.com/wp-content/uploads/2014/05/10_asan_fekah_01-750x390.jpg"
+        },
+        {
+          "alternative": true,
+          "label": "ফিকহ মুহাম্মদী ১ম ও ২য় খন্ড",
+          "scope": false,
+          "section": "আল-ফিকহ",
+          "url": "https://bjilibrary.com/6677",
+          "title": "ফিকহ মুহাম্মদী ১ম ও ২য় খন্ড",
+          "cover": "https://bjilibrary.com/wp-content/uploads/2024/07/1-3-750x1138.jpg"
+        },
+        {
+          "alternative": true,
+          "label": "ফিকহুস সুন্নাহ ১ম খন্ড সাইয়্যেদ সাবিক।",
+          "scope": false,
+          "section": "আল-ফিকহ",
+          "url": "https://bjilibrary.com/6555",
+          "title": "ফিকহুস সুন্নাহ ১ম খন্ড সাইয়্যেদ সাবিক।",
+          "cover": null
+        },
+        {
+          "alternative": false,
+          "label": "১। তাওহীদ, রিসালাত ও আখিরাত – সাইয়েদ আবুল আ’লা মওদূদী (রাহি.)।",
+          "scope": false,
+          "section": "ঈমান-আক্বীদাহ",
+          "url": "https://bjilibrary.com/121",
+          "title": "তাওহীদ, রিসালাত ও আখিরাত",
+          "cover": null
+        },
+        {
+          "alternative": false,
+          "label": "২। আল কুরআনের চারটি মৌলিক পরিভাষা – সাইয়েদ আবুল আ’লা মওদূদী (রাহি.)।",
+          "scope": false,
+          "section": "ঈমান-আক্বীদাহ",
+          "url": "https://bjilibrary.com/221",
+          "title": "আল কুরআনের চারটি মৌলিক পরিভাষা",
+          "cover": null
+        },
+        {
+          "alternative": false,
+          "label": "৩। ইসলামী সংস্কৃতির মর্মকথা – সাইয়েদ আবুল আ’লা মওদূদী (রাহি.)।",
+          "scope": false,
+          "section": "ঈমান-আক্বীদাহ",
+          "url": "https://bjilibrary.com/2036",
+          "title": "ইসলামী সংস্কৃতির মর্মকথা",
+          "cover": null
+        },
+        {
+          "alternative": false,
+          "label": "৪। সত্যের সাক্ষ্য – সাইয়েদ আবুল আ’লা মওদূদী (রাহি.)।",
+          "scope": false,
+          "section": "দাওয়াত ও তাবলিগ",
+          "url": "https://bjilibrary.com/157",
+          "title": "সত্যের সাক্ষ্য",
+          "cover": null
+        },
+        {
+          "alternative": false,
+          "label": "৫। দাওয়াত ইলাল্লাহ দায়ী ইলাল্লাহ – সাইয়েদ আবুল আ’লা মওদূদী (রাহি.)।",
+          "scope": false,
+          "section": "দাওয়াত ও তাবলিগ",
+          "url": "https://bjilibrary.com/306",
+          "title": "দাওয়াত ইলাল্লাহ দায়ী ইলাল্লাহ",
+          "cover": null
+        },
+        {
+          "alternative": false,
+          "label": "৬। ইসলামী দাওয়াত ও কর্মনীতি – সাইয়েদ আবুল আ’লা মওদূদী (রাহি.)।",
+          "scope": false,
+          "section": "দাওয়াত ও তাবলিগ",
+          "url": "https://bjilibrary.com/378",
+          "title": "ইসলামী দাওয়াত ও কর্মনীতি",
+          "cover": null
+        },
+        {
+          "alternative": false,
+          "label": "৭। ইসলামের হাকীকত – সাইয়েদ আবুল আ’লা মওদূদী (রাহি.)।",
+          "scope": false,
+          "section": "ইসলাম ও ইবাদাত",
+          "url": "https://bjilibrary.com/4366",
+          "title": "ইসলামের হাকীকত",
+          "cover": "https://bjilibrary.com/wp-content/uploads/2019/10/13_islamer_haqiqat-750x390.jpg"
+        },
+        {
+          "alternative": false,
+          "label": "৮। নামাজ রোযার হাকীকত – সাইয়েদ আবুল আ’লা মওদূদী (রাহি.)।",
+          "scope": false,
+          "section": "ইসলাম ও ইবাদাত",
+          "url": "https://bjilibrary.com/196",
+          "title": "নামাজ রোযার হাকীকত",
+          "cover": null
+        },
+        {
+          "alternative": false,
+          "label": "৯। যাকাতের হাকীকত – সাইয়েদ আবুল আ’লা মওদূদী (রাহি.)।",
+          "scope": false,
+          "section": "ইসলাম ও ইবাদাত",
+          "url": "https://bjilibrary.com/138",
+          "title": "যাকাতের হাকীকত",
+          "cover": null
+        },
+        {
+          "alternative": false,
+          "label": "১০। হজ্জের হাকীকত – সাইয়েদ আবুল আ’লা মওদূদী (রাহি.)।",
+          "scope": false,
+          "section": "ইসলাম ও ইবাদাত",
+          "url": "https://bjilibrary.com/140",
+          "title": "হজ্জের হাকীকত",
+          "cover": null
+        },
+        {
+          "alternative": false,
+          "label": "১১। জিহাদের হাকীকত – সাইয়েদ আবুল আ’লা মওদূদী (রাহি.)।",
+          "scope": false,
+          "section": "ইসলাম ও ইবাদাত",
+          "url": "https://bjilibrary.com/5052",
+          "title": "জিহাদের হাকীকত",
+          "cover": "https://bjilibrary.com/wp-content/uploads/2019/11/18_jihader_hakikot-1-750x384.jpg"
+        },
+        {
+          "alternative": false,
+          "label": "১২। ইসলাম পরিচিতি – সাইয়েদ আবুল আ’লা মওদূদী (রাহি.)।",
+          "scope": false,
+          "section": "ইসলাম ও ইবাদাত",
+          "url": "https://bjilibrary.com/130",
+          "title": "ইসলাম পরিচিতি",
+          "cover": null
+        },
+        {
+          "alternative": false,
+          "label": "১৩। শান্তিপথ – সাইয়েদ আবুল আ’লা মওদূদী (রাহি.)।",
+          "scope": false,
+          "section": "ইসলাম ও ইবাদাত",
+          "url": "https://bjilibrary.com/5230",
+          "title": "শান্তিপথ",
+          "cover": "https://bjilibrary.com/wp-content/uploads/2019/11/21_shanti_path-750x384.jpg"
+        },
+        {
+          "alternative": false,
+          "label": "১৪। ইসলামের জীবন পদ্ধতি – সাইয়েদ আবুল আ’লা মওদূদী (রাহি.)।",
+          "scope": false,
+          "section": "ইসলাম ও ইবাদাত",
+          "url": "https://bjilibrary.com/5248",
+          "title": "ইসলামের জীবন পদ্ধতি",
+          "cover": null
+        },
+        {
+          "alternative": false,
+          "label": "১৫। ইসলাম ও জাহেলিয়াত – সাইয়েদ আবুল আ’লা মওদূদী (রাহি.)।",
+          "scope": false,
+          "section": "ইসলাম ও ইবাদাত",
+          "url": "https://bjilibrary.com/363",
+          "title": "ইসলাম ও জাহেলিয়াত",
+          "cover": null
+        },
+        {
+          "alternative": false,
+          "label": "১৬। ইসলাম ও আধুনিক অর্থনৈতিক মতবাদ – সাইয়েদ আবুল আ’লা মওদূদী (রাহি.)।",
+          "scope": false,
+          "section": "ইসলাম ও ইবাদাত",
+          "url": "https://bjilibrary.com/5269",
+          "title": "ইসলাম ও আধুনিক অর্থনৈতিক মতবাদ",
+          "cover": null
+        },
+        {
+          "alternative": false,
+          "label": "১৭। ইসলামী অর্থ ব্যবস্থায় যাকাত – ড. জাবেদ মুহাম্মাদ ।",
+          "scope": false,
+          "section": "ইসলাম ও ইবাদাত",
+          "url": "https://bjilibrary.com/5485",
+          "title": "ইসলামী অর্থ ব্যবস্থায় যাকাত",
+          "cover": null
+        },
+        {
+          "alternative": false,
+          "label": "১৮। কবীরা গুনাহ (বিআইসি) – ইমাম শামসুদ্দীন আয যাহাবী (রাহি.)।",
+          "scope": false,
+          "section": "ইসলাম ও ইবাদাত",
+          "url": "https://bjilibrary.com/4324",
+          "title": "কবীরা গুনাহ (বিআইসি)",
+          "cover": null
+        },
+        {
+          "alternative": false,
+          "label": "১৯। আর রিবা – ড. মুহাম্মাদ নুরুল ইসলাম।",
+          "scope": false,
+          "section": "ইসলাম ও ইবাদাত",
+          "url": "https://bjilibrary.com/6667",
+          "title": "আর রিবা",
+          "cover": null
+        },
+        {
+          "alternative": false,
+          "label": "২০। ইসলাম ও জাহেলিয়াতের চিরন্তন দ্বন্দ্ব – আব্বাস আলী খান (রাহি.)।",
+          "scope": false,
+          "section": "ইসলাম ও ইবাদাত",
+          "url": "https://bjilibrary.com/1954",
+          "title": "ইসলাম ও জাহেলিয়াতের চিরন্তন দ্বন্দ্ব",
+          "cover": null
+        },
+        {
+          "alternative": false,
+          "label": "২১। আল্লাহর নৈকট্য লাভের উপায় – মাওলানা মতিউর রহমান নিজামী (রাহি.)।",
+          "scope": false,
+          "section": "আমল-আখলাক ও মু‘আমালাত",
+          "url": "https://bjilibrary.com/5302",
+          "title": "আল্লাহর নৈকট্য লাভের উপায়",
+          "cover": null
+        },
+        {
+          "alternative": false,
+          "label": "২২। চরিত্র গঠনের মৌলিক উপাদান – নঈম সিদ্দিকী (রাহি.)।",
+          "scope": false,
+          "section": "আমল-আখলাক ও মু‘আমালাত",
+          "url": "https://bjilibrary.com/117",
+          "title": "চরিত্র গঠনের মৌলিক উপাদান",
+          "cover": null
+        },
+        {
+          "alternative": false,
+          "label": "২৩। ইসলামী আদাবে জিন্দেগী – মাওলানা মতিউর রহমান নিজামী (রাহি.)।",
+          "scope": false,
+          "section": "আমল-আখলাক ও মু‘আমালাত",
+          "url": "https://bjilibrary.com/6695",
+          "title": "ইসলামী আদাবে জিন্দেগী",
+          "cover": null
+        },
+        {
+          "alternative": false,
+          "label": "২৪। জামায়াতে ইসলামীর কার্যবিবরণী ১ম ও ২য় খন্ড।",
+          "scope": false,
+          "section": "ইসলামী আন্দোলন ও সংগঠন",
+          "url": "https://bjilibrary.com/5333",
+          "title": "জামায়াতে ইসলামীর কার্যবিবরণী ১ম ও ২য় খন্ড।",
+          "cover": null
+        },
+        {
+          "alternative": false,
+          "label": "২৫। গঠনতন্ত্র, বাংলাদেশ জামায়াতে ইসলামী।",
+          "scope": false,
+          "section": "ইসলামী আন্দোলন ও সংগঠন",
+          "url": "https://bjilibrary.com/5400",
+          "title": "গঠনতন্ত্র, বাংলাদেশ জামায়াতে ইসলামী।",
+          "cover": null
+        },
+        {
+          "alternative": false,
+          "label": "২৬। সংগঠন পদ্ধতি, বাংলাদেশ জামায়াতে ইসলামী।",
+          "scope": false,
+          "section": "ইসলামী আন্দোলন ও সংগঠন",
+          "url": "https://bjilibrary.com/5405",
+          "title": "সংগঠন পদ্ধতি, বাংলাদেশ জামায়াতে ইসলামী।",
+          "cover": null
+        },
+        {
+          "alternative": false,
+          "label": "২৭। ইসলামী আন্দোলন : সাফল্যের শর্তাবলী – সাইয়েদ আবুল আ’লা মওদূদী (রাহি.)।",
+          "scope": false,
+          "section": "ইসলামী আন্দোলন ও সংগঠন",
+          "url": "https://bjilibrary.com/152",
+          "title": "ইসলামী আন্দোলন : সাফল্যের শর্তাবলী",
+          "cover": null
+        },
+        {
+          "alternative": false,
+          "label": "২৮। হেদায়াত – সাইয়েদ আবুল আ’লা মওদূদী (রাহি.)।",
+          "scope": false,
+          "section": "ইসলামী আন্দোলন ও সংগঠন",
+          "url": "https://bjilibrary.com/235",
+          "title": "হেদায়াত",
+          "cover": "https://bjilibrary.com/wp-content/uploads/2014/01/51_hedayat-750x384.jpg"
+        },
+        {
+          "alternative": false,
+          "label": "২৯। ইসলামী রেনেসাঁ আন্দোলন – সাইয়েদ আবুল আ’লা মওদূদী (রাহি.)।",
+          "scope": false,
+          "section": "ইসলামী আন্দোলন ও সংগঠন",
+          "url": "https://bjilibrary.com/284",
+          "title": "ইসলামী রেনেসাঁ আন্দোলন",
+          "cover": null
+        },
+        {
+          "alternative": false,
+          "label": "৩০। ইসলামী আন্দোলনের ভবিষ্যত কর্মসূচি – সাইয়েদ আবুল আ’লা মওদূদী (রাহি.)।",
+          "scope": false,
+          "section": "ইসলামী আন্দোলন ও সংগঠন",
+          "url": "https://bjilibrary.com/5417",
+          "title": "ইসলামী আন্দোলনের ভবিষ্যত কর্মসূচি",
+          "cover": null
+        },
+        {
+          "alternative": false,
+          "label": "৩১ । ইসলামী রাষ্ট্র কীভাবে প্রতিষ্ঠিত হয় (ই: বিপ্লবের পথ) – সাইয়েদ আবুল আ’লা মওদূদী (রাহি.)।",
+          "scope": false,
+          "section": "ইসলামী আন্দোলন ও সংগঠন",
+          "url": "https://bjilibrary.com/144",
+          "title": "ইসলামী রাষ্ট্র কীভাবে প্রতিষ্ঠিত হয় (ই: বিপ্লবের পথ)",
+          "cover": null
+        },
+        {
+          "alternative": false,
+          "label": "৩২। একটি সত্যনিষ্ঠ দলের প্রয়োজন – সাইয়েদ আবুল আ’লা মওদূদী (রাহি.)।",
+          "scope": false,
+          "section": "ইসলামী আন্দোলন ও সংগঠন",
+          "url": "https://bjilibrary.com/4489",
+          "title": "একটি সত্যনিষ্ঠ দলের প্রয়োজন",
+          "cover": null
+        },
+        {
+          "alternative": false,
+          "label": "৩৩। ভাঙ্গা ও গড়া – সাইয়েদ আবুল আ’লা মওদূদী (রাহি.)।",
+          "scope": false,
+          "section": "ইসলামী আন্দোলন ও সংগঠন",
+          "url": "https://bjilibrary.com/226",
+          "title": "ভাঙ্গা ও গড়া",
+          "cover": null
+        },
+        {
+          "alternative": false,
+          "label": "৩৪। ইসলামী আন্দোলনের নৈতিক ভিত্তি – সাইয়েদ আবুল আ’লা মওদূদী (রাহি.)।",
+          "scope": false,
+          "section": "ইসলামী আন্দোলন ও সংগঠন",
+          "url": "https://bjilibrary.com/148",
+          "title": "ইসলামী আন্দোলনের নৈতিক ভিত্তি",
+          "cover": null
+        },
+        {
+          "alternative": false,
+          "label": "৩৫। ইসলামের রাজনৈতিক মতবাদ – সাইয়েদ আবুল আ’লা মওদূদী (রাহি.)।",
+          "scope": false,
+          "section": "ইসলামী আন্দোলন ও সংগঠন",
+          "url": "https://bjilibrary.com/453",
+          "title": "ইসলামের রাজনৈতিক মতবাদ",
+          "cover": null
+        },
+        {
+          "alternative": false,
+          "label": "৩৬। ইসলাম ও পাশ্চাত্য সভ্যতার দ্বন্দ্ব – সাইয়েদ আবুল আ’লা মওদূদী (রাহি.)।",
+          "scope": false,
+          "section": "ইসলামী আন্দোলন ও সংগঠন",
+          "url": "https://bjilibrary.com/1957",
+          "title": "ইসলাম ও পাশ্চাত্য সভ্যতার দ্বন্দ্ব",
+          "cover": null
+        },
+        {
+          "alternative": false,
+          "label": "৩৭। ইসলামী আন্দোলন ও সংগঠন – মাওলানা মতিউর রহমান নিজামী (রাহি.)।",
+          "scope": false,
+          "section": "ইসলামী আন্দোলন ও সংগঠন",
+          "url": "https://bjilibrary.com/269",
+          "title": "ইসলামী আন্দোলন ও সংগঠন",
+          "cover": null
+        },
+        {
+          "alternative": false,
+          "label": "৩৮। একটি আদর্শবাদী দলের পতনের কারণ ও তার থেকে বাঁচার উপায় – আব্বাস আলী খান (রাহি.)।",
+          "scope": false,
+          "section": "ইসলামী আন্দোলন ও সংগঠন",
+          "url": "https://bjilibrary.com/105",
+          "title": "একটি আদর্শবাদী দলের পতনের কারণ ও তার থেকে বাঁচার উপায়",
+          "cover": null
+        },
+        {
+          "alternative": false,
+          "label": "৩৯। ইনফাক ফি সাবিলিল্লাহ – মাওলানা মতিউর রহমান নিজামী (রাহি.)।",
+          "scope": false,
+          "section": "ইসলামী আন্দোলন ও সংগঠন",
+          "url": "https://bjilibrary.com/5453",
+          "title": "ইনফাক ফি সাবিলিল্লাহ",
+          "cover": "https://bjilibrary.com/wp-content/uploads/2019/12/61_infak_fee_sabilillah-750x384.jpg"
+        },
+        {
+          "alternative": false,
+          "label": "৪০। ইসলামী আন্দোলন: সমস্যা ও সম্ভাবনা – মাওলানা মতিউর রহমান নিজামী (রাহি.)।",
+          "scope": false,
+          "section": "ইসলামী আন্দোলন ও সংগঠন",
+          "url": "https://bjilibrary.com/5461",
+          "title": "ইসলামী আন্দোলন: সমস্যা ও সম্ভাবনা",
+          "cover": null
+        },
+        {
+          "alternative": false,
+          "label": "৪১। ইসলামী সমাজ গঠনে নারী সমাজের ভূমিকা – হাফেজা আসমা খাতুন।",
+          "scope": false,
+          "section": "ইসলামী আন্দোলন ও সংগঠন",
+          "url": "https://bjilibrary.com/5655",
+          "title": "ইসলামী সমাজ গঠনে নারী সমাজের ভূমিকা",
+          "cover": null
+        },
+        {
+          "alternative": false,
+          "label": "৪২। দ্বীন প্রতিষ্ঠায় মহিলাদের দায়িত্ব – শামসুন্নাহার নিজামী।",
+          "scope": false,
+          "section": "ইসলামী আন্দোলন ও সংগঠন",
+          "url": "https://bjilibrary.com/5657",
+          "title": "দ্বীন প্রতিষ্ঠায় মহিলাদের দায়িত্ব",
+          "cover": null
+        },
+        {
+          "alternative": false,
+          "label": "৪৩। অমুসলিম নাগরিক ও জামায়াতে ইসলামী – অধ্যাপক গোলাম আযম (রাহি.)।",
+          "scope": false,
+          "section": "ইসলামী আন্দোলন ও সংগঠন",
+          "url": "https://bjilibrary.com/6432",
+          "title": "অমুসলিম নাগরিক ও জামায়াতে ইসলামী",
+          "cover": null
+        },
+        {
+          "alternative": false,
+          "label": "৪৪। শ্রমিক সংকলন – কল্যাণ প্রকাশনী।",
+          "scope": false,
+          "section": "ইসলামী আন্দোলন ও সংগঠন",
+          "url": "https://bjilibrary.com/7091",
+          "title": "শ্রমিক সংকলন",
+          "cover": null
+        },
+        {
+          "alternative": false,
+          "label": "৪৫। জামায়াতে ইসলামীর রাজনৈতিক ভূমিকা – অধ্যাপক গোলাম আযম (রাহি.)।",
+          "scope": false,
+          "section": "ইসলামী আন্দোলন ও সংগঠন",
+          "url": "https://bjilibrary.com/5441",
+          "title": "জামায়াতে ইসলামীর রাজনৈতিক ভূমিকা",
+          "cover": null
+        },
+        {
+          "alternative": false,
+          "label": "৪৬। ইসলামী আন্দোলনের পথে আল্লাহর সাহায্য পাওয়ার উপযুক্ত হওয়াই আমাদের কাজ – মকবুল আহমাদ (রাহি.)।",
+          "scope": false,
+          "section": "ইসলামী আন্দোলন ও সংগঠন",
+          "url": "https://bjilibrary.com/6478",
+          "title": "ইসলামী আন্দোলনের পথে আল্লাহর সাহায্য পাওয়ার উপযুক্ত হওয়াই আমাদের কাজ",
+          "cover": null
+        },
+        {
+          "alternative": false,
+          "label": "৪৭। স্বামী-স্ত্রীর অধিকার – সাইয়েদ আবুল আ’লা মওদূদী (রাহি.)।",
+          "scope": false,
+          "section": "পারিবারিক জীবন ও সামাজিক সম্পর্ক",
+          "url": "https://bjilibrary.com/2535",
+          "title": "স্বামী-স্ত্রীর অধিকার",
+          "cover": null
+        },
+        {
+          "alternative": false,
+          "label": "৪৮। ইসলামী সমাজে মজুরের অধিকার – মওলানা মুহাম্মাদ আবদুর রহীম (রহ)।",
+          "scope": false,
+          "section": "পারিবারিক জীবন ও সামাজিক সম্পর্ক",
+          "url": "https://bjilibrary.com/39",
+          "title": "ইসলামী সমাজে মজুরের অধিকার",
+          "cover": null
+        },
+        {
+          "alternative": false,
+          "label": "৪৯। মাতা-পিতা ও সন্তানের অধিকার – আল্লামা ইউসুফ ইসলাহী (রাহি.)।",
+          "scope": false,
+          "section": "পারিবারিক জীবন ও সামাজিক সম্পর্ক",
+          "url": "https://bjilibrary.com/4514",
+          "title": "মাতা-পিতা ও সন্তানের অধিকার",
+          "cover": null
+        },
+        {
+          "alternative": false,
+          "label": "৫০। ইসলামী আন্দোলনের কর্মীদের পারস্পরিক সম্পর্ক – খুররম জাহ্ মুরাদ (রাহি.)।",
+          "scope": false,
+          "section": "পারিবারিক জীবন ও সামাজিক সম্পর্ক",
+          "url": "https://bjilibrary.com/161",
+          "title": "ইসলামী আন্দোলনের কর্মীদের পারস্পরিক সম্পর্ক",
+          "cover": null
+        },
+        {
+          "alternative": false,
+          "label": "৫১। মুমিনের পারিবারিক জীবন – অধ্যাপক মুহাম্মদ ইউসুফ আলী (রাহি.)।",
+          "scope": false,
+          "section": "পারিবারিক জীবন ও সামাজিক সম্পর্ক",
+          "url": "https://bjilibrary.com/5329",
+          "title": "মুমিনের পারিবারিক জীবন",
+          "cover": null
+        },
+        {
+          "alternative": false,
+          "label": "৫২। পর্দা ও ইসলাম – সাইয়েদ আবুল আ’লা মওদূদী (রাহি.)।",
+          "scope": false,
+          "section": "পারিবারিক জীবন ও সামাজিক সম্পর্ক",
+          "url": "https://bjilibrary.com/2007",
+          "title": "পর্দা ও ইসলাম",
+          "cover": null
+        },
+        {
+          "alternative": false,
+          "label": "৫৩। ষ্ট্যাটাস অব উইমেন ইন ইসলাম – ড. ইউসুফ আল কারযাভী (রাহি.)।",
+          "scope": false,
+          "section": "পারিবারিক জীবন ও সামাজিক সম্পর্ক",
+          "url": "https://bjilibrary.com/6729",
+          "title": "ষ্ট্যাটাস অব উইমেন ইন ইসলাম",
+          "cover": null
+        },
+        {
+          "alternative": false,
+          "label": "৫৪। সফল জীবনের পরিচয় – অধ্যাপক এ.কে.এম নাজির আহমদ (রাহি)।",
+          "scope": false,
+          "section": "পারিবারিক জীবন ও সামাজিক সম্পর্ক",
+          "url": "https://bjilibrary.com/5138",
+          "title": "সফল জীবনের পরিচয়",
+          "cover": null
+        },
+        {
+          "alternative": false,
+          "label": "৫৫। ইসলাম ও জাতীয়তাবাদ – সাইয়েদ আবুল আ’লা মওদূদী (রাহি.)।",
+          "scope": false,
+          "section": "পারিবারিক জীবন ও সামাজিক সম্পর্ক",
+          "url": "https://bjilibrary.com/350",
+          "title": "ইসলাম ও জাতীয়তাবাদ",
+          "cover": null
+        },
+        {
+          "alternative": false,
+          "label": "৫৬। সমাজকল্যাণ ম্যানুয়েল – জামায়াত প্রকাশনী।",
+          "scope": false,
+          "section": "পারিবারিক জীবন ও সামাজিক সম্পর্ক",
+          "url": "https://bjilibrary.com/6911",
+          "title": "সমাজকল্যাণ ম্যানুয়েল",
+          "cover": null
+        },
+        {
+          "alternative": false,
+          "label": "৫৭। সিরাতে সরওয়ারে আলম (৩য়, ৪র্থ ও ৫ম খণ্ড) – সাইয়েদ আবুল আ’লা মওদূদী (রাহি.)।",
+          "scope": false,
+          "section": "সিরাত ও ইতিহাস",
+          "url": "https://bjilibrary.com/1950",
+          "title": "সিরাতে সরওয়ারে আলম (৩য়, ৪র্থ ও ৫ম খণ্ড)",
+          "cover": null
+        },
+        {
+          "alternative": false,
+          "label": "৫৮। সিরাতে ইবনে হিশাম (বাংলাদেশ ইসলামিক সেন্টার কর্তৃক প্রকাশিত) ইবনে হিশাম (রাহি.)।",
+          "scope": false,
+          "section": "সিরাত ও ইতিহাস",
+          "url": "https://bjilibrary.com/852",
+          "title": "সিরাতে ইবনে হিশাম (বাংলাদেশ ইসলামিক সেন্টার কর্তৃক প্রকাশিত) ইবনে হিশাম (রাহি.)।",
+          "cover": null
+        },
+        {
+          "alternative": false,
+          "label": "৫৯। রাসূলুল্লাহর (সা.) বিপ্লবী জীবন – আবু সলীম মুহাম্মদ আবুল হাই (রাহি.)।",
+          "scope": false,
+          "section": "সিরাত ও ইতিহাস",
+          "url": "https://bjilibrary.com/172",
+          "title": "রাসূলুল্লাহর (সা.) বিপ্লবী জীবন",
+          "cover": null
+        },
+        {
+          "alternative": false,
+          "label": "৬০। রাসূলুল্লাহ (সা.) এর মক্কার জীবন – মাওলানা মতিউর রহমান নিজামী (রাহি.)।",
+          "scope": false,
+          "section": "সিরাত ও ইতিহাস",
+          "url": "https://bjilibrary.com/4530",
+          "title": "রাসূলুল্লাহ (সা.) এর মক্কার জীবন",
+          "cover": null
+        },
+        {
+          "alternative": false,
+          "label": "৬১। আসহাবে রাসূলের জীবনকথা ১ম, ২য় এবং ৫ম খন্ড – ড. মুহাম্মদ আবদুল মা’বুদ।",
+          "scope": false,
+          "section": "সিরাত ও ইতিহাস",
+          "url": "https://bjilibrary.com/1700",
+          "title": "আসহাবে রাসূলের জীবনকথা ১ম, ২য় এবং ৫ম খন্ড",
+          "cover": null
+        },
+        {
+          "alternative": false,
+          "label": "৬২। খেলাফত ও রাজতন্ত্র – সাইয়েদ আবুল আ’লা মওদূদী (রাহি.)।",
+          "scope": false,
+          "section": "সিরাত ও ইতিহাস",
+          "url": "https://bjilibrary.com/774",
+          "title": "খেলাফত ও রাজতন্ত্র",
+          "cover": null
+        },
+        {
+          "alternative": false,
+          "label": "৬৩। ইসলামী জাগরণের তিন পথিকৃৎ – অধ্যাপক এ.কে.এম. নাজির আহমদ (রাহি.)।",
+          "scope": false,
+          "section": "সিরাত ও ইতিহাস",
+          "url": "https://bjilibrary.com/537",
+          "title": "ইসলামী জাগরণের তিন পথিকৃৎ",
+          "cover": null
+        },
+        {
+          "alternative": false,
+          "label": "৬৪। পলাশী থেকে বাংলাদেশ – অধ্যাপক গোলাম আযম (রাহি.)।",
+          "scope": false,
+          "section": "সিরাত ও ইতিহাস",
+          "url": "https://bjilibrary.com/322",
+          "title": "পলাশী থেকে বাংলাদেশ",
+          "cover": null
+        },
+        {
+          "alternative": false,
+          "label": "৬৫। জামায়াতে ইসলামীর ইতিহাস ১ম, ২য় ও ৩য় খন্ড – জামায়াত প্রকাশনী।",
+          "scope": false,
+          "section": "সিরাত ও ইতিহাস",
+          "url": "https://bjilibrary.com/4511",
+          "title": "জামায়াতে ইসলামীর ইতিহাস ১ম, ২য় ও ৩য় খন্ড",
+          "cover": null
+        }
+      ]
+    },
+    {
+      "id": "annual",
+      "name": "Annual study B",
+      "url": "https://bjilibrary.com/yearly-syllabus/yearly-syllabus-educated",
+      "entries": [
+        {
+          "alternative": false,
+          "label": "১। তাফহীমুল কুরআন- সাইয়েদ আবুল আ’লা মওদূদী (রাহি.), শুরু থেকে ধারাবাহিকভাবে পড়তে থাকা।",
+          "scope": false,
+          "section": "আল-কুরআন",
+          "url": "https://bjilibrary.com/1778",
+          "title": "তাফহীমুল কুরআন- সাইয়েদ আবুল আ’লা মওদূদী (রাহি.), শুরু থেকে ধারাবাহিকভাবে পড়তে থাকা।",
+          "cover": null
+        },
+        {
+          "alternative": false,
+          "label": "রিয়াদুস সালেহীন",
+          "scope": false,
+          "section": "আল-হাদিস",
+          "url": "https://bjilibrary.com/1866",
+          "title": "রিয়াদুস সালেহীন",
+          "cover": null
+        },
+        {
+          "alternative": false,
+          "label": "মুয়াত্তা মালিক",
+          "scope": false,
+          "section": "আল-হাদিস",
+          "url": "https://bjilibrary.com/4734",
+          "title": "মুয়াত্তা মালিক",
+          "cover": null
+        },
+        {
+          "alternative": false,
+          "label": "৩। ফিকহুস সুন্নাহ পর্যায়ক্রমে পড়া।",
+          "scope": false,
+          "section": "আল-হাদিস",
+          "url": "https://bjilibrary.com/6555",
+          "title": "ফিকহুস সুন্নাহ পর্যায়ক্রমে পড়া।",
+          "cover": null
+        },
+        {
+          "alternative": true,
+          "label": "২। মানবতার বন্ধু মুহাম্মদ রসূলুল্লাহ (সা.) – নঈম সিদ্দিকী (রাহি.)।",
+          "scope": false,
+          "section": "সিরাত ও ইতিহাস",
+          "url": "https://bjilibrary.com/408",
+          "title": "মানবতার বন্ধু মুহাম্মদ রসূলুল্লাহ (সা.)",
+          "cover": null
+        },
+        {
+          "alternative": true,
+          "label": "আসহাবে রাসূলের জীবন কথা- ড. মুহাম্মাদ আবদুল মা’বুদ।",
+          "scope": false,
+          "section": "সিরাত ও ইতিহাস",
+          "url": "https://bjilibrary.com/1700",
+          "title": "আসহাবে রাসূলের জীবন কথা- ড. মুহাম্মাদ আবদুল মা’বুদ।",
+          "cover": null
+        },
+        {
+          "alternative": true,
+          "label": "বিশ্বনবীর সাহাবী – তালিবুল হাশেমী",
+          "scope": false,
+          "section": "সিরাত ও ইতিহাস",
+          "url": "https://bjilibrary.com/5071",
+          "title": "বিশ্বনবীর সাহাবী",
+          "cover": null
+        },
+        {
+          "alternative": true,
+          "label": "৫। রাসূলের (সা.) ভালোবাসায় সিক্ত যারা – ড. মুহাম্মাদ আব্দুস সামাদ।",
+          "scope": false,
+          "section": "সিরাত ও ইতিহাস",
+          "url": "https://bjilibrary.com/6720",
+          "title": "রাসূলের (সা.) ভালোবাসায় সিক্ত যারা",
+          "cover": null
+        },
+        {
+          "alternative": true,
+          "label": "৬। মাওলানা মওদূদী : একটি জীবন একটি ইতিহাস – আব্বাস আলী খান (রাহি.)।",
+          "scope": false,
+          "section": "সিরাত ও ইতিহাস",
+          "url": "https://bjilibrary.com/5817",
+          "title": "মাওলানা মওদূদী : একটি জীবন একটি ইতিহাস",
+          "cover": null
+        },
+        {
+          "alternative": true,
+          "label": "৭। জীবনে যা দেখলাম – অধ্যাপক গোলাম আযম (রাহি.), পর্যায়ক্রমে পড়তে থাকা।",
+          "scope": false,
+          "section": "সিরাত ও ইতিহাস",
+          "url": "https://bjilibrary.com/6633",
+          "title": "জীবনে যা দেখলাম",
+          "cover": null
+        },
+        {
+          "alternative": false,
+          "label": "১। গঠনতন্ত্র, বাংলাদেশ জামায়াতে ইসলামী।",
+          "scope": false,
+          "section": "Continuing study",
+          "url": "https://bjilibrary.com/5400",
+          "title": "গঠনতন্ত্র, বাংলাদেশ জামায়াতে ইসলামী।",
+          "cover": null
+        },
+        {
+          "alternative": false,
+          "label": "২। সংগঠন পদ্ধতি, বাংলাদেশ জামায়াতে ইসলামী।",
+          "scope": false,
+          "section": "Continuing study",
+          "url": "https://bjilibrary.com/5405",
+          "title": "সংগঠন পদ্ধতি, বাংলাদেশ জামায়াতে ইসলামী।",
+          "cover": null
+        },
+        {
+          "alternative": false,
+          "label": "৩। তাওহীদ, রিসালাত ও আখিরাত – সাইয়েদ আবুল আ’লা মওদূদী (রাহি.)।",
+          "scope": false,
+          "section": "Continuing study",
+          "url": "https://bjilibrary.com/121",
+          "title": "তাওহীদ, রিসালাত ও আখিরাত",
+          "cover": null
+        },
+        {
+          "alternative": false,
+          "label": "৪। নামাজ রোযার হাকীকত – সাইয়েদ আবুল আ’লা মওদূদী (রাহি.)।",
+          "scope": false,
+          "section": "Continuing study",
+          "url": "https://bjilibrary.com/196",
+          "title": "নামাজ রোযার হাকীকত",
+          "cover": null
+        },
+        {
+          "alternative": false,
+          "label": "৫। হেদায়াত – সাইয়েদ আবুল আ’লা মওদূদী (রাহি.)।",
+          "scope": false,
+          "section": "Continuing study",
+          "url": "https://bjilibrary.com/235",
+          "title": "হেদায়াত",
+          "cover": "https://bjilibrary.com/wp-content/uploads/2014/01/51_hedayat-750x384.jpg"
+        },
+        {
+          "alternative": false,
+          "label": "৬। ইসলামী রাষ্ট্র কীভাবে প্রতিষ্ঠিত হয় – সাইয়েদ আবুল আ’লা মওদূদী (রাহি.)।",
+          "scope": false,
+          "section": "Continuing study",
+          "url": "https://bjilibrary.com/144",
+          "title": "ইসলামী রাষ্ট্র কীভাবে প্রতিষ্ঠিত হয়",
+          "cover": null
+        },
+        {
+          "alternative": false,
+          "label": "৭। ইসলামী দাওয়াত ও কর্মনীতি – সাইয়েদ আবুল আ’লা মওদূদী (রাহি.)।",
+          "scope": false,
+          "section": "Continuing study",
+          "url": "https://bjilibrary.com/378",
+          "title": "ইসলামী দাওয়াত ও কর্মনীতি",
+          "cover": null
+        },
+        {
+          "alternative": false,
+          "label": "৮। ইসলাম ও জাহেলিয়াত – সাইয়েদ আবুল আ’লা মওদূদী (রাহি.)।",
+          "scope": false,
+          "section": "Continuing study",
+          "url": "https://bjilibrary.com/363",
+          "title": "ইসলাম ও জাহেলিয়াত",
+          "cover": null
+        },
+        {
+          "alternative": false,
+          "label": "৯। ইসলামী আন্দোলনের নৈতিক ভিত্তি – সাইয়েদ আবুল আ’লা মওদূদী (রাহি.)।",
+          "scope": false,
+          "section": "Continuing study",
+          "url": "https://bjilibrary.com/148",
+          "title": "ইসলামী আন্দোলনের নৈতিক ভিত্তি",
+          "cover": null
+        },
+        {
+          "alternative": false,
+          "label": "১০। ইসলামী রেনেঁসা আন্দোলন – সাইয়েদ আবুল আ’লা মওদূদী (রাহি.)।",
+          "scope": false,
+          "section": "Continuing study",
+          "url": "https://bjilibrary.com/284",
+          "title": "ইসলামী রেনেঁসা আন্দোলন",
+          "cover": null
+        },
+        {
+          "alternative": false,
+          "label": "১১। ইসলামী আন্দোলন: সাফল্যের শর্তাবলী – সাইয়েদ আবুল আ’লা মওদূদী (রাহি.)।",
+          "scope": false,
+          "section": "Continuing study",
+          "url": "https://bjilibrary.com/152",
+          "title": "ইসলামী আন্দোলন: সাফল্যের শর্তাবলী",
+          "cover": null
+        },
+        {
+          "alternative": false,
+          "label": "১২। ইসলামী আন্দোলন ও সংগঠন – মাওলানা মতিউর রহমান নিজামী (রাহি.)।",
+          "scope": false,
+          "section": "Continuing study",
+          "url": "https://bjilibrary.com/269",
+          "title": "ইসলামী আন্দোলন ও সংগঠন",
+          "cover": null
+        },
+        {
+          "alternative": false,
+          "label": "১৩। জামায়াতে ইসলামীর ইতিহাস – ১ম, ২য় ও ৩য় খন্ড।",
+          "scope": false,
+          "section": "Continuing study",
+          "url": "https://bjilibrary.com/4511",
+          "title": "জামায়াতে ইসলামীর ইতিহাস",
+          "cover": null
+        },
+        {
+          "alternative": false,
+          "label": "১৪। চরিত্র গঠনের মৌলিক উপাদান – নঈম সিদ্দিকী (রাহি.)।",
+          "scope": false,
+          "section": "Continuing study",
+          "url": "https://bjilibrary.com/117",
+          "title": "চরিত্র গঠনের মৌলিক উপাদান",
+          "cover": null
+        }
+      ]
+    },
+    {
+      "id": "higher",
+      "name": "Higher study",
+      "url": "https://bjilibrary.com/higher-study",
+      "entries": [
+        {
+          "alternative": false,
+          "label": "১। তাফসীরে ইবনে কাসীর।",
+          "scope": false,
+          "section": "আল কুরআন",
+          "url": "https://bjilibrary.com/626",
+          "title": "তাফসীরে ইবনে কাসীর।",
+          "cover": null
+        },
+        {
+          "alternative": false,
+          "label": "২। তাফসীর তাফহীমুল কুরআন।",
+          "scope": false,
+          "section": "আল কুরআন",
+          "url": "https://bjilibrary.com/1778",
+          "title": "তাফসীর তাফহীমুল কুরআন।",
+          "cover": null
+        },
+        {
+          "alternative": false,
+          "label": "৩। তাফসীর ফী যিলালিল কুরআন।",
+          "scope": false,
+          "section": "আল কুরআন",
+          "url": "https://bjilibrary.com/641",
+          "title": "তাফসীর ফী যিলালিল কুরআন।",
+          "cover": null
+        },
+        {
+          "alternative": false,
+          "label": "৪। মা’আরিফুল কুরআন।",
+          "scope": false,
+          "section": "আল কুরআন",
+          "url": "https://bjilibrary.com/2430",
+          "title": "মা’আরিফুল কুরআন।",
+          "cover": null
+        },
+        {
+          "alternative": false,
+          "label": "৫৷ কুরআন ব্যাখ্যার মূলনীতি – শাহ ওয়ালীউল্লাহ দেহলবী (রাহি.)।",
+          "scope": false,
+          "section": "আল কুরআন",
+          "url": "https://bjilibrary.com/1923",
+          "title": "৫৷ কুরআন ব্যাখ্যার মূলনীতি",
+          "cover": null
+        },
+        {
+          "alternative": false,
+          "label": "৬। কুরআন অধ্যয়ন সহায়িকা – খুররম জাহ্ মুরাদ (রাহি.)।",
+          "scope": false,
+          "section": "আল কুরআন",
+          "url": "https://bjilibrary.com/1932",
+          "title": "কুরআন অধ্যয়ন সহায়িকা",
+          "cover": null
+        },
+        {
+          "alternative": false,
+          "label": "৮। কুরআনের আলোকে মুমিনের জীবন – মাওলানা মতিউর রহমান নিজামী (রাহি.)।",
+          "scope": false,
+          "section": "আল কুরআন",
+          "url": "https://bjilibrary.com/5025",
+          "title": "কুরআনের আলোকে মুমিনের জীবন",
+          "cover": null
+        },
+        {
+          "alternative": false,
+          "label": "৯ । সহিহ আল বুখারী।",
+          "scope": false,
+          "section": "আল-হাদিস",
+          "url": "https://bjilibrary.com/656",
+          "title": "সহিহ আল বুখারী।",
+          "cover": null
+        },
+        {
+          "alternative": false,
+          "label": "১০। সহিহ মুসলিম।",
+          "scope": false,
+          "section": "আল-হাদিস",
+          "url": "https://bjilibrary.com/661",
+          "title": "সহিহ মুসলিম।",
+          "cover": null
+        },
+        {
+          "alternative": false,
+          "label": "১১। জামে আত তিরমিযী।",
+          "scope": false,
+          "section": "আল-হাদিস",
+          "url": "https://bjilibrary.com/3016",
+          "title": "জামে আত তিরমিযী।",
+          "cover": null
+        },
+        {
+          "alternative": false,
+          "label": "১২। সুনান আবু দাউদ।",
+          "scope": false,
+          "section": "আল-হাদিস",
+          "url": "https://bjilibrary.com/3020",
+          "title": "সুনান আবু দাউদ।",
+          "cover": null
+        },
+        {
+          "alternative": false,
+          "label": "১৩। সুনান আন নাসাঈ।",
+          "scope": false,
+          "section": "আল-হাদিস",
+          "url": "https://bjilibrary.com/4737",
+          "title": "সুনান আন নাসাঈ।",
+          "cover": null
+        },
+        {
+          "alternative": false,
+          "label": "১৪। সুনান ইবনু মাজাহ।",
+          "scope": false,
+          "section": "আল-হাদিস",
+          "url": "https://bjilibrary.com/4749",
+          "title": "সুনান ইবনু মাজাহ।",
+          "cover": null
+        },
+        {
+          "alternative": false,
+          "label": "১৫। মিশকাত শরীফ",
+          "scope": false,
+          "section": "আল-হাদিস",
+          "url": "https://bjilibrary.com/4517",
+          "title": "মিশকাত শরীফ",
+          "cover": null
+        },
+        {
+          "alternative": false,
+          "label": "১৬। আল মুয়াত্তা – ইমাম মালিক (রাহি.)।",
+          "scope": false,
+          "section": "আল-হাদিস",
+          "url": "https://bjilibrary.com/4734",
+          "title": "আল মুয়াত্তা",
+          "cover": null
+        },
+        {
+          "alternative": false,
+          "label": "১৭। বুলুগুল মারাম – ইবনে হাজার আল আসকালানী (রাহি.)।",
+          "scope": false,
+          "section": "আল-হাদিস",
+          "url": "https://bjilibrary.com/5203",
+          "title": "বুলুগুল মারাম",
+          "cover": null
+        },
+        {
+          "alternative": false,
+          "label": "১৮। যাদেরাহ – আল্লামা জলীল আহসান নদবী (রাহি.)।",
+          "scope": false,
+          "section": "আল-হাদিস",
+          "url": "https://bjilibrary.com/1356",
+          "title": "যাদেরাহ",
+          "cover": null
+        },
+        {
+          "alternative": false,
+          "label": "১৯। আল আদাবুল মুফরাদ – ইমাম আল বুখারী (রাহি.)।",
+          "scope": false,
+          "section": "আল-হাদিস",
+          "url": "https://bjilibrary.com/3148",
+          "title": "আল আদাবুল মুফরাদ",
+          "cover": null
+        },
+        {
+          "alternative": false,
+          "label": "২০। হাদিস সংকলনের ইতিহাস – মাওলানা মুহাম্মাদ আবদুর রহীম (রাহি.)।",
+          "scope": false,
+          "section": "আল-হাদিস",
+          "url": "https://bjilibrary.com/1935",
+          "title": "হাদিস সংকলনের ইতিহাস",
+          "cover": null
+        },
+        {
+          "alternative": false,
+          "label": "২১। ফতোয়ায়ে আলমগীরী",
+          "scope": false,
+          "section": "আল ফিকহ",
+          "url": "https://bjilibrary.com/6680",
+          "title": "ফতোয়ায়ে আলমগীরী",
+          "cover": null
+        },
+        {
+          "alternative": false,
+          "label": "২২। ফিকহুস সুন্নাহ – সাইয়েদ সাবেক (রাহি.)।",
+          "scope": false,
+          "section": "আল ফিকহ",
+          "url": "https://bjilibrary.com/6555",
+          "title": "ফিকহুস সুন্নাহ",
+          "cover": null
+        },
+        {
+          "alternative": false,
+          "label": "২৩। রাসায়েল ও মাসায়েল – সাইয়েদ আবুল আ’লা মওদূদী (রাহি.)।",
+          "scope": false,
+          "section": "আল ফিকহ",
+          "url": "https://bjilibrary.com/548",
+          "title": "রাসায়েল ও মাসায়েল",
+          "cover": null
+        },
+        {
+          "alternative": false,
+          "label": "২৪। আপনাদের প্রশ্নের জওয়াব – আল্লামা মুহাম্মাদ ইউসুফ লুধিয়ানাবী (রাহি.)।",
+          "scope": false,
+          "section": "আল ফিকহ",
+          "url": "https://bjilibrary.com/5219",
+          "title": "আপনাদের প্রশ্নের জওয়াব",
+          "cover": null
+        },
+        {
+          "alternative": false,
+          "label": "২৫। মহিলা ফিকহ – আল্লামা মুহাম্মাদ আতাইয়া খামীস (রাহি.)।",
+          "scope": false,
+          "section": "আল ফিকহ",
+          "url": "https://bjilibrary.com/5222",
+          "title": "মহিলা ফিকহ",
+          "cover": null
+        },
+        {
+          "alternative": false,
+          "label": "২৬। মহিলাদের তা’লীমুল মাসায়েল – হামিদা পারভীন।",
+          "scope": false,
+          "section": "আল ফিকহ",
+          "url": "https://bjilibrary.com/5225",
+          "title": "মহিলাদের তা’লীমুল মাসায়েল",
+          "cover": null
+        },
+        {
+          "alternative": false,
+          "label": "২৭। ইসলামে হালাল-হারামের বিধান – আল্লামা ইউসুফ আল-কারযাভী (রাহি.)।",
+          "scope": false,
+          "section": "আল ফিকহ",
+          "url": "https://bjilibrary.com/2047",
+          "title": "ইসলামে হালাল-হারামের বিধান",
+          "cover": null
+        },
+        {
+          "alternative": false,
+          "label": "২৮। সিরাতুন্নবী (সা.) – সাইয়েদ সুলাইমান নদবী (রাহি.) ও শিবলী নু’মানী ।",
+          "scope": false,
+          "section": "সিরাতে রাসূল (রা.)",
+          "url": "https://bjilibrary.com/6726",
+          "title": "সিরাতুন্নবী (সা.)",
+          "cover": null
+        },
+        {
+          "alternative": false,
+          "label": "২৯। সিরাতে সরওয়ারে আলম – সাইয়েদ আবুল আ’লা মওদূদী (রাহি.)।",
+          "scope": false,
+          "section": "সিরাতে রাসূল (রা.)",
+          "url": "https://bjilibrary.com/1950",
+          "title": "সিরাতে সরওয়ারে আলম",
+          "cover": null
+        },
+        {
+          "alternative": false,
+          "label": "৩০। আর রাহীকুল মাখতূম পয়গামে মুহাম্মদী – আল্লাম্মা ছফিউর রহমান মোবারকপুরী (রাহি.)।",
+          "scope": false,
+          "section": "সিরাতে রাসূল (রা.)",
+          "url": "https://bjilibrary.com/1582",
+          "title": "আর রাহীকুল মাখতূম পয়গামে মুহাম্মদী",
+          "cover": null
+        },
+        {
+          "alternative": false,
+          "label": "৩১। পয়গামে মুহাম্মদী – সাইয়েদ সোলায়মান নদভী (রাহি.)।",
+          "scope": false,
+          "section": "সিরাতে রাসূল (রা.)",
+          "url": "https://bjilibrary.com/4980",
+          "title": "পয়গামে মুহাম্মদী",
+          "cover": null
+        },
+        {
+          "alternative": false,
+          "label": "৩৩। সাহাবায়ে কিরামের মর্যাদা – সাইয়েদ আবুল আ’লা মওদূদী (রাহি.)।",
+          "scope": false,
+          "section": "সিরাতে সাহাবা",
+          "url": "https://bjilibrary.com/4997",
+          "title": "সাহাবায়ে কিরামের মর্যাদা",
+          "cover": null
+        },
+        {
+          "alternative": false,
+          "label": "৩৪। খিলাফাতে রাশেদা – মাওলানা মুহাম্মাদ আবদুর রহীম (রাহি.)।",
+          "scope": false,
+          "section": "সিরাতে সাহাবা",
+          "url": "https://bjilibrary.com/5007",
+          "title": "খিলাফাতে রাশেদা",
+          "cover": null
+        },
+        {
+          "alternative": false,
+          "label": "৩৫। হযরত আবু বকর (রা.) – মুহাম্মাদ হুসাইন হায়কল (রাহি.)।",
+          "scope": false,
+          "section": "সিরাতে সাহাবা",
+          "url": "https://bjilibrary.com/5026",
+          "title": "হযরত আবু বকর (রা.)",
+          "cover": null
+        },
+        {
+          "alternative": false,
+          "label": "৩৬। হযরত উমর (রা.) – আবদুল মওদূদ (রাহি.)।",
+          "scope": false,
+          "section": "সিরাতে সাহাবা",
+          "url": "https://bjilibrary.com/6238",
+          "title": "হযরত উমর (রা.)",
+          "cover": null
+        },
+        {
+          "alternative": false,
+          "label": "৩৭। উসমান ইবন আফফান (রা.) – ড. যুবাইর মুহাম্মদ ইহসানুল হক (রাহি.)।",
+          "scope": false,
+          "section": "সিরাতে সাহাবা",
+          "url": "https://bjilibrary.com/6606",
+          "title": "উসমান ইবন আফফান (রা.)",
+          "cover": null
+        },
+        {
+          "alternative": false,
+          "label": "৩৯। আহসাবে রাসূলের জীবন কথা – ড. মুহাম্মাদ আবদুল মা’বুদ।",
+          "scope": false,
+          "section": "সিরাতে সাহাবা",
+          "url": "https://bjilibrary.com/1700",
+          "title": "আহসাবে রাসূলের জীবন কথা",
+          "cover": null
+        },
+        {
+          "alternative": false,
+          "label": "৪০। মহিলা সাহাবী – তালিবুল হাশেমী (রাহি.)।",
+          "scope": false,
+          "section": "সিরাতে সাহাবা",
+          "url": "https://bjilibrary.com/5120",
+          "title": "মহিলা সাহাবী",
+          "cover": null
+        },
+        {
+          "alternative": false,
+          "label": "৪১। ইসলামী আইন – সাইয়েদ আবুল আ’লা মওদূদী (রাহি.)।",
+          "scope": false,
+          "section": "রাজনীতি",
+          "url": "https://bjilibrary.com/5342",
+          "title": "ইসলামী আইন",
+          "cover": null
+        },
+        {
+          "alternative": false,
+          "label": "৪২। ইসলামী রাষ্ট্র ও সংবিধান – সাইয়েদ আবুল আ’লা মওদূদী (রাহি.)",
+          "scope": false,
+          "section": "রাজনীতি",
+          "url": "https://bjilibrary.com/2568",
+          "title": "ইসলামী রাষ্ট্র ও সংবিধান",
+          "cover": null
+        },
+        {
+          "alternative": false,
+          "label": "৪৩। ইসলামী শাসনতন্ত্র প্রণয়ন – সাইয়েদ আবুল আ’লা মওদূদী (রাহি.)।",
+          "scope": false,
+          "section": "রাজনীতি",
+          "url": "https://bjilibrary.com/2559",
+          "title": "ইসলামী শাসনতন্ত্র প্রণয়ন",
+          "cover": null
+        },
+        {
+          "alternative": false,
+          "label": "৪৪। মুসলমানদের অতীত, বর্তমান ও ভবিষ্যত কর্মসূচি – সাইয়েদ আবুল আ’লা মওদূদী (রাহি.)।",
+          "scope": false,
+          "section": "রাজনীতি",
+          "url": "https://bjilibrary.com/5351",
+          "title": "মুসলমানদের অতীত, বর্তমান ও ভবিষ্যত কর্মসূচি",
+          "cover": null
+        },
+        {
+          "alternative": false,
+          "label": "৪৫। চিন্তাধারা – অধ্যাপক গোলাম আযম (রাহি.)।",
+          "scope": false,
+          "section": "রাজনীতি",
+          "url": "https://bjilibrary.com/5355",
+          "title": "চিন্তাধারা",
+          "cover": null
+        },
+        {
+          "alternative": false,
+          "label": "৪৬। কুরআনে ঘোষিত মুসলিম শাসকদের চার দফা কর্মসূচি – অধ্যাপক গোলাম আযম (রাহি.)।",
+          "scope": false,
+          "section": "রাজনীতি",
+          "url": "https://bjilibrary.com/5359",
+          "title": "কুরআনে ঘোষিত মুসলিম শাসকদের চার দফা কর্মসূচি",
+          "cover": null
+        },
+        {
+          "alternative": false,
+          "label": "৪৭। বিশ্ব নবীর জীবনে রাজনীতি – অধ্যাপক গোলাম আযম (রাহি.)।",
+          "scope": false,
+          "section": "রাজনীতি",
+          "url": "https://bjilibrary.com/5363",
+          "title": "বিশ্ব নবীর জীবনে রাজনীতি",
+          "cover": null
+        },
+        {
+          "alternative": false,
+          "label": "৪৮। আল্লাহর আইন ও সৎ লোকের শাসন – অধ্যাপক গোলাম আযম (রাহি.)।",
+          "scope": false,
+          "section": "রাজনীতি",
+          "url": "https://bjilibrary.com/5142",
+          "title": "আল্লাহর আইন ও সৎ লোকের শাসন",
+          "cover": "https://bjilibrary.com/wp-content/uploads/2019/11/11_allahor_ain_sotlok-750x1108.jpg"
+        },
+        {
+          "alternative": false,
+          "label": "৪৯। জাতীয় সংসদে বক্তৃতামালা – মাওলানা মতিউর রহমান নিজামী (রাহি.)।",
+          "scope": false,
+          "section": "রাজনীতি",
+          "url": "https://bjilibrary.com/5369",
+          "title": "জাতীয় সংসদে বক্তৃতামালা",
+          "cover": null
+        },
+        {
+          "alternative": false,
+          "label": "৫০। ১০০ বছরের রাজনীতি – আবুল আসাদ।",
+          "scope": false,
+          "section": "রাজনীতি",
+          "url": "https://bjilibrary.com/1791",
+          "title": "১০০ বছরের রাজনীতি",
+          "cover": null
+        },
+        {
+          "alternative": false,
+          "label": "৫১। বিশ্ব পরিস্থিতি ও ইসলামী আন্দোলন – মুহাম্মাদ কামারুজ্জামান (রাহি.)।",
+          "scope": false,
+          "section": "রাজনীতি",
+          "url": "https://bjilibrary.com/5380",
+          "title": "বিশ্ব পরিস্থিতি ও ইসলামী আন্দোলন",
+          "cover": null
+        },
+        {
+          "alternative": false,
+          "label": "৫২। অরক্ষিত স্বাধীনতাই পরাধীনতা – মেজর (অব.) এম.এ জলিল (রাহি.)।",
+          "scope": false,
+          "section": "রাজনীতি",
+          "url": "https://bjilibrary.com/2584",
+          "title": "অরক্ষিত স্বাধীনতাই পরাধীনতা",
+          "cover": null
+        },
+        {
+          "alternative": false,
+          "label": "৫৩। ইসলামী রাজনীতি – আনছার আলী (রাহি.)।",
+          "scope": false,
+          "section": "রাজনীতি",
+          "url": "https://bjilibrary.com/5385",
+          "title": "ইসলামী রাজনীতি",
+          "cover": null
+        },
+        {
+          "alternative": false,
+          "label": "৫৪। আধুনিক বিশ্বের প্রয়োজন ইসলামী রাষ্ট্র – ড. খুরশীদ আহমদ (রাহি.)।",
+          "scope": false,
+          "section": "রাজনীতি",
+          "url": "https://bjilibrary.com/5389",
+          "title": "আধুনিক বিশ্বের প্রয়োজন ইসলামী রাষ্ট্র",
+          "cover": null
+        },
+        {
+          "alternative": false,
+          "label": "৫৫। আজকের বিশ্বে ইসলামী রাষ্ট্রের প্রয়োজনীয়তা – আনছার আলী (রাহি.)।",
+          "scope": false,
+          "section": "রাজনীতি",
+          "url": "https://bjilibrary.com/5394",
+          "title": "আজকের বিশ্বে ইসলামী রাষ্ট্রের প্রয়োজনীয়তা",
+          "cover": null
+        },
+        {
+          "alternative": false,
+          "label": "৫৬। ইসলামী রাষ্ট্র ব্যবস্থা – ড. আবদুল করীম জায়দান (রাহি.)।",
+          "scope": false,
+          "section": "রাজনীতি",
+          "url": "https://bjilibrary.com/1887",
+          "title": "ইসলামী রাষ্ট্র ব্যবস্থা",
+          "cover": null
+        },
+        {
+          "alternative": false,
+          "label": "৫৭। ইসলামী রাষ্ট্র – নুরুল ইসলাম",
+          "scope": false,
+          "section": "রাজনীতি",
+          "url": "https://bjilibrary.com/6609",
+          "title": "ইসলামী রাষ্ট্র",
+          "cover": null
+        },
+        {
+          "alternative": false,
+          "label": "৫৮। ইসলামের ব্যাপকতা – ড: ইউসুফ আল-কারযাভী (রাহি.)।",
+          "scope": false,
+          "section": "রাজনীতি",
+          "url": "https://bjilibrary.com/6692",
+          "title": "ইসলামের ব্যাপকতা",
+          "cover": null
+        },
+        {
+          "alternative": false,
+          "label": "৫৯। নন্দিত জাতি নিন্দিত গন্তব্যে – মাওলানা দেলাওয়ার হোসাইন সাঈদী (রাহি.)।",
+          "scope": false,
+          "section": "রাজনীতি",
+          "url": "https://bjilibrary.com/2245",
+          "title": "নন্দিত জাতি নিন্দিত গন্তব্যে",
+          "cover": null
+        },
+        {
+          "alternative": false,
+          "label": "৬০। সুদ ও আধুনিক ব্যাংকিং – সাইয়েদ আবুল আ’লা মওদূদী (রাহি.)।",
+          "scope": false,
+          "section": "অর্থনীতি",
+          "url": "https://bjilibrary.com/565",
+          "title": "সুদ ও আধুনিক ব্যাংকিং",
+          "cover": null
+        },
+        {
+          "alternative": false,
+          "label": "৬১। ইসলামী অর্থনীতি – সাইয়েদ আবুল আ’লা মওদূদী (রাহি.)।",
+          "scope": false,
+          "section": "অর্থনীতি",
+          "url": "https://bjilibrary.com/2019",
+          "title": "ইসলামী অর্থনীতি",
+          "cover": null
+        },
+        {
+          "alternative": false,
+          "label": "৬২। মহানবীর অর্থনৈতিক শিক্ষা – অধ্যাপক আকরাম খান (রাহি.)।",
+          "scope": false,
+          "section": "অর্থনীতি",
+          "url": "https://bjilibrary.com/5482",
+          "title": "মহানবীর অর্থনৈতিক শিক্ষা",
+          "cover": null
+        },
+        {
+          "alternative": false,
+          "label": "৬৩। ইসলামের অর্থনীতি – মাওলানা মুহাম্মাদ আবদুর রহীম (রাহি.)।",
+          "scope": false,
+          "section": "অর্থনীতি",
+          "url": "https://bjilibrary.com/2565",
+          "title": "ইসলামের অর্থনীতি",
+          "cover": null
+        },
+        {
+          "alternative": false,
+          "label": "৬৪। ইসলাম ও আধুনিক অর্থনৈতিক মতবাদ – সাইয়েদ আবুল আ’লা মওদূদী (রাহি.)।",
+          "scope": false,
+          "section": "অর্থনীতি",
+          "url": "https://bjilibrary.com/5269",
+          "title": "ইসলাম ও আধুনিক অর্থনৈতিক মতবাদ",
+          "cover": null
+        },
+        {
+          "alternative": false,
+          "label": "৬৫। ইসলামী ব্যাংক ও অর্থ ব্যবস্থার রূপরেখা – ড. এম ওমর চাপরা।",
+          "scope": false,
+          "section": "অর্থনীতি",
+          "url": "https://bjilibrary.com/5496",
+          "title": "ইসলামী ব্যাংক ও অর্থ ব্যবস্থার রূপরেখা",
+          "cover": null
+        },
+        {
+          "alternative": false,
+          "label": "৬৬। ইসলামী ব্যাংকিং – শাহ মুহাম্মাদ হাবীবুর রহমান ।",
+          "scope": false,
+          "section": "অর্থনীতি",
+          "url": "https://bjilibrary.com/5500",
+          "title": "ইসলামী ব্যাংকিং",
+          "cover": null
+        },
+        {
+          "alternative": false,
+          "label": "৬৭। সুদ: এক ভয়াবহ অভিশাপ : পরিত্রাণের উপায় – শাহ মুহাম্মাদ হাবীবুর রহমান।",
+          "scope": false,
+          "section": "অর্থনীতি",
+          "url": "https://bjilibrary.com/5507",
+          "title": "সুদ: এক ভয়াবহ অভিশাপ : পরিত্রাণের উপায়",
+          "cover": null
+        },
+        {
+          "alternative": false,
+          "label": "৬৯। ইসলামের দৃষ্টিতে সম্পদ বন্টন – মুফতী মুহাম্মাদ শফী (রাহি.)।",
+          "scope": false,
+          "section": "অর্থনীতি",
+          "url": "https://bjilibrary.com/5514",
+          "title": "ইসলামের দৃষ্টিতে সম্পদ বন্টন",
+          "cover": null
+        },
+        {
+          "alternative": false,
+          "label": "৭০। উশর – সাইয়েদ মুহাম্মদ আলী (রাহি.)।",
+          "scope": false,
+          "section": "অর্থনীতি",
+          "url": "https://bjilibrary.com/5518",
+          "title": "উশর",
+          "cover": null
+        },
+        {
+          "alternative": false,
+          "label": "৭৫। স্বামী-স্ত্রীর অধিকার – সাইয়েদ আবুল আ’লা মওদূদী (রাহি.)।",
+          "scope": false,
+          "section": "পারিবারিক জীবন",
+          "url": "https://bjilibrary.com/2535",
+          "title": "স্বামী-স্ত্রীর অধিকার",
+          "cover": null
+        },
+        {
+          "alternative": false,
+          "label": "৭৬। পরিবার ও পারিবারিক জীবন – মাওলানা মুহাম্মাদ আবদুর রহীম (রাহি.)।",
+          "scope": false,
+          "section": "পারিবারিক জীবন",
+          "url": "https://bjilibrary.com/2587",
+          "title": "পরিবার ও পারিবারিক জীবন",
+          "cover": null
+        },
+        {
+          "alternative": false,
+          "label": "৭৭। ইসলামী আন্দোলনমুখী পরিবার গঠন – অধ্যাপক মুহাম্মাদ ইউসুফ আলী (রাহি.)।",
+          "scope": false,
+          "section": "পারিবারিক জীবন",
+          "url": "https://bjilibrary.com/6245",
+          "title": "ইসলামী আন্দোলনমুখী পরিবার গঠন",
+          "cover": null
+        },
+        {
+          "alternative": false,
+          "label": "৭৮। সন্তানের চরিত্র গঠনে পরিবার ও পরিবেশ – অধ্যাপক মাযহারুল ইসলাম।",
+          "scope": false,
+          "section": "পারিবারিক জীবন",
+          "url": "https://bjilibrary.com/5530",
+          "title": "সন্তানের চরিত্র গঠনে পরিবার ও পরিবেশ",
+          "cover": null
+        },
+        {
+          "alternative": false,
+          "label": "৭৯। ইসলামের পারিবারিক জীবন – আবদুস শহীদ নাসিম।",
+          "scope": false,
+          "section": "পারিবারিক জীবন",
+          "url": "https://bjilibrary.com/6251",
+          "title": "ইসলামের পারিবারিক জীবন",
+          "cover": null
+        },
+        {
+          "alternative": false,
+          "label": "৮০। ইসলাম ও সামাজিক সুবিচার – সাইয়েদ আবুল আ’লা মওদূদী (রাহি.)।",
+          "scope": false,
+          "section": "সামাজিক জীবন",
+          "url": "https://bjilibrary.com/5536",
+          "title": "ইসলাম ও সামাজিক সুবিচার",
+          "cover": null
+        },
+        {
+          "alternative": false,
+          "label": "৮১। ইসলাম ও সামাজিক সুবিচার – সাইয়েদ কুতুব শহীদ (রাহি.)।",
+          "scope": false,
+          "section": "সামাজিক জীবন",
+          "url": "https://bjilibrary.com/5540",
+          "title": "ইসলাম ও সামাজিক সুবিচার",
+          "cover": null
+        },
+        {
+          "alternative": false,
+          "label": "৮২। ইসলামী সমাজ বিপ্লবের ধারা – সাইয়েদ কুতুব শহীদ (রাহি.)।",
+          "scope": false,
+          "section": "সামাজিক জীবন",
+          "url": "https://bjilibrary.com/297",
+          "title": "ইসলামী সমাজ বিপ্লবের ধারা",
+          "cover": null
+        },
+        {
+          "alternative": false,
+          "label": "৮৩। ইসলামের সামাজিক আচরণ – এ.এন.এম. সিরাজুল ইসলাম।",
+          "scope": false,
+          "section": "সামাজিক জীবন",
+          "url": "https://bjilibrary.com/6612",
+          "title": "ইসলামের সামাজিক আচরণ",
+          "cover": null
+        },
+        {
+          "alternative": false,
+          "label": "৮৪। কুরআন হাদিসের আলোকে সমাজ জীবন – মাওলানা দেলাওয়ার হোসাইন সাঈদী (রাহি.)।",
+          "scope": false,
+          "section": "সামাজিক জীবন",
+          "url": "https://bjilibrary.com/5545",
+          "title": "কুরআন হাদিসের আলোকে সমাজ জীবন",
+          "cover": null
+        },
+        {
+          "alternative": false,
+          "label": "৮৫। ইসলামী আচরণ – অধ্যাপক মুজিবুর রহমান",
+          "scope": false,
+          "section": "সামাজিক জীবন",
+          "url": "https://bjilibrary.com/4139",
+          "title": "ইসলামী আচরণ",
+          "cover": null
+        },
+        {
+          "alternative": false,
+          "label": "৮৬। ইসলামিক ম্যানারস – আবুল ফাত্তাহ আবুগুদ্দাহ",
+          "scope": false,
+          "section": "সামাজিক জীবন",
+          "url": "https://bjilibrary.com/6701",
+          "title": "ইসলামিক ম্যানারস",
+          "cover": null
+        },
+        {
+          "alternative": false,
+          "label": "৮৭। ইসলাম ও জাতীয়তাবাদ – সাইয়েদ আবুল আ’লা মওদূদী (রাহি.)।",
+          "scope": false,
+          "section": "সামাজিক জীবন",
+          "url": "https://bjilibrary.com/350",
+          "title": "ইসলাম ও জাতীয়তাবাদ",
+          "cover": null
+        },
+        {
+          "alternative": false,
+          "label": "৮৮। আমাদের দাওয়াত জীবন বিধান ইসলাম – ড: ইউসুফ আল-কারযাভী (রাহি.)।",
+          "scope": false,
+          "section": "সামাজিক জীবন",
+          "url": "https://bjilibrary.com/6711",
+          "title": "আমাদের দাওয়াত জীবন বিধান ইসলাম",
+          "cover": null
+        },
+        {
+          "alternative": false,
+          "label": "৮৯। ইসলামী রাষ্ট্র প্রতিষ্ঠার দায়িত্ব – সদরুদ্দীন ইসলাহী (রাহি.)।",
+          "scope": false,
+          "section": "আন্দোলন ও সংগঠন",
+          "url": "https://bjilibrary.com/6626",
+          "title": "ইসলামী রাষ্ট্র প্রতিষ্ঠার দায়িত্ব",
+          "cover": null
+        },
+        {
+          "alternative": false,
+          "label": "১১। ইসলামী আন্দোলনের পথ ও পাথেয় – মাওলানা মতিউর রহমাননিজামী (রাহি.)।",
+          "scope": false,
+          "section": "আন্দোলন ও সংগঠন",
+          "url": "https://bjilibrary.com/6258",
+          "title": "ইসলামী আন্দোলনের পথ ও পাথেয়",
+          "cover": null
+        },
+        {
+          "alternative": false,
+          "label": "৯২। ইসলামী আন্দোলন : চ্যালেঞ্জ ও মুকাবিলা – মাওলানা মতিউর রহমান নিজামী (রাহি.)।",
+          "scope": false,
+          "section": "আন্দোলন ও সংগঠন",
+          "url": "https://bjilibrary.com/6620",
+          "title": "ইসলামী আন্দোলন : চ্যালেঞ্জ ও মুকাবিলা",
+          "cover": null
+        },
+        {
+          "alternative": false,
+          "label": "৯৩। খাঁটি মুমিনের সহীহ জযবা – অধ্যাপক গোলাম আযম (রাহি.)।",
+          "scope": false,
+          "section": "আন্দোলন ও সংগঠন",
+          "url": "https://bjilibrary.com/5554",
+          "title": "খাঁটি মুমিনের সহীহ জযবা",
+          "cover": null
+        },
+        {
+          "alternative": false,
+          "label": "৯৪। জামায়াতে ইসলামীর কর্মনীতি – অধ্যাপক গোলাম আযম (রাহি.)।",
+          "scope": false,
+          "section": "আন্দোলন ও সংগঠন",
+          "url": "https://bjilibrary.com/2520",
+          "title": "জামায়াতে ইসলামীর কর্মনীতি",
+          "cover": null
+        },
+        {
+          "alternative": false,
+          "label": "৯৫। রুকনিয়াতের দায়িত্ব ও মর্যাদা – অধ্যাপক গোলাম আযম (রাহি.)।",
+          "scope": false,
+          "section": "আন্দোলন ও সংগঠন",
+          "url": "https://bjilibrary.com/5561",
+          "title": "রুকনিয়াতের দায়িত্ব ও মর্যাদা",
+          "cover": null
+        },
+        {
+          "alternative": false,
+          "label": "৯৬। মুসিলম বিশ্বে ইসলামী আন্দোলনের কর্মপন্থা – সাইয়েদ আবুল আ’লা মওদূদী (রাহি.)।",
+          "scope": false,
+          "section": "আন্দোলন ও সংগঠন",
+          "url": "https://bjilibrary.com/5564",
+          "title": "মুসিলম বিশ্বে ইসলামী আন্দোলনের কর্মপন্থা",
+          "cover": null
+        },
+        {
+          "alternative": false,
+          "label": "৯৭। ইসলামী আন্দোলনের কর্মীদের কাঙ্ক্ষিত মান – আব্বাস আলী খান (রাহি.)।",
+          "scope": false,
+          "section": "আন্দোলন ও সংগঠন",
+          "url": "https://bjilibrary.com/6261",
+          "title": "ইসলামী আন্দোলনের কর্মীদের কাঙ্ক্ষিত মান",
+          "cover": null
+        },
+        {
+          "alternative": false,
+          "label": "৯৮। মুসলিম উম্মাহর সঠিক কর্মনীতি – ড. আবদুল কাদের আওদাহ (রাহি.)।",
+          "scope": false,
+          "section": "আন্দোলন ও সংগঠন",
+          "url": "https://bjilibrary.com/5609",
+          "title": "মুসলিম উম্মাহর সঠিক কর্মনীতি",
+          "cover": null
+        },
+        {
+          "alternative": false,
+          "label": "৯৯। আধুনিক পরিবেশে ইসলাম – অধ্যাপক গোলাম আযম (রাহি.)।",
+          "scope": false,
+          "section": "আন্দোলন ও সংগঠন",
+          "url": "https://bjilibrary.com/5293",
+          "title": "আধুনিক পরিবেশে ইসলাম",
+          "cover": null
+        },
+        {
+          "alternative": false,
+          "label": "১০০। ইসলামী নেতৃত্ব – অধ্যাপক এ. কে. এম নাজির আহমদ (রাহি.)।",
+          "scope": false,
+          "section": "আন্দোলন ও সংগঠন",
+          "url": "https://bjilibrary.com/598",
+          "title": "ইসলামী নেতৃত্ব",
+          "cover": null
+        },
+        {
+          "alternative": false,
+          "label": "১০১। ইমাম বান্নার পাঠশালা – ড. ইউসুফ আল কারযাভী (রাহি.)।",
+          "scope": false,
+          "section": "আন্দোলন ও সংগঠন",
+          "url": "https://bjilibrary.com/6683",
+          "title": "ইমাম বান্নার পাঠশালা",
+          "cover": null
+        },
+        {
+          "alternative": false,
+          "label": "১০৩। দুঃখ কষ্টের হিকমত – ইমাম ইবনুল কাইয়েম (রাহি.)।",
+          "scope": false,
+          "section": "আন্দোলন ও সংগঠন",
+          "url": "https://bjilibrary.com/6674",
+          "title": "দুঃখ কষ্টের হিকমত",
+          "cover": null
+        },
+        {
+          "alternative": false,
+          "label": "১০৪। ইসলামী বিপ্লব সাধনে সংগঠন – অধ্যাপক মুহাম্মাদ ইউসুফ আলী",
+          "scope": false,
+          "section": "আন্দোলন ও সংগঠন",
+          "url": "https://bjilibrary.com/6264",
+          "title": "ইসলামী বিপ্লব সাধনে সংগঠন",
+          "cover": null
+        },
+        {
+          "alternative": false,
+          "label": "১০৫। আল্লাহর খিলাফত কায়েমের দায়িত্ব ও পদ্ধতি – অধ্যাপক গোলাম আযম (রাহি.)।",
+          "scope": false,
+          "section": "আন্দোলন ও সংগঠন",
+          "url": "https://bjilibrary.com/5614",
+          "title": "আল্লাহর খিলাফত কায়েমের দায়িত্ব ও পদ্ধতি",
+          "cover": null
+        },
+        {
+          "alternative": false,
+          "label": "১০৬। ইসলামী আন্দোলন সাফল্য ও বিভ্রান্তি – অধ্যাপক গোলাম আযম (রাহি.)।",
+          "scope": false,
+          "section": "আন্দোলন ও সংগঠন",
+          "url": "https://bjilibrary.com/6616",
+          "title": "ইসলামী আন্দোলন সাফল্য ও বিভ্রান্তি",
+          "cover": null
+        },
+        {
+          "alternative": false,
+          "label": "১০৮। মুসলিম নারীর নিকট ইসলামের দাবি – সাইয়েদ আবুল আ’লা মওদূদী (রাহি.)।",
+          "scope": false,
+          "section": "নারী",
+          "url": "https://bjilibrary.com/5618",
+          "title": "মুসলিম নারীর নিকট ইসলামের দাবি",
+          "cover": "https://bjilibrary.com/wp-content/uploads/2020/01/Muslim-Narir-kache-dabi-750x390.jpg"
+        },
+        {
+          "alternative": false,
+          "label": "১০৯। ইসলাম ও নারী – মুহাম্মাদ কুতুব (রাহি.)।",
+          "scope": false,
+          "section": "নারী",
+          "url": "https://bjilibrary.com/5621",
+          "title": "ইসলাম ও নারী",
+          "cover": null
+        },
+        {
+          "alternative": false,
+          "label": "১১০। ইসলাম ও আধুনিক মুসলিম নারী – মরিয়ম জামিলা।",
+          "scope": false,
+          "section": "নারী",
+          "url": "https://bjilibrary.com/34",
+          "title": "ইসলাম ও আধুনিক মুসলিম নারী",
+          "cover": null
+        },
+        {
+          "alternative": false,
+          "label": "১১২। ইসলাম ও পাশ্চাত্য সমাজে নারী – ড. মুসতাফা আস সিবায়ী (রাহি.)।",
+          "scope": false,
+          "section": "নারী",
+          "url": "https://bjilibrary.com/5629",
+          "title": "ইসলাম ও পাশ্চাত্য সমাজে নারী",
+          "cover": null
+        },
+        {
+          "alternative": false,
+          "label": "১১৩। ইসলামী সমাজে নারী – জালালুদ্দীন আনছার উমরী (রাহি.)।",
+          "scope": false,
+          "section": "নারী",
+          "url": "https://bjilibrary.com/5632",
+          "title": "ইসলামী সমাজে নারী",
+          "cover": null
+        },
+        {
+          "alternative": false,
+          "label": "১১৫। সংগ্রামী নারী – মুহাম্মাদ নূরুজ্জামান (রাহি.)।",
+          "scope": false,
+          "section": "নারী",
+          "url": "https://bjilibrary.com/5635",
+          "title": "সংগ্রামী নারী",
+          "cover": null
+        },
+        {
+          "alternative": false,
+          "label": "১১৭। ইসলামী আন্দোলনে মহিলা কর্মীদের দায়িত্ব ও কর্তব্য – বেগম রোকেয়া আনসার।",
+          "scope": false,
+          "section": "নারী",
+          "url": "https://bjilibrary.com/6623",
+          "title": "ইসলামী আন্দোলনে মহিলা কর্মীদের দায়িত্ব ও কর্তব্য",
+          "cover": null
+        },
+        {
+          "alternative": false,
+          "label": "১১৮। আল কুরআনে নারী – অধ্যাপক মোশাররফ হোসাইন।",
+          "scope": false,
+          "section": "নারী",
+          "url": "https://bjilibrary.com/5639",
+          "title": "আল কুরআনে নারী",
+          "cover": null
+        },
+        {
+          "alternative": false,
+          "label": "১২০। তাওহীদের মর্মকথা – শাইখ আবদুর রহমান বিন নাসের",
+          "scope": false,
+          "section": "বিবিধ",
+          "url": "https://bjilibrary.com/5730",
+          "title": "তাওহীদের মর্মকথা",
+          "cover": null
+        },
+        {
+          "alternative": false,
+          "label": "১২২। আহলে সুন্নাত ওয়াল জামায়াতের আক্বীদা – শায়খ মুহাম্মাদ আস সালেহ আল সাঈমা (রাহি.)।",
+          "scope": false,
+          "section": "বিবিধ",
+          "url": "https://bjilibrary.com/5736",
+          "title": "আহলে সুন্নাত ওয়াল জামায়াতের আক্বীদা",
+          "cover": null
+        },
+        {
+          "alternative": false,
+          "label": "১২৪। সত্যের মাপকাঠি – মুহাম্মাদ নাজমুল ইসলাম।",
+          "scope": false,
+          "section": "বিবিধ",
+          "url": "https://bjilibrary.com/5740",
+          "title": "সত্যের মাপকাঠি",
+          "cover": null
+        },
+        {
+          "alternative": false,
+          "label": "১২৬। সত্যের আলো – মাওলানা বশীরুজ্জামান (রাহি.)।",
+          "scope": false,
+          "section": "বিবিধ",
+          "url": "https://bjilibrary.com/5743",
+          "title": "সত্যের আলো",
+          "cover": null
+        },
+        {
+          "alternative": false,
+          "label": "১২৭। কুরআন হাদিসের আলোকে আখিরাতের চিত্র – মাওলানা মুহাম্মাদ খলিলুর রহমান মুমিন।",
+          "scope": false,
+          "section": "বিবিধ",
+          "url": "https://bjilibrary.com/5747",
+          "title": "কুরআন হাদিসের আলোকে আখিরাতের চিত্র",
+          "cover": null
+        },
+        {
+          "alternative": false,
+          "label": "১২৮। তাকবিয়াতুল ঈমান – শাহ ইসমাঈল শহীদ (রাহি.)।",
+          "scope": false,
+          "section": "বিবিধ",
+          "url": "https://bjilibrary.com/5752",
+          "title": "তাকবিয়াতুল ঈমান",
+          "cover": null
+        },
+        {
+          "alternative": false,
+          "label": "১২৯। আল জিহাদ – সাইয়েদ আবুল আ’লা মওদূদী (রাহি.)।",
+          "scope": false,
+          "section": "বিবিধ",
+          "url": "https://bjilibrary.com/5756",
+          "title": "আল জিহাদ",
+          "cover": null
+        },
+        {
+          "alternative": false,
+          "label": "১৩০। নির্বাচিত রচনাবলী – সাইয়েদ আবুল আ’লা মওদূদী (রাহি.)।",
+          "scope": false,
+          "section": "বিবিধ",
+          "url": "https://bjilibrary.com/5759",
+          "title": "নির্বাচিত রচনাবলী",
+          "cover": null
+        },
+        {
+          "alternative": false,
+          "label": "১৩১। ইসলাম ও জিহাদ – শায়খ হাসানুল বান্না (রাহি.)।",
+          "scope": false,
+          "section": "বিবিধ",
+          "url": "https://bjilibrary.com/5762",
+          "title": "ইসলাম ও জিহাদ",
+          "cover": null
+        },
+        {
+          "alternative": false,
+          "label": "১৩২। কালজয়ী আদর্শ ইসলাম – সাইয়েদ কুতুব (রাহি.)।",
+          "scope": false,
+          "section": "বিবিধ",
+          "url": "https://bjilibrary.com/5769",
+          "title": "কালজয়ী আদর্শ ইসলাম",
+          "cover": null
+        },
+        {
+          "alternative": false,
+          "label": "১৩৩। আগামী দিনের জীবন বিধান – সাইয়েদ কুতুব (রাহি.)।",
+          "scope": false,
+          "section": "বিবিধ",
+          "url": "https://bjilibrary.com/5772",
+          "title": "আগামী দিনের জীবন বিধান",
+          "cover": null
+        },
+        {
+          "alternative": false,
+          "label": "১৩৪। পাশ্চাত্য সভ্যতার উৎস – আবদুল হামিদ সিদ্দিকী।",
+          "scope": false,
+          "section": "বিবিধ",
+          "url": "https://bjilibrary.com/5776",
+          "title": "পাশ্চাত্য সভ্যতার উৎস",
+          "cover": null
+        },
+        {
+          "alternative": false,
+          "label": "১৩৫। ভ্রান্তির বেড়াজালে ইসলাম – মুহাম্মাদ কুতুব (রাহি.)।",
+          "scope": false,
+          "section": "বিবিধ",
+          "url": "https://bjilibrary.com/5778",
+          "title": "ভ্রান্তির বেড়াজালে ইসলাম",
+          "cover": null
+        },
+        {
+          "alternative": false,
+          "label": "১৩৬। ইসলামের পূর্ণাঙ্গ রূপ – মাওলানা সদরুদ্দীন ইসলাহী (রাহি.)।",
+          "scope": false,
+          "section": "বিবিধ",
+          "url": "https://bjilibrary.com/5783",
+          "title": "ইসলামের পূর্ণাঙ্গ রূপ",
+          "cover": null
+        },
+        {
+          "alternative": false,
+          "label": "১৩৭। দ্বীন ইসলামের বৈশিষ্ট্য – আবদুল কাদের আওদাহ (রাহি.)।",
+          "scope": false,
+          "section": "বিবিধ",
+          "url": "https://bjilibrary.com/5787",
+          "title": "দ্বীন ইসলামের বৈশিষ্ট্য",
+          "cover": null
+        },
+        {
+          "alternative": false,
+          "label": "১৩৮। মুসলমানদেরকে যা জানতেই হবে – ড. আবদুল্লাহ আল মুসলিম (রাহি.)।",
+          "scope": false,
+          "section": "বিবিধ",
+          "url": "https://bjilibrary.com/5792",
+          "title": "মুসলমানদেরকে যা জানতেই হবে",
+          "cover": null
+        },
+        {
+          "alternative": false,
+          "label": "১৪১। ইসলামের জীবনচিত্র – নাসরুল্লাহ খান আযীয (রাহি.)।",
+          "scope": false,
+          "section": "বিবিধ",
+          "url": "https://bjilibrary.com/5795",
+          "title": "ইসলামের জীবনচিত্র",
+          "cover": null
+        },
+        {
+          "alternative": false,
+          "label": "১৪২ । ইসলামী পুনর্জাগরণ: সমস্যা ও সম্ভাবনা – নাসরুল্লাহ খান আযীয (রাহি.)।",
+          "scope": false,
+          "section": "বিবিধ",
+          "url": "https://bjilibrary.com/5799",
+          "title": "ইসলামী পুনর্জাগরণ: সমস্যা ও সম্ভাবনা",
+          "cover": null
+        },
+        {
+          "alternative": false,
+          "label": "১৪৪। বিজ্ঞানে মুসলমানদের অবদান – মুহাম্মাদ নুরুল আমীন।",
+          "scope": false,
+          "section": "বিবিধ",
+          "url": "https://bjilibrary.com/5805",
+          "title": "বিজ্ঞানে মুসলমানদের অবদান",
+          "cover": null
+        },
+        {
+          "alternative": false,
+          "label": "১৪৫।আল কুরআন এক মহাবিস্ময় – ড. মরিস বুকাইলি, ড. কিথ এল মূর, গ্যারি মিলার।",
+          "scope": false,
+          "section": "বিবিধ",
+          "url": "https://bjilibrary.com/5808",
+          "title": "আল কুরআন এক মহাবিস্ময়",
+          "cover": null
+        },
+        {
+          "alternative": false,
+          "label": "১৪৬।জীবন্ত নামায – অধ্যাপক গোলাম আযম (রাহি.)।",
+          "scope": false,
+          "section": "বিবিধ",
+          "url": "https://bjilibrary.com/5811",
+          "title": "জীবন্ত নামায",
+          "cover": null
+        },
+        {
+          "alternative": false,
+          "label": "১৪৭। মনটাকে কাজ দিন – অধ্যাপক গোলাম আযম (রাহি.)।",
+          "scope": false,
+          "section": "বিবিধ",
+          "url": "https://bjilibrary.com/5814",
+          "title": "মনটাকে কাজ দিন",
+          "cover": null
+        },
+        {
+          "alternative": false,
+          "label": "১৪৮। সাইয়েদ আবুল আ’লা মওদূদী – অধ্যাপক এ. কে. এম নাজির আহমদ (রাহি.)।",
+          "scope": false,
+          "section": "বিবিধ",
+          "url": "https://bjilibrary.com/5820",
+          "title": "সাইয়েদ আবুল আ’লা মওদূদী",
+          "cover": null
+        },
+        {
+          "alternative": false,
+          "label": "১৪৯। উমর তিলমিসানী ও ইখওয়ান – সাইয়েদ উমর তিলমিসানী (রাহি.)।",
+          "scope": false,
+          "section": "বিবিধ",
+          "url": "https://bjilibrary.com/5821",
+          "title": "উমর তিলমিসানী ও ইখওয়ান",
+          "cover": null
+        },
+        {
+          "alternative": false,
+          "label": "১৫০। শহীদ হাসানুল বান্নার ডায়রী – খলিল আহমদ হামেদী",
+          "scope": false,
+          "section": "বিবিধ",
+          "url": "https://bjilibrary.com/5828",
+          "title": "শহীদ হাসানুল বান্নার ডায়রী",
+          "cover": null
+        },
+        {
+          "alternative": false,
+          "label": "১৫১। অধ্যাপক গোলাম আযমের সংগ্রামী জীবন – মুহাম্মাদ কামারুজ্জামান (রাহি.)।",
+          "scope": false,
+          "section": "বিবিধ",
+          "url": "https://bjilibrary.com/5831",
+          "title": "অধ্যাপক গোলাম আযমের সংগ্রামী জীবন",
+          "cover": null
+        },
+        {
+          "alternative": false,
+          "label": "১৫২। যুগে যুগে ইসলামী জাগরণ – অধ্যাপক এ. কে. এম নাজির আহমদ (রাহি.)।",
+          "scope": false,
+          "section": "বিবিধ",
+          "url": "https://bjilibrary.com/5834",
+          "title": "যুগে যুগে ইসলামী জাগরণ",
+          "cover": null
+        },
+        {
+          "alternative": false,
+          "label": "১৫৩। বাংলাদেশে ইসলামের আগমন – অধ্যাপক এ. কে. এম নাজির আহমদ (রাহি.)।",
+          "scope": false,
+          "section": "বিবিধ",
+          "url": "https://bjilibrary.com/5837",
+          "title": "বাংলাদেশে ইসলামের আগমন",
+          "cover": null
+        },
+        {
+          "alternative": false,
+          "label": "১৫৪। তাবেয়ীদের জীবন কথা – ড. মুহাম্মাদ আবদুল মাবুদ।",
+          "scope": false,
+          "section": "বিবিধ",
+          "url": "https://bjilibrary.com/5840",
+          "title": "তাবেয়ীদের জীবন কথা",
+          "cover": null
+        },
+        {
+          "alternative": false,
+          "label": "১৫৫। ঈমাম ইবনু তাইমিয়ার সংগ্রামী জীবন – আবদুল মান্নান তালিব (রাহি.)।",
+          "scope": false,
+          "section": "বিবিধ",
+          "url": "https://bjilibrary.com/5843",
+          "title": "ঈমাম ইবনু তাইমিয়ার সংগ্রামী জীবন",
+          "cover": null
+        },
+        {
+          "alternative": false,
+          "label": "১৫৬। মর্দে মুজাহিদ যুগে যুগে – বদরে আলম (রাহি.)।",
+          "scope": false,
+          "section": "বিবিধ",
+          "url": "https://bjilibrary.com/5846",
+          "title": "মর্দে মুজাহিদ যুগে যুগে",
+          "cover": null
+        },
+        {
+          "alternative": false,
+          "label": "১৫৭। হাজী শরীয়তুল্লাহ – মোশাররফ হোসেন খান।",
+          "scope": false,
+          "section": "বিবিধ",
+          "url": "https://bjilibrary.com/5850",
+          "title": "হাজী শরীয়তুল্লাহ",
+          "cover": null
+        },
+        {
+          "alternative": false,
+          "label": "১৫৮। সাইয়েদ নিসার আলী তিতুমীর – মোশাররফ হোসেন খান।",
+          "scope": false,
+          "section": "বিবিধ",
+          "url": "https://bjilibrary.com/5853",
+          "title": "সাইয়েদ নিসার আলী তিতুমীর",
+          "cover": null
+        },
+        {
+          "alternative": false,
+          "label": "১৫৯। সাইয়েদ কুতুব: জীবন ও কর্ম – আব্দুদ্দাইয়ান মুহাম্মাদ ইউনুস।",
+          "scope": false,
+          "section": "বিবিধ",
+          "url": "https://bjilibrary.com/5856",
+          "title": "সাইয়েদ কুতুব: জীবন ও কর্ম",
+          "cover": null
+        },
+        {
+          "alternative": false,
+          "label": "১৬০। উপমহাদেশের আযাদী আন্দোলন ও মুসলমান – সাইয়েদ আবুল আ’লা মওদূদী (রাহি.)।",
+          "scope": false,
+          "section": "বিবিধ",
+          "url": "https://bjilibrary.com/5859",
+          "title": "উপমহাদেশের আযাদী আন্দোলন ও মুসলমান",
+          "cover": null
+        },
+        {
+          "alternative": false,
+          "label": "১৬১। তারিখে ইসলাম – সাইয়েদ মুহাম্মাদ আমীমুল ইহসান (রাহি.)।",
+          "scope": false,
+          "section": "বিবিধ",
+          "url": "https://bjilibrary.com/5862",
+          "title": "তারিখে ইসলাম",
+          "cover": null
+        },
+        {
+          "alternative": false,
+          "label": "১৬২। বাংলার মুসলমানদের ইতিহাস – আব্বাস আলী খান (রাহি.)।",
+          "scope": false,
+          "section": "বিবিধ",
+          "url": "https://bjilibrary.com/5865",
+          "title": "বাংলার মুসলমানদের ইতিহাস",
+          "cover": null
+        },
+        {
+          "alternative": false,
+          "label": "১৬৩। মুক্তি সংগ্রামের মূলধারা – মুহাম্মাদ আবদুল মান্নান (রাহি.)।",
+          "scope": false,
+          "section": "বিবিধ",
+          "url": "https://bjilibrary.com/5868",
+          "title": "মুক্তি সংগ্রামের মূলধারা",
+          "cover": null
+        },
+        {
+          "alternative": false,
+          "label": "১৬৪। আমাদের জাতিসত্তার বিকাশধারা – মুহাম্মাদ আবদুল মান্নান (রাহি.)।",
+          "scope": false,
+          "section": "বিবিধ",
+          "url": "https://bjilibrary.com/5871",
+          "title": "আমাদের জাতিসত্তার বিকাশধারা",
+          "cover": null
+        },
+        {
+          "alternative": false,
+          "label": "১৬৬। আমরা সেই সে জাতি – আবুল আসাদ।",
+          "scope": false,
+          "section": "বিবিধ",
+          "url": "https://bjilibrary.com/5874",
+          "title": "আমরা সেই সে জাতি",
+          "cover": "https://bjilibrary.com/wp-content/uploads/2020/04/Capture-40-750x440.jpg"
+        },
+        {
+          "alternative": false,
+          "label": "১৬৭৷ মক্কা শরীফের ইতিকথা – এ. এন. এম সিরাজুল ইসলাম।",
+          "scope": false,
+          "section": "বিবিধ",
+          "url": "https://bjilibrary.com/5877",
+          "title": "১৬৭৷ মক্কা শরীফের ইতিকথা",
+          "cover": null
+        },
+        {
+          "alternative": false,
+          "label": "১৬৮। মদীনা শরীফের ইতিকথা – এ. এন. এম সিরাজুল ইসলাম।",
+          "scope": false,
+          "section": "বিবিধ",
+          "url": "https://bjilibrary.com/5880",
+          "title": "মদীনা শরীফের ইতিকথা",
+          "cover": null
+        },
+        {
+          "alternative": false,
+          "label": "১৬৯। আল আকসা মসজিদের ইতিকথা – এ. এন. এম সিরাজুল ইসলাম।",
+          "scope": false,
+          "section": "বিবিধ",
+          "url": "https://bjilibrary.com/5884",
+          "title": "আল আকসা মসজিদের ইতিকথা",
+          "cover": null
+        },
+        {
+          "alternative": false,
+          "label": "১৭০। ইসলামের ঐতিহাসিক অবদান – এম.এন. রায়।",
+          "scope": false,
+          "section": "বিবিধ",
+          "url": "https://bjilibrary.com/5996",
+          "title": "ইসলামের ঐতিহাসিক অবদান",
+          "cover": null
+        },
+        {
+          "alternative": false,
+          "label": "১৭১ । উসমানী খিলাফাত – অধ্যাপক এ. কে. এম নাজির আহমদ (রাহি.)।",
+          "scope": false,
+          "section": "বিবিধ",
+          "url": "https://bjilibrary.com/5999",
+          "title": "উসমানী খিলাফাত",
+          "cover": null
+        },
+        {
+          "alternative": false,
+          "label": "১৭২। বাংলার মুসলমানদের ইতিহাস (১৯৪৭-১৯৫৭) – ড. এম. এ রহীম।",
+          "scope": false,
+          "section": "বিবিধ",
+          "url": "https://bjilibrary.com/6267",
+          "title": "বাংলার মুসলমানদের ইতিহাস (১৯৪৭-১৯৫৭)",
+          "cover": null
+        },
+        {
+          "alternative": false,
+          "label": "১৭৪। ইতিহাস কথা কয় – মোহাম্মাদ মোদাব্বের।",
+          "scope": false,
+          "section": "বিবিধ",
+          "url": "https://bjilibrary.com/6002",
+          "title": "ইতিহাস কথা কয়",
+          "cover": null
+        },
+        {
+          "alternative": false,
+          "label": "১৭৫। দি ইন্ডিয়ান মুসলমান – ডব্লিউ ডব্লিউ হানটার।",
+          "scope": false,
+          "section": "বিবিধ",
+          "url": "https://bjilibrary.com/6005",
+          "title": "দি ইন্ডিয়ান মুসলমান",
+          "cover": null
+        },
+        {
+          "alternative": false,
+          "label": "১৭৮। সাহাবীদের বিপ্লবী জীবন – ড. আব্দুর রহমান রাফাত পাশা (রাহি.)।",
+          "scope": false,
+          "section": "বিবিধ",
+          "url": "https://bjilibrary.com/6629",
+          "title": "সাহাবীদের বিপ্লবী জীবন",
+          "cover": null
+        },
+        {
+          "alternative": false,
+          "label": "১৭৯ । আসহাবে রাসূলের জীবন ধারা – অধ্যাপক এ. কে. এম নাজির আহমদ (রাহি.)।",
+          "scope": false,
+          "section": "বিবিধ",
+          "url": "https://bjilibrary.com/6008",
+          "title": "আসহাবে রাসূলের জীবন ধারা",
+          "cover": null
+        },
+        {
+          "alternative": false,
+          "label": "১৮০। অপপ্রচারের মুকাবিলায় মুহাম্মাদুর রাসূলুল্লাহ (সা.) – অধ্যাপক এ. কে. এম নাজির আহমদ (রাহি.)।",
+          "scope": false,
+          "section": "বিবিধ",
+          "url": "https://bjilibrary.com/6011",
+          "title": "অপপ্রচারের মুকাবিলায় মুহাম্মাদুর রাসূলুল্লাহ (সা.)",
+          "cover": null
+        },
+        {
+          "alternative": false,
+          "label": "১৮১। শিক্ষা-সাহিত্য-সংস্কৃতি – মাওলানা মুহাম্মাদ আবদুর রহীম (রাহি.)।",
+          "scope": false,
+          "section": "বিবিধ",
+          "url": "https://bjilibrary.com/6014",
+          "title": "শিক্ষা-সাহিত্য-সংস্কৃতি",
+          "cover": null
+        },
+        {
+          "alternative": false,
+          "label": "১৮৩। ইসলামী শিক্ষার মূলনীতি – অধ্যাপক খুরশিদ আহমদ।",
+          "scope": false,
+          "section": "বিবিধ",
+          "url": "https://bjilibrary.com/6020",
+          "title": "ইসলামী শিক্ষার মূলনীতি",
+          "cover": null
+        },
+        {
+          "alternative": false,
+          "label": "১৮৪। শিক্ষা ও প্রশিক্ষণ – আফজাল হুসাইন।",
+          "scope": false,
+          "section": "বিবিধ",
+          "url": "https://bjilibrary.com/6023",
+          "title": "শিক্ষা ও প্রশিক্ষণ",
+          "cover": null
+        },
+        {
+          "alternative": false,
+          "label": "১৮৫। ইসলামী শিক্ষা ব্যবস্থার রূপরেখা – অধ্যক্ষ মুহাম্মাদ আবদুর রব (রাহি.)।",
+          "scope": false,
+          "section": "বিবিধ",
+          "url": "https://bjilibrary.com/6026",
+          "title": "ইসলামী শিক্ষা ব্যবস্থার রূপরেখা",
+          "cover": null
+        },
+        {
+          "alternative": false,
+          "label": "১৮৬। ইসলামী শিক্ষা ও সংস্কৃতি – অধ্যাপক এ কে.এম নাজির আহমদ রাহি.।",
+          "scope": false,
+          "section": "বিবিধ",
+          "url": "https://bjilibrary.com/6029",
+          "title": "ইসলামী শিক্ষা ও সংস্কৃতি",
+          "cover": null
+        },
+        {
+          "alternative": false,
+          "label": "১৮৮। ইসলামে ধর্মীয় চিন্তার পুনর্গঠন – ড. মুহাম্মাদ ইকবাল।",
+          "scope": false,
+          "section": "বিবিধ",
+          "url": "https://bjilibrary.com/6032",
+          "title": "ইসলামে ধর্মীয় চিন্তার পুনর্গঠন",
+          "cover": null
+        },
+        {
+          "alternative": false,
+          "label": "১৮৯ । ইসলামী দর্শন – শিবলী নু’মানী।",
+          "scope": false,
+          "section": "বিবিধ",
+          "url": "https://bjilibrary.com/6038",
+          "title": "ইসলামী দর্শন",
+          "cover": null
+        },
+        {
+          "alternative": false,
+          "label": "১৯০। আল কুরআনের অভিধান – মুহাম্মদ খলিলুর রহমান মুমিন।",
+          "scope": false,
+          "section": "বিবিধ",
+          "url": "https://bjilibrary.com/6043",
+          "title": "আল কুরআনের অভিধান",
+          "cover": null
+        },
+        {
+          "alternative": false,
+          "label": "১৯১। ইসলামী বিশ্বকোষ ১ – ইসলামিক ফাউন্ডেশন বাংলাদেশ।",
+          "scope": false,
+          "section": "বিবিধ",
+          "url": "https://bjilibrary.com/6046",
+          "title": "ইসলামী বিশ্বকোষ ১",
+          "cover": null
+        },
+        {
+          "alternative": false,
+          "label": "১৯২। সেমিনার স্মারকগ্রন্থ সমূহ ১ – বাংলাদেশ ইসলামিক সেন্টার প্রকাশিত।",
+          "scope": false,
+          "section": "বিবিধ",
+          "url": "https://bjilibrary.com/6049",
+          "title": "সেমিনার স্মারকগ্রন্থ সমূহ ১",
+          "cover": null
+        }
+      ]
+    }
+  ]
+}
