@@ -130,7 +130,9 @@ def request_exception(body: ExceptionRequest, actor: Actor = Depends(current_act
 def decide(request_id: UUID, body: Decision, actor: Actor = Depends(current_actor), db: Session = Depends(get_db)):
     require_reviewer(actor)
     lock_organization(db)
-    request = db.query(AuditLog).filter(AuditLog.id == request_id, AuditLog.action == policy.REQUEST_EVENT).with_for_update().one_or_none()
+    # Audit events are immutable and the runtime deliberately has no UPDATE privilege.
+    # The organization lock above serializes decisions; do not row-lock audit_logs.
+    request = db.query(AuditLog).filter(AuditLog.id == request_id, AuditLog.action == policy.REQUEST_EVENT).one_or_none()
     if not request:
         raise HTTPException(404, "Security request not found")
     if policy.resolved(db, request.id):
