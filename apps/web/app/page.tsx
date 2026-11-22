@@ -3,6 +3,7 @@ import {useEffect, useState, type FormEvent} from "react";
 import Link from "next/link";
 import {Users, UserCheck, UserPlus, UserRound, ArrowUpRight, ArrowDownRight, Activity, GitBranch, ShieldCheck, ArrowRight} from "lucide-react";
 import Shell from "@/components/Shell";
+import RegisteredOverview from "@/components/RegisteredOverview";
 import {api, type Dashboard} from "@/lib/api";
 
 const categories = [
@@ -30,6 +31,8 @@ export default function Home() {
   return <Shell title="Overview" subtitle="A clear, real-time view of authorized organizational records.">
     <form className="toolbar dashboard-search" action="/members/"><input className="input" name="q" aria-label="Search people by name or member ID" placeholder="Search people by name, member ID or mobile" value={personSearch} onChange={e=>setPersonSearch(e.target.value)}/><button className="secondary-btn" type="submit">Find profile</button></form>
     {error && <div className="alert" role="alert">{error}</div>}
+    <RegisteredOverview/>
+    <div className="section-title"><div><h2>Official membership</h2><p className="subhead">Confirmed organizational records only. These totals can differ from registered profiles.</p></div></div>
     <form className="toolbar" onSubmit={filter}>
       <label>From <input aria-label="Start date" className="input" type="date" value={start} onChange={e=>setStart(e.target.value)}/></label>
       <label>Through <input aria-label="End date" className="input" type="date" value={end} onChange={e=>setEnd(e.target.value)}/></label>
@@ -44,7 +47,7 @@ export default function Home() {
     <div className="two-col">
       <div className="panel"><div className="panel-head"><div><h2>Organizational distribution</h2><span className="subhead">Active records by organizational category</span></div><Activity size={20} color="#318A67"/></div>
         {categories.map(c=><div className="barrow" key={c.key}><label>{c.label}</label><div className="bartrack"><div className="barfill" style={{width: ((data?.by_category[c.key] || 0) / max * 100) + "%"}}/></div><strong>{data ? data.by_category[c.key] : "—"}</strong></div>)}
-        <div className="hint" style={{marginTop:25}}>Counts are calculated from active database records, not manually entered dashboard totals.</div>
+        <div className="hint" style={{marginTop:25}}>Counts use the official membership ledger. Registered accounts and self-reported categories do not automatically enter these totals.</div>
       </div>
       <div className="panel"><div className="panel-head"><div><h2>Period movement</h2><span className="subhead">Selected reporting dates</span></div><ArrowUpRight size={20} color="#318A67"/></div>
         <div style={{display:"flex",justifyContent:"space-between",gap:10,padding:"18px 0",borderBottom:"1px solid #E9EFEA"}}><span><ArrowUpRight size={17} color="#23885A"/> Increase</span><strong>{data ? data.period.increase : "—"}</strong></div>
@@ -57,9 +60,9 @@ export default function Home() {
       <div className="panel"><div className="panel-head"><div><h2>Unit overview</h2><span className="subhead">Authorized, active people across units</span></div><Link className="link-action" href="/organization">All units <ArrowRight size={13}/></Link></div>
         {data?.by_unit?.length ? <div className="table-wrap"><table className="data-table"><thead><tr><th>Unit</th><th>Code</th><th>Active</th></tr></thead><tbody>{data.by_unit.slice(0,7).map(u=><tr key={u.id}><td>{u.name}</td><td>{u.code}</td><td><b>{u.count}</b></td></tr>)}</tbody></table></div> : <div className="empty"><GitBranch size={28}/><strong>No units configured yet</strong><span>Authorized admins can create the organizational structure.</span></div>}
       </div>
-      <div className="panel"><div className="panel-head"><div><h2>Workspace snapshot</h2><span className="subhead">Live server-calculated totals</span></div><ShieldCheck color="#318A67" size={20}/></div>
+      <div className="panel"><div className="panel-head"><div><h2>Official membership snapshot</h2><span className="subhead">Live server-calculated totals</span></div><ShieldCheck color="#318A67" size={20}/></div>
         <div className="stat-number">{data ? data.total_active.toLocaleString() : "—"}</div><p className="subhead">Total active records within your approved access scope.</p>
-        <hr className="subtle-divider"/><p className="hint">Sensitive profile changes are reviewed through the independent approval process. Reports are permission-scoped.</p>
+        <hr className="subtle-divider"/><p className="hint">Ordinary administrators use independent review; the Master Admin can act directly. Reports remain permission-scoped.</p>
         <Link href="/reports" className="primary-btn" style={{marginTop:12}}>Open reports <ArrowRight size={15}/></Link>
       </div>
     </div>

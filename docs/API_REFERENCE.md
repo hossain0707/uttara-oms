@@ -99,3 +99,12 @@ curl --fail --max-time 70 https://uttara-oms-api.onrender.com/health/ready
 ```
 
 This checks readiness only. It does not test identity, permissions, business writes, email or 50 authenticated users. Test authenticated requests in a separate environment with synthetic identities; do not copy live tokens into scripts or documentation.
+
+## Membership confirmation and current profile totals
+
+- `GET /api/v1/reports/registered-summary`: current aggregate counts of active registered accounts, consented saved profiles by self-reported category, incomplete profiles, linked profiles, awaiting confirmation and active units. Thana report viewers receive aggregates only. Scoped staff see only profiles linked to official members within their approved scope; requested units never expand visibility. This is separate from historical dashboard date filters.
+- `GET /api/v1/master/confirmation-queue?q=&limit=20&offset=0`: owner-only paginated awaiting profiles, searchable by normalized name or email.
+- `GET /api/v1/master/accounts/{user_id}/membership`: owner-only versioned preview, masked phone and up to 20 duplicate candidates (phone matches first). No private identity document or report payload.
+- `POST /api/v1/master/accounts/{user_id}/membership`: owner/AAL2 only. Required: `expected_profile_version`, `mode` (`CREATE` or `LINK`), `consent_attested: true`, `duplicates_reviewed: true`. CREATE requires `category` and `org_node_id`; optional `member_number` and `joined_on`. LINK requires `member_id` and `expected_member_version`. Returns CONFIRMED, member_id and created flag.
+
+Confirmation holds organization then target-account locks. Member creation, creation event, ledger movement, profile link/version and audit commit together. Linking adds no movement. Unique phone/member-number/profile-link constraints and expected versions prevent duplicate/stale submissions. Ordinary role approval rules are unchanged.

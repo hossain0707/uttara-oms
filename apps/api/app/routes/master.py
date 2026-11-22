@@ -396,7 +396,7 @@ def activity(limit: int = Query(default=20, ge=1, le=100), offset: int = Query(d
              actor: Actor = Depends(current_actor), db: Session = Depends(get_db)):
     require_owner(db, actor)
     actions = [policy.POLICY_EVENT, policy.APPROVE_EVENT, policy.REJECT_EVENT, "MASTER_ACCOUNT_STATUS", "MASTER_ACCOUNT_DELETED",
-               "ACCESS_APPROVED", "ACCESS_REJECTED", "ACCESS_SUPERSEDED", "CHANGE_APPROVED", "CHANGE_REJECTED", "PERSONAL_ASSIGNMENT_UPDATED"]
+               "ACCESS_APPROVED", "ACCESS_REJECTED", "ACCESS_SUPERSEDED", "CHANGE_APPROVED", "CHANGE_REJECTED", "PERSONAL_ASSIGNMENT_UPDATED", "MEMBERSHIP_CONFIRMED"]
     query = db.query(AuditLog).filter(AuditLog.action.in_(actions))
     total = query.count()
     rows = query.order_by(AuditLog.created_at.desc(), AuditLog.id.desc()).offset(offset).limit(limit).all()

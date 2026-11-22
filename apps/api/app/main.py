@@ -13,7 +13,7 @@ from uuid import UUID
 from .models import AppUser, AuditLog
 from .config import settings
 from .database import get_db
-from .routes import access, approvals, members, organization, reports, personal, master, directory
+from .routes import access, approvals, members, organization, reports, personal, master, directory, confirmation
 
 app = FastAPI(title="Uttara OMS API", version="0.1.0",
               docs_url=None if settings().environment == "production" else "/docs",
@@ -24,6 +24,7 @@ app.add_middleware(CORSMiddleware, allow_origins=settings().allowed_origins,
                    allow_headers=["Authorization", "Content-Type"],
                    expose_headers=["Content-Disposition"])
 
+app.include_router(confirmation.router, prefix="/api/v1")
 app.include_router(directory.router, prefix="/api/v1")
 app.include_router(master.router, prefix="/api/v1")
 app.include_router(personal.router, prefix="/api/v1")
