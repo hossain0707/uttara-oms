@@ -18,11 +18,11 @@ Use the newest email code, check Spam and wait for the resend timer instead of s
 1. Enter your full name **once**, in Bengali or English. A second-language name is not required. It is displayed as saved.
 2. Enter contact details, occupation and responsibility. Suggested positions are descriptions, not appointments or access permissions.
 3. Search an address directly, or choose division → district → upazila/thana → union/area. Apply the selection explicitly, then add house/road details. Manual and unlisted addresses are supported.
-4. Select NID or passport and supply its number. NID accepts 10, 13 or 17 digits; passport accepts 5–20 letters/digits. This checks format only; it does not verify identity. No document scan is requested.
+4. NID or passport information is not required or displayed. Enter your name and consent to save your profile.
 5. Optionally choose a JPG/PNG/WebP photo up to 5 MB. The app processes it before saving. Photo sharing in the authorized directory is a separate checkbox.
 6. Select a requested unit/category if appropriate, read the consent statement and choose **Save my profile**.
 
-After saving, a profile card appears. Choose **Edit profile** to reopen the form or **Cancel editing** to restore saved profile fields. The owner card masks the document number; authorized directory/reviewer responses exclude it. Private profile information and reports have different visibility rules described in [the data model](DATA_MODEL.md).
+After saving, a profile card appears. Choose **Edit profile** to reopen the form or **Cancel editing** to restore saved profile fields. NID and passport fields are absent from both the form and saved card. Private profile information and reports have different visibility rules described in [the data model](DATA_MODEL.md).
 
 If no active units exist, save without a unit and ask an administrator to configure the hierarchy. Requested units and self-reported categories do not change official membership or administrative access.
 

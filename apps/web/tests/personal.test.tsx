@@ -18,7 +18,7 @@ it("saves only the owner's self-reported profile and allows a separate leader ap
     path === "/self/profile"
       ? {
           version: 1,
-          details: { full_name: "Synthetic owner", consent: true, identity_type:"NID", identity_number:"1000000000" },
+          details: { full_name: "Synthetic owner", consent: true },
           goals: [],
           reviewer_assigned: false,
         }
@@ -51,7 +51,7 @@ it("saves only the owner's self-reported profile and allows a separate leader ap
 });
 
 function mockWorkspace() {
-  let saved = {version: 1, details: {full_name: 'Saved owner', consent: true, books: [], identity_type:'NID', identity_number:'1000000000'}, goals: [], reviewer_assigned: false};
+  let saved = {version: 1, details: {full_name: 'Saved owner', consent: true, books: []}, goals: [], reviewer_assigned: false};
   vi.mocked(api).mockImplementation(async (path, options) => {
     if (path === '/self/profile') {
       if (options?.method === 'PUT') saved = {...saved, version: saved.version + 1, details: JSON.parse(String(options.body)).details};
@@ -109,18 +109,20 @@ it('adds a library book and saves it without overwriting unsaved profile edits',
  fireEvent.click(screen.getByRole('tab',{name:'My profile'}));expect((screen.getByLabelText('Full name') as HTMLInputElement).value).toBe('Unsaved profile name');
 });
 
-it('shows a saved profile, masks identity, and allows editing or cancelling without saving', async()=>{
+it('shows a saved profile without identity fields and allows editing or cancelling without saving', async()=>{
  mockWorkspace();render(<PersonalWorkspace/>);
  await screen.findByRole('heading',{name:'Saved owner'});
  expect(screen.queryByLabelText('Full name')).toBeNull();
- expect(screen.getByText('NID · •••• 0000')).toBeTruthy();
+ expect(screen.queryByText('Identity document')).toBeNull();
  expect(screen.queryByText('1000000000')).toBeNull();
  fireEvent.click(screen.getByRole('button',{name:'Edit profile'}));
+ expect(screen.queryByLabelText('NID or passport number')).toBeNull();
  fireEvent.change(screen.getByLabelText('Full name'),{target:{value:'Changed'}});
  fireEvent.click(screen.getByRole('button',{name:'Cancel editing'}));
  expect(screen.getByRole('heading',{name:'Saved owner'})).toBeTruthy();
  expect(vi.mocked(api).mock.calls.filter(([,o])=>o?.method==='PUT')).toHaveLength(0);
  fireEvent.click(screen.getByRole('button',{name:'Edit profile'}));
+ expect(screen.queryByLabelText('NID or passport number')).toBeNull();
  fireEvent.change(screen.getByLabelText('Full name'),{target:{value:'Changed'}});
  fireEvent.click(screen.getByRole('button',{name:'Save my profile'}));
  await screen.findByRole('heading',{name:'Changed'});

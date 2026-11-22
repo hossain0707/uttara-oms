@@ -40,7 +40,7 @@ Diagram omits auxiliary foreign keys for clarity; it is not generated DDL. Revie
 | Official name, category, status, unit, occupation | SQL columns | Approved official-record scope; aggregates exclude names |
 | Official phone/address | Fernet ciphertext; phone also keyed HMAC digest | Authorized record views; selected official phone fields in Thana Admin export |
 | Personal profile/name/photo/books | Fernet-encrypted JSON | Owner; assigned reviewer projection; minimal directory projection by scope |
-| NID/passport | Inside encrypted profile JSON | Owner endpoint only; owner card masks last four; excluded from review/directory/report exports |
+| Legacy NID/passport | Older encrypted profile JSON may contain these keys | Excluded from every profile response and discarded on subsequent profile/reading saves; no new collection or display |
 | Report entries, summary, goal snapshot, review note | Fernet ciphertext | Owner and assigned independent reviewer through authorized endpoints |
 | Current target assignment | Encrypted goal JSON | Owner and assignment-managing Thana Admin |
 | Owner / MFA policy | Limited JSON in append-only audit detail | Authorized security endpoints; not a browser-editable flag |
