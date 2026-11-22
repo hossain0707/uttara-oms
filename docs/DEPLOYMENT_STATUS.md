@@ -1,57 +1,55 @@
-# Current deployment status
+# Deployment status and reproduction
 
-Updated 2026-11-20 (Asia/Seoul). This supersedes historical setup notes in earlier revisions and chronological project-plan entries.
+Reviewed **2026-11-22 (Asia/Seoul)**. This supersedes old branches, SMTP-pending notes and release chronology. Evidence is a recorded observation, not perpetual uptime or a live inventory of permissions.
 
-**Latest release:** PR #5 (profile-tab visibility and email acceptance evidence) and PR #1 (full release) are merged. Application release commit: `1fca4f0b1cfdabbbf9b78fc5013c951a0df2c1e0` on main. Render deployment from that commit is Live; Cloudflare production branch is main with the email UI enabled. Owner confirmed receiving a six-digit code and signing into the personal workspace. Google sign-in is also owner-confirmed. Final canonical UI checks and new-user/abuse acceptance are separate from this returning-user verification.
+## Application baseline and last verified deployments
 
-## Source and live services
+| Component | Recorded state |
+| --- | --- |
+| Source | `main`, PR #18 merged, `f33c8bc783031000bf7885d0c6c591e8f4967580` |
+| Frontend | [uttara-oms.pages.dev](https://uttara-oms.pages.dev), Cloudflare Pages; deployment `f326e26f-bcbc-4a72-9bde-9f7f649bb8b0`, success 2026-11-22 03:42 Asia/Seoul |
+| API | [uttara-oms-api.onrender.com](https://uttara-oms-api.onrender.com), Render Free Singapore; deployment `dep-dc0ubvmk1f9s73a9t2l0`, same source, Live |
+| Database / identity | Supabase Free project `ahlgssvkdrbrsebkgafa`, PostgreSQL `postgres`, application schema `oms`, Auth project URL `https://ahlgssvkdrbrsebkgafa.supabase.co` |
+| Schema | Exact Alembic revision `0005_personal_workspace`; no migration in PR #18 |
+| Release checks | Quality, dependency security and container checks passed before PR #18 merge; baseline local suites 67 backend passed / 4 PostgreSQL-only skipped, 43 web passed |
+| Live acceptance | Authorized directory found a saved profile using a partial English name and opened its minimal summary. Google/email OTP acceptance was owner-confirmed earlier. |
 
-- Repository: https://github.com/hossain0707/uttara-oms
-- Production deployment branch: **main**. The previous hardening/production-foundation branch was merged through PR #1.
-- PR #1 and #5 are merged; earlier PR #2, #3 and #4 are included.
-- Frontend: https://uttara-oms.pages.dev — Cloudflare Pages static export.
-- Backend: https://uttara-oms-api.onrender.com — Render Free Docker service, Singapore.
-- Database/Auth: Supabase Free, project `ahlgssvkdrbrsebkgafa`, Singapore. PostgreSQL database `postgres`, isolated application schema `oms`.
-- No OMS Cloud Run service, Render PostgreSQL, paid disk or Cloudflare container was deployed. Unrelated applications are not reused.
+These identifiers are operational references, not secrets. Account lists, MFA exceptions and private identity subjects are deliberately not reproduced in source documentation. Check current provider dashboards for newer deployment status and current grants.
 
-## Last verified releases
+## Actual free topology
 
-| Component | Source | Deployment |
-| --- | --- | --- |
-| Backend | `ee3bcef3b8f864a39f34348ca4292a2e910a25ae` | `dep-dbvv11942hec7387ikug`, Live; `/health/ready` returned `ready` |
-| Frontend | `6a9ac19dd1700993f0724e5affedf2d65cd2fcda` | `75d16ad5-2178-4383-a22d-60058d2b96ca`, successful OTP-enabled build; mail acceptance failed, fallback d71753bc-94b0-4611-99a1-f1dcec8fc123 succeeded, email form hidden |
-| Database | `0005_personal_workspace` | Additive upgrade applied once after owner approval; do not rerun fresh initialization or the 0004-only upgrade script |
+Cloudflare Pages serves a static Next.js export. Render runs the FastAPI Docker service. Supabase hosts Auth and PostgreSQL. Supabase sends authentication emails through the owner-configured Gmail SMTP sender. No Render Postgres, Cloud Run service, paid disk, paid PITR, Cloudflare backend function or object-storage photo pipeline is part of this topology.
 
-The subsequent packaging/documentation follow-up does not change the database revision or API. Consult the GitHub branch head and provider deployment source before claiming a newer release is live.
+The documentation update does not require database migration, credential replacement or a backend application change. Merging to `main` can trigger the existing Pages build automatically. Render remains manually deployed.
 
-CI for PR #4: quality 44719729349, dependency security 44719729331, containers 44719729254 all passed. PostgreSQL backend: 59 tests; frontend: 12 tests. Container checks include nonroot users, HTTP startup and native PDF rendering. Passing checks does not certify a production service.
+## Frontend configuration
 
-## Current authentication and authorization
+| Setting | Value |
+| --- | --- |
+| Project | `uttara-oms` |
+| Production branch | `main`, automatic deployments enabled |
+| Build root | `apps/web` |
+| Command | `npm ci && npm run build:static` |
+| Output | `out` |
 
-- Google OAuth signup/sign-in works. Basic signup creates an active self-only account, no official membership and no role grant.
-- Personal profile, reading progress, daily/monthly report drafts and owner exports are deployed. Submitted reports require an explicitly assigned reviewer.
-- Main admins approve user role applications and assign reviewers/monthly targets. Administrator-initiated permission changes retain independent admin approval.
-- Every organizational role requires authenticator AAL2. Basic users do not require an authenticator. Enrollment QR is distinct from a verified factor's normal code challenge.
-- Supabase Email is enabled; Confirm email on, anonymous sign-in off, Google/TOTP preserved. Email OTP length 6 (saved and verified after reload on 2026-11-20), expiry 600 seconds.
-- **Email OTP returning-user acceptance passed after credential correction.** Both Token-based templates are saved; owner confirmed receipt and successful verification. Earlier SMTP rejection notes are historical.
-- Production `NEXT_PUBLIC_EMAIL_OTP_ENABLED=true` is now enabled after owner-confirmed inbox delivery and verification. Google remains available.
+Public build variables (replace the publishable-key placeholder with the project's public key; never a service-role key):
 
-## Immediate email completion sequence
+```dotenv
+NEXT_PUBLIC_API_URL=https://uttara-oms-api.onrender.com
+NEXT_PUBLIC_SUPABASE_URL=https://ahlgssvkdrbrsebkgafa.supabase.co
+NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY=<public-project-publishable-key>
+NEXT_PUBLIC_EMAIL_OTP_ENABLED=true
+```
 
-1. Completed: owner privately corrected the sender App Password; actual email receipt and verification were confirmed. For the discussed Gmail option: host `smtp.gmail.com`, port `465`, matching sender/username, sender name Uttara OMS, and a Google App Password. Google verification/credential creation must be completed by the owner, not inferred or bypassed.
-2. Completed: confirmed SMTP persisted after a reload without revealing its password.
-3. Completed: set **Confirm sign up** and **Magic link or OTP** email bodies to `infra/supabase/email-otp.html`, including `{{ .Token }}`; do not leave a magic-link-only body.
-4. Preserve email confirmation, Google and role MFA. Review rate limits within the chosen free sender allowance.
-5. Enable `NEXT_PUBLIC_EMAIL_OTP_ENABLED=true` in the frontend build environment and rebuild. Pages, Docker and Compose consume it at build time; a runtime restart cannot replace the compiled value.
-6. Owner privately enters received codes for new/returning-user tests. Verify incorrect/expired code rejection, role isolation and leader AAL1/AAL2 behavior before declaring email signup operational.
+All are compiled at build time. Restarting an old deployment does not change embedded values. `_headers` is generated by the static build and restricts API/Auth connections; BJILibrary is an allowed image source. Preview URLs are different origins: configure isolated preview Auth/API settings or expect CORS/redirect restrictions; do not add wildcard production origins.
 
-## Deployment configuration
+## Backend configuration
 
-### Backend
+Render service `srv-dbvsonec6qcc73ag9t70`: Free, Singapore, branch `main`, Docker context `apps/api`, Dockerfile `apps/api/Dockerfile`, port 8000, health path `/health/ready`, automatic deployment off. Root `/` returning 404 is normal. Free cold starts affect latency.
 
-Render service `srv-dbvsonec6qcc73ag9t70`, Free Singapore; branch main; Docker context `./apps/api`, Dockerfile `./apps/api/Dockerfile`; port 8000; health `/health/ready`; auto-deploy off. The service root can return 404 normally.
+`render.yaml` remains a historical blueprint referencing `hardening/production-foundation`. It is not the current dashboard configuration and should not be applied unchanged. No infrastructure setting is modified by this documentation release.
 
-Secrets in Render: DATABASE_URL, ENCRYPTION_KEY, PHONE_HASH_KEY. Preserve existing keys; replacing them in place breaks decryption/deduplication. Non-secret configuration:
+Server-only secrets: `DATABASE_URL`, `ENCRYPTION_KEY`, `PHONE_HASH_KEY`. Obtain these through authorized secret handover, not GitHub. Non-secret settings:
 
 ```dotenv
 ENVIRONMENT=production
@@ -63,37 +61,21 @@ SUPABASE_JWKS_URL=https://ahlgssvkdrbrsebkgafa.supabase.co/auth/v1/.well-known/j
 CORS_ORIGINS=https://uttara-oms.pages.dev
 ```
 
-Runtime DB role `oms_runtime` uses the shared session pooler (host verified during setup: `aws-1-ap-southeast-1.pooler.supabase.com`, port 5432, username `oms_runtime.ahlgssvkdrbrsebkgafa`, database postgres), TLS and `search_path=oms`. The password is not recorded in source. Recheck Supabase Connect before changing connectivity.
+The server connects via Supabase's session pooler using restricted `oms_runtime`, TLS and `search_path=oms`. Obtain the current host/port/username from **Connect**; do not guess pooler credentials. Use a separate owner/migration connection for DDL. Existing runtime grants deny schema creation, history mutation and member deletion. `FOR UPDATE` on `audit_logs` is prohibited because it needs UPDATE privilege; the organization lock serializes security decisions without weakening immutability.
 
-Use a separate migration owner. Runtime privileges exclude schema CREATE/DDL, TRUNCATE, member DELETE and history UPDATE/DELETE. All deployed tables have RLS; the server role's policies make FastAPI RBAC/ownership the end-user boundary. The new personal tables were checked live: runtime SELECT/INSERT/UPDATE true, DELETE false; anon/authenticated SELECT false.
+## Auth and SMTP configuration
 
-### Frontend
+Google OAuth, Email provider, email confirmation and TOTP are enabled. Supabase Site URL is the canonical frontend; exact recovery redirect includes `https://uttara-oms.pages.dev/reset-password/`. Google's callback is the Supabase `/auth/v1/callback`. The API requires asymmetric JWT signing. Do not recreate working OAuth secrets just to deploy a code change.
 
-Cloudflare Pages project uttara-oms; root `apps/web`; command `npm ci && npm run build:static`; output `out`; automatic production deployments enabled for main. Public build variables:
+Email OTP is six digits, configured expiry 600 seconds. **Confirm sign up** and **Magic link or OTP** use the Token-based template at `infra/supabase/email-otp.html`. Recovery email retains the confirmation-link template. Gmail option: `smtp.gmail.com`, port `465`, matching sender and SMTP username, sender name `Uttara OMS`, owner-entered Google App Password. Sender credentials and personal mailbox identity are not included here. The previous credential rejection was resolved with owner-confirmed inbox receipt/sign-in; new-user/recovery acceptance and delivery at load remain separate checks. Default/provider email limits are documented in [CAPACITY.md](CAPACITY.md), not assumed equal to current dashboard settings.
 
-```dotenv
-NEXT_PUBLIC_API_URL=https://uttara-oms-api.onrender.com
-NEXT_PUBLIC_SUPABASE_URL=https://ahlgssvkdrbrsebkgafa.supabase.co
-NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY=<project publishable key; never service-role/private key>
-NEXT_PUBLIC_EMAIL_OTP_ENABLED=true
-```
+## Deploying application changes
 
-The static builder emits no-store/security headers and CSP restricted to configured API/Auth origins. Preview hosts are separate origins; do not replace CORS with a wildcard for testing. Supabase Site URL is the canonical frontend. Google callback is `https://ahlgssvkdrbrsebkgafa.supabase.co/auth/v1/callback`. OAuth client is configured in the dedicated Google project; do not recreate working secrets.
+1. Branch from fresh `main`, review concurrent changes, run relevant tests and open a PR. Record exact feature commit and CI results.
+2. If schema changes, back up data and matching keys, rehearse on isolated staging, review compatibility and run one owner-controlled migration job. Readiness expects an exact revision.
+3. Merge green changes. Pages builds automatically; confirm successful production deployment and source SHA. For API changes, manually deploy the exact intended source in Render (normally latest `main`).
+4. For additive API/frontend contracts, publish the compatible API before depending on it from the frontend; plan ordering explicitly because Pages auto-deploys. The existing pipeline is not an atomic multi-service release system.
+5. Confirm backend Live + readiness, then actual signed-in role/scope behavior, UI errors and affected flows. Never verify writes using real invented consent or fabricated production people.
+6. Record release identifiers and limitations. Application rollback is allowed only when compatible with current schema and authoritative security events; never automatically downgrade/drop user tables.
 
-Google audience was last observed External/Testing. Basic identity-only scopes have a documented test-user allowlist exception; production branding review remains separate. Do not request broader Gmail API scopes just for app login.
-
-## Deploying the next change
-
-1. Branch from the current deployment branch, inspect concurrent changes, run the relevant checks and open a PR to that branch.
-2. For schema changes, preserve backups/keys, rehearse in isolated staging and migrate once as owner before compatible API/frontend deployment. Readiness requires the exact current revision.
-3. Merge reviewed green changes. Pages auto-builds; Render requires Manual Deploy -> Deploy latest commit or an exact verified source.
-4. Verify the actual build SHA, status, readiness, authenticated routes and browser errors. Record evidence without credentials or personal records.
-5. Do not downgrade/drop new tables to roll back user data. Old 0004-ready backend code will need a reviewed readiness compatibility plan after the 0005 migration.
-
-## Production gates still open
-
-Keep the owner’s **free-only** constraint. Do not add a card, paid plans/disks/PITR/overages or usage-billed services without a new explicit instruction. Render Free sleeps after inactivity; no availability SLA is claimed.
-
-Email delivery acceptance, full normal-user/leader browser acceptance, backup/restore drill and RPO/RTO, privacy/retention review, monitoring/alerting, upstream abuse controls and independent security review remain open. No complete Bengali paper-book transcription, pixel-perfect mockup match or offline sync is claimed. Initial setup created 12 wards, no invented units/member records. Do not fill production with test people or fabricated consent to demonstrate a feature.
-
-See operations.md, RELEASE_CHECKLIST.md, EMAIL_OTP_AND_PERSONAL_WORKSPACE.md and PROJECT_STATUS.md. Early versions of this file are preserved in Git history rather than presented as current setup instructions.
+[Operations and recovery](operations.md) · [Release checklist](RELEASE_CHECKLIST.md) · [Developer setup](DEVELOPER_GUIDE.md).

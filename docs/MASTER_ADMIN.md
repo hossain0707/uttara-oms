@@ -1,6 +1,6 @@
 # Master Admin security panel
 
-The owner is a separately provisioned account, not another assignable role in the ordinary Thana Admin dropdown. Provisioning binds the existing app_users UUID, preserving the account's verified Auth subject; it does not use an email from a client request or editable user metadata. The selected deployment owner is najmul.eee1996@gmail.com. No other account is automatically an owner.
+The owner is a separately provisioned account, not another assignable role in the ordinary Thana Admin dropdown. Provisioning binds the existing app_users UUID, preserving the account's verified Auth subject; it does not use an email from a client request or editable user metadata. The selected deployment owner is bound privately to a verified existing app-user UUID. The public repository does not list owner/exception recipient identities. No account becomes owner automatically.
 
 ## Interface
 
@@ -26,4 +26,4 @@ Publish and deploy both API and frontend. Verify the existing owner account UUID
 
 ## Validation
 
-Synthetic API tests cover owner-only requests, independent approvals, requester/target self-approval denial, duplicate/stale requests, live AAL1 exception checks, expiry, immediate revocation, owner MFA and role protection, suspension, minimum administrators and fail-closed missing configuration. Frontend tests cover owner-only controls and separate reviewer controls. No real account was exempted or suspended during testing.
+Synthetic API tests cover owner-only requests, independent approvals, requester/target self-approval denial, duplicate/stale requests, live AAL1 exception checks, expiry, immediate revocation, owner MFA and role protection, suspension, minimum administrators and fail-closed missing configuration. Frontend tests cover owner-only controls and separate reviewer controls. These regression tests use synthetic identities; the public documentation does not reproduce the live exception inventory.

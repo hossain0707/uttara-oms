@@ -1,15 +1,17 @@
 # Email OTP, personal workspace and approvals
 
-## Intended flow
+Current flow notes; reviewed 2026-11-22. See [deployment status](DEPLOYMENT_STATUS.md) for the shipped main release. The migration sequence below is historical upgrade guidance, not an instruction to rerun it on the current database.
+
+## Implemented flow
 
 1. Ordinary user requests an email code, enters it in the app, and receives an active basic account automatically. Google remains an optional first factor. No role or official member record is created.
 2. A basic account opens My workspace: profile, current/permanent address, requested unit, self-reported category, joining/worker/candidate/oath dates, reading list, daily metrics and monthly reports.
 3. Save profile consent first. Save reports as drafts. A user submits to an explicitly assigned reviewer. Only the owner and assigned reviewer can read report contents through the API; main-admin assignment metadata is separate.
 4. Main admin opens Access control to approve user-submitted leader applications and assign report reviewers and monthly targets. Ward/unit roles are scoped. Self-requesting THANA_ADMIN is forbidden. Administrator-initiated role changes retain independent administrator approval.
-5. All organizational roles, including report viewers, require authenticator AAL2 before any application endpoint. A normal basic account does not. Email/Google supplies the first factor; TOTP is the additional factor.
+5. Organizational roles, including report viewers, require authenticator AAL2 by default; an active reviewed non-owner exception can lift that gate. The owner and security decision reviewers still require AAL2. A normal basic account does not. Email/Google supplies the first factor; TOTP is the additional factor.
 6. Reviewers open Personal report reviews, add a note and mark reviewed or return for correction. Reviewed/submitted reports cannot be edited until returned. Targets and reviews never promote a membership category automatically.
 
-## Deployment sequence
+## Historical 0004 → 0005 upgrade sequence
 
 - Verify migration 0004, preserve the encryption and phone-hash keys, and obtain permission for the runtime grants.
 - Run `infra/supabase/upgrade_0005.sql` once as schema owner. It is transactional, checks the old revision and adds only the new private tables. Do not rerun fresh initialization on a live schema. Alembic users run `alembic upgrade head` and apply equivalent runtime grants.
@@ -27,7 +29,7 @@ Report months use Asia/Dhaka dates. Prayers are counts, literature and Quran are
 
 Personal reports are encrypted JSON, versioned and audited. They are not a replacement for the official Member/MemberEvent/MembershipDelta model. Linking a profile to a member is a main-admin metadata operation with a unique-member constraint, not automatic registration. Profile edits do not update official records. Organizational category/unit/status changes still use the independent approval module.
 
-The scanned syllabus is a source for future verified structured reading templates. This release supports personal book progress; it does not claim exact transcription of every syllabus page, pixel-perfect mockups, configurable worship metrics or automatic spiritual/political eligibility scoring.
+The scanned syllabus supplies provisional vocabulary, and BJILibrary supplies source-linked tracks; see LIBRARY_INTEGRATION.md. This release supports personal book progress; it does not claim exact transcription of every syllabus page, pixel-perfect mockups, configurable worship metrics or automatic spiritual/political eligibility scoring.
 
 ## Recovery
 

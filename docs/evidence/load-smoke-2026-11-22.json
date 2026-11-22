@@ -1,0 +1,56 @@
+{
+  "date": "2026-11-22",
+  "scope": "read-only live bursts; one runner; no authenticated business operations",
+  "warmup_health_seconds": 6.900256,
+  "attempts": [
+    {
+      "endpoint": "/login/",
+      "client": "Python urllib",
+      "requests": 50,
+      "success": 0,
+      "status_counts": {
+        "403": 50
+      },
+      "wall_seconds": 6.008,
+      "median_seconds": 5.964,
+      "p95_seconds": 5.997,
+      "max_seconds": 5.998
+    },
+    {
+      "endpoint": "/health/ready",
+      "client": "Python urllib",
+      "requests": 50,
+      "success": 50,
+      "status_counts": {
+        "200": 50
+      },
+      "wall_seconds": 7.837,
+      "median_seconds": 7.333,
+      "p95_seconds": 7.787,
+      "max_seconds": 7.833,
+      "observed_completions_per_second": 6.38
+    },
+    {
+      "endpoint": "/login/",
+      "client": "curl",
+      "requests": 50,
+      "success": 50,
+      "status_counts": {
+        "200": 50
+      },
+      "wall_seconds": 7.189,
+      "median_seconds": 7.175,
+      "p95_seconds": 7.186,
+      "max_seconds": 7.186,
+      "observed_completions_per_second": 6.96
+    }
+  ],
+  "limitations": [
+    "Initial frontend 403 cause not established",
+    "Not a sustained throughput benchmark",
+    "No 50-user authenticated simulation",
+    "No 1000-account dataset",
+    "Client timing includes network/proxy/scheduling",
+    "No production settings, accounts or email changed"
+  ]
+}

@@ -1,5 +1,7 @@
 # Implementation plan
 
+**Historical foundation plan, not the current backlog or deployment state.** Use [HANDOVER.md](HANDOVER.md), [PROJECT_STATUS.md](PROJECT_STATUS.md) and [DEPLOYMENT_STATUS.md](DEPLOYMENT_STATUS.md) for current instructions.
+
 Current follow-up (2026-11-20): fix and verify end-to-end workspace operations after owner-reported profile/book save failure. Sender setup and returning-user email OTP acceptance are complete. Baseline sections below are historical, not current deployment claims. See DEPLOYMENT_STATUS.md for the live topology.
 
 Baseline reviewed: `9baf58a3f2117eabc4db26801b906ee6418989d0` (main), 2026-11-20 Asia/Seoul.

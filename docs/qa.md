@@ -2,6 +2,10 @@
 
 **Status: not yet production-certified.** Use test identities and artificial records only.
 
+## Recorded baseline evidence
+
+PR #18 (`f33c8bc`) passed quality, dependency-security and container checks. Local results: 67 backend passed / 4 PostgreSQL-only skipped; 43 web tests passed; TypeScript/static export passed. Live partial English name search and profile projection were verified. Full real-browser/mobile and authenticated capacity acceptance remain open. The checkboxes below are a reusable acceptance checklist, not an assertion that all work is unimplemented. See [current release gates](RELEASE_CHECKLIST.md) and [capacity evidence](CAPACITY.md).
+
 ## Functional acceptance
 
 - [ ] 12 configurable Wards appear under root; Units can be created, edited and disabled appropriately.
@@ -24,7 +28,7 @@
 
 - [ ] Unsigned, malformed, expired, wrong-audience, wrong-issuer and HS256 JWTs rejected.
 - [ ] Unapproved Supabase user cannot access any organizational record.
-- [ ] Admin cannot access without `aal2` when MFA policy enabled.
+- [ ] Admin without `aal2` is denied unless an active, independently approved non-owner exception applies; owner and security reviewers still require AAL2.
 - [ ] No production data, passwords, JWTs or keys in GitHub, logs or analytics.
 - [ ] Automated API integration tests and browser E2E tests pass.
 - [ ] Penetration test, privacy review, data retention, deletion workflow and recovery drill completed.
@@ -44,3 +48,8 @@ Do not ingest real sensitive member records until all security gates have named 
 - CI: dedicated PostgreSQL schemas per route/migration fixture, exact Alembic head, model drift check, backend suite, frontend tests/typecheck/build and separate dependency audits.
 
 jsdom component tests do not prove browser OAuth, mobile layout, accessibility or live MFA enrollment. Those acceptance gates require staging and real browsers with synthetic identities. A successful dependency audit does not replace penetration testing.
+
+
+## Additional regression coverage
+
+Personal profile/reading save separation, blank reading rows, saved cards, private identity exclusion, photo processing, report staging/review, library track/source limits, password recovery/confirmation UI, access decision/removal feedback, Master Admin owner protection, live policy expiry/revocation, restricted-runtime security decisions, in-page confirmation/cancel, and unified bilingual partial search/deduplication/scoped projections are covered by the current suites. Use synthetic identities; component mocks do not prove provider delivery or live browser sessions.

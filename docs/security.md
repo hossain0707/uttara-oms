@@ -4,15 +4,15 @@
 
 ## Core safeguards in this version
 
-1. **Default deny:** All business routes require a verified Supabase JWT with expected issuer, audience, asymmetric signature, and authenticated role.
-2. **Independent authorization:** An approved local user record and a scoped grant are mandatory even after Google sign-in.
+1. **Default deny:** All protected business routes require a verified Supabase JWT with expected issuer, audience, asymmetric signature and authenticated role; health endpoints are public.
+2. **Independent authorization:** An active local account is required after sign-in; basic users have owner-only workspace access. Organizational routes additionally require approved grants and scope.
 3. **Least privilege:** role checks happen on the API, with Thana-wide aggregate-only viewer access, Ward-descendant or Unit-only personal-data scopes.
 4. **Critical change review:** category transfers, unit transfers and activation-state changes are not written directly. A different qualified reviewer must approve.
-5. **Admin authentication:** MFA level `aal2` is required for Thana Admin sessions by default.
+5. **Admin authentication:** MFA level `aal2` is required for organizational grants by default. Reviewed non-owner exceptions are server-enforced; owner and security decision reviewers always require AAL2.
 6. **Sensitive field encryption:** phone and address use Fernet; exact phone uniqueness uses a separate keyed HMAC. Data provider should additionally encrypt disks and backups.
 7. **Audit:** logs contain action, target, timestamp and actor, without plain phone/address and without automatic request logging of HTTP bodies.
 8. **Data export:** profiles are exported only by Thana Admin; the action is audit logged. All file responses request no browser caching.
-9. **Public source control:** no production member data, database backups, keys or tenant configurations are committed.
+9. **Public source control:** no production member data, database backups or private credentials may be committed. Public deployment identifiers/configuration are documented separately.
 
 ## Before real-world launch (blocking)
 
@@ -36,7 +36,7 @@ This platform must not be used to infer people's political preferences, conduct 
 
 ## Hardening changes and limits
 
-JWT algorithms are checked before key lookup; the JWKS client caches key sets for five minutes with a five-second fetch timeout, while JWT signature, expiry, issuer, audience and authenticated role remain mandatory. OAuth uses PKCE. The browser has a TOTP enrollment/challenge gate; Supabase recovery/reset remains external. Refresh callbacks defer session calls to avoid auth-lock deadlocks. Session tokens still use Supabase browser storage, so XSS prevention and a tested CSP remain mandatory; no server-cookie migration is claimed.
+JWT algorithms are checked before key lookup; the JWKS client caches key sets for five minutes with a five-second fetch timeout, while JWT signature, expiry, issuer, audience and authenticated role remain mandatory. OAuth uses PKCE. The browser has a TOTP enrollment/challenge gate; Supabase manages recovery, with application password-reset screens and an enrolled-factor AAL2 check before password changes. Refresh callbacks defer session calls to avoid auth-lock deadlocks. Session tokens still use Supabase browser storage, so XSS prevention and a tested CSP remain mandatory; no server-cookie migration is claimed.
 
 Strict write schemas reject unknown fields, blank required text and null mandatory patches. Validation responses omit submitted inputs. API responses are no-store and carry nosniff/frame/referrer restrictions. Readiness does not expose database errors or connection strings; production OpenAPI endpoints are disabled. PostgreSQL history triggers and unique indexes are defense in depth, not protection against a privileged database owner. The application is single-Thana; it is not a multi-tenant isolation design.
 
