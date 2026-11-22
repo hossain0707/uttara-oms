@@ -265,7 +265,7 @@ def test_personal_exports_owner_only_and_spreadsheet_text(context):
     assert c.get(f"/api/v1/self/reports/{rid}/export/pdf").status_code == 404
 
 
-def test_profile_identity_photo_and_directory_privacy(context):
+def test_profile_without_identity_photo_and_directory_privacy(context):
     import base64
     from io import BytesIO
     from PIL import Image
@@ -279,11 +279,11 @@ def test_profile_identity_photo_and_directory_privacy(context):
     details = {"full_name": "Synthetic owner", "identity_type": "NID",
                "identity_number": "১০০০০০০০০০", "photo": photo, "consent": True}
     assert c.put("/api/v1/self/profile", json={"expected_version": 0, "details": {"consent": True}}).status_code == 422
-    assert c.put("/api/v1/self/profile", json={"expected_version": 0, "details": {**details, "identity_number": "123"}}).status_code == 422
     assert c.put("/api/v1/self/profile", json={"expected_version": 0, "details": {**details, "photo": "data:image/svg+xml;base64,PHN2Zz4="}}).status_code == 422
     saved = c.put("/api/v1/self/profile", json={"expected_version": 0, "details": details})
     assert saved.status_code == 200, saved.text
-    assert saved.json()["details"]["identity_number"] == "1000000000"
+    assert "identity_number" not in saved.json()["details"]
+    assert "identity_type" not in saved.json()["details"]
     member = c.post("/api/v1/members", json=make_body(unit.id)).json()
     with h["session_factory"]() as db:
         profile = db.get(PersonalProfile, w["editor"].id)
@@ -304,11 +304,28 @@ def test_profile_identity_photo_and_directory_privacy(context):
     assert c.get("/api/v1/members").json()["items"] == []
     assert c.get(f'/api/v1/members/{member["id"]}').status_code == 403
     h["actor"] = w["editor"]
-    # Reading-only saves cannot overwrite identification or opt in to sharing.
+    # Reading-only saves retain sharing settings and do not restore removed identity fields.
     reading = c.put("/api/v1/self/profile", json={"expected_version": 2, "section": "reading", "details": {"consent": True, "books": [{"title": "Synthetic book"}]}})
     assert reading.status_code == 200, reading.text
-    assert reading.json()["details"]["identity_number"] == "1000000000"
+    assert "identity_number" not in reading.json()["details"]
     assert reading.json()["details"]["directory_sharing"] is True
     revoked = c.put("/api/v1/self/profile", json={"expected_version": 3, "details": {**details, "directory_sharing": False}})
     assert revoked.status_code == 200
     assert c.get("/api/v1/members").json()["items"][0]["photo"] == ""
+
+
+def test_name_only_profile_saves_and_legacy_identity_is_not_returned(context):
+    from app.routes.personal import pack, unpack
+    c,h,w,_,_=context
+    result=c.put('/api/v1/self/profile',json={'expected_version':0,'details':{'full_name':'বাংলা নাম','consent':True}})
+    assert result.status_code==200,result.text
+    with h['session_factory']() as db:
+        profile=db.get(PersonalProfile,w['editor'].id)
+        details=unpack(profile.details_encrypted)
+        details.update(identity_type='NID',identity_number='1000000000')
+        profile.details_encrypted=pack(details);db.commit()
+    assert 'identity_number' not in c.get('/api/v1/self/profile').text
+    reading=c.put('/api/v1/self/profile',json={'expected_version':1,'section':'reading','details':{'consent':True}})
+    assert reading.status_code==200,reading.text
+    with h['session_factory']() as db:
+        assert 'identity_number' not in unpack(db.get(PersonalProfile,w['editor'].id).details_encrypted)

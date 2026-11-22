@@ -2,7 +2,6 @@
 
 import base64
 import binascii
-import re
 from io import BytesIO
 from PIL import Image, UnidentifiedImageError
 import calendar
@@ -69,6 +68,7 @@ class Book(InputModel):
 
 
 class ProfileData(InputModel):
+    # Compatibility input only; discarded, never returned or saved.
     identity_type: Literal["", "NID", "PASSPORT"] = ""
     identity_number: str = Field(default="", max_length=30)
     photo: str = Field(default="", max_length=160000)
@@ -91,14 +91,7 @@ class ProfileData(InputModel):
 
 
     @model_validator(mode="after")
-    def identity_and_photo(self):
-        self.identity_number = self.identity_number.translate(str.maketrans("০১২৩৪৫৬৭৮৯", "0123456789")).strip().replace(" ", "").upper()
-        if bool(self.identity_type) != bool(self.identity_number):
-            raise ValueError("Choose NID or passport and enter its number")
-        if self.identity_type == "NID" and not re.fullmatch(r"(?:[0-9]{10}|[0-9]{13}|[0-9]{17})", self.identity_number):
-            raise ValueError("NID must contain 10, 13 or 17 digits")
-        if self.identity_type == "PASSPORT" and not re.fullmatch(r"[A-Z0-9]{5,20}", self.identity_number):
-            raise ValueError("Passport number must contain 5–20 letters or digits")
+    def validate_photo(self):
         if self.photo:
             if not self.photo.startswith("data:image/jpeg;base64,"):
                 raise ValueError("Choose a JPEG profile photo")
@@ -195,7 +188,7 @@ class Review(InputModel):
 def profile_view(row):
     return {
         "version": row.version if row else 0,
-        "details": unpack(row.details_encrypted) if row else {},
+        "details": reviewer_profile(row) if row else {},
         "goals": unpack(row.goals_encrypted).get("items", []) if row else [],
         "reviewer_assigned": bool(row and row.reviewer_id),
         "member_linked": bool(row and row.member_id),
@@ -203,7 +196,7 @@ def profile_view(row):
 
 
 def reviewer_profile(row):
-    # Identity documents are private to the owner, including in review responses.
+    # Deprecated identity fields are excluded from every profile response.
     return {k: v for k, v in unpack(row.details_encrypted).items()
             if k not in {"identity_number", "identity_type"}}
 
@@ -260,21 +253,23 @@ def save_profile(
         db, body.details.requested_unit_id
     ):
         raise HTTPException(422, "Choose an active unit")
-    details = body.details.model_dump(mode="json")
+    details = body.details.model_dump(mode="json", exclude={"identity_number", "identity_type"})
     if body.section == "reading":
         previous = unpack(row.details_encrypted) if row else {}
         if not previous.get("consent"):
             raise HTTPException(422, "Save your profile and consent first")
         details = {**previous, "books": details["books"]}
-    elif not details["full_name"].strip() or not details["identity_number"]:
-        raise HTTPException(422, "Enter your full name and NID or passport number")
+    elif not details["full_name"].strip():
+        raise HTTPException(422, "Enter your full name")
+    details.pop("identity_number", None)
+    details.pop("identity_type", None)
     try:
         details["phone"] = normalize_phone(details["phone"]) or ""
     except ValueError as exc:
         raise HTTPException(422, str(exc)) from exc
     if body.section == "profile":
         details["consent_at"] = datetime.now(timezone.utc).isoformat()
-        details["consent_version"] = "personal-v2"
+        details["consent_version"] = "personal-v3"
     if row is None:
         row = PersonalProfile(user_id=actor.id, version=0)
         db.add(row)

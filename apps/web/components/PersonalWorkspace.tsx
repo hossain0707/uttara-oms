@@ -16,8 +16,6 @@ export const metrics = [
 ] as const;
 type Book = { title: string; total_pages: number; completed_pages: number };
 type Details = {
-  identity_type: string;
-  identity_number: string;
   photo: string;
   directory_sharing: boolean;
   full_name: string;
@@ -64,8 +62,6 @@ type Node = {
   name: string;
 };
 const empty: Details = {
-  identity_type: "",
-  identity_number: "",
   photo: "",
   directory_sharing: false,
   full_name: "",
@@ -93,7 +89,6 @@ const today = () =>
   }).format(new Date());
 export default function PersonalWorkspace() {
   const [editingProfile, setEditingProfile] = useState(false);
-  const [showIdentity, setShowIdentity] = useState(false);
   const [tab, setTab] = useState("profile"),
     [profile, setProfile] = useState<Profile | null>(null),
     [details, setDetails] = useState<Details>(empty),
@@ -169,7 +164,7 @@ export default function PersonalWorkspace() {
   }
   async function saveProfile(reading = false) {
     await act(async () => {
-      if (!reading && (!details.full_name.trim() || !details.identity_type || !details.identity_number.trim())) throw new Error("Enter your full name and NID or passport number.");
+      if (!reading && !details.full_name.trim()) throw new Error("Enter your full name.");
       if (!reading && details.phone) {
         const phone = details.phone.replace(/[\s()\-]/g, "").replace(/^\+?880/, "0");
         if (!/^01[3-9][0-9]{8}$/.test(phone)) throw new Error("Mobile number: use a valid Bangladeshi mobile number, such as 017XXXXXXXX or +88017XXXXXXXX.");
@@ -192,7 +187,7 @@ export default function PersonalWorkspace() {
         });
       setProfile(saved);
       if (reading) setDetails((d) => ({ ...d, books: saved.details.books || [] }));
-      else { setDetails(d=>({...empty,...saved.details,books:d.books}));setEditingProfile(false);setShowIdentity(false); }
+      else { setDetails(d=>({...empty,...saved.details,books:d.books}));setEditingProfile(false); }
       setNotice(reading ? "Reading progress saved." : "Profile saved.");
     });
   }
@@ -315,8 +310,6 @@ export default function PersonalWorkspace() {
                 {field("full_name", "Full name")}
                 {field("father_name", "Father’s name")}
                 {field("phone", "Mobile number", "tel")}
-                <div className="form-field"><label htmlFor="identity-type">Identity document</label><select id="identity-type" className="select" required value={details.identity_type} onChange={e=>setDetails(d=>({...d,identity_type:e.target.value,identity_number:""}))}><option value="">Choose document</option><option value="NID">National ID (NID)</option><option value="PASSPORT">Passport</option></select></div>
-                <div className="form-field"><label htmlFor="identity-number">NID or passport number</label><div className="identity-input"><input id="identity-number" className="input" type={showIdentity?"text":"password"} autoComplete="off" required maxLength={30} value={details.identity_number} onChange={e=>setDetails(d=>({...d,identity_number:e.target.value}))}/><button type="button" className="secondary-btn" aria-label={showIdentity?"Hide document number":"Show document number"} onClick={()=>setShowIdentity(v=>!v)}>{showIdentity?"Hide":"Show"}</button></div><p className="hint">Stored privately. Never shown in the directory. This does not verify your identity.</p></div>
                 <h3 className="form-field full">2. Occupation & responsibility</h3>
                 {field("occupation", "Occupation")}
                 {field("position", "Responsibility / position")}
@@ -387,13 +380,13 @@ export default function PersonalWorkspace() {
                     setDetails((d) => ({ ...d, consent: e.target.checked }))
                   }
                 />{" "}
-                I consent to privately storing my NID or passport number, profile photo and voluntary prayer, study and
+                I consent to storing my profile information, photo and voluntary prayer, study and
                 organizational reports. Authorized Thana administrators may find my basic profile summary. My assigned responsible person may
                 review submitted reports and profile details. Main
                 administrators manage assignments.
               </label>
-              <label className="consent"><input type="checkbox" checked={details.directory_sharing} onChange={e=>setDetails(d=>({...d,directory_sharing:e.target.checked}))}/> Show my photo in authorized people search. My document number and personal reports stay private.</label>
-              <div className="profile-form-actions"><button className="primary-btn" disabled={busy}>Save my profile</button>{profile.details.full_name&&<button type="button" className="secondary-btn" disabled={busy} onClick={()=>{setDetails(d=>({...empty,...profile.details,books:d.books}));setEditingProfile(false);setShowIdentity(false);setNotice("");}}>Cancel editing</button>}</div>
+              <label className="consent"><input type="checkbox" checked={details.directory_sharing} onChange={e=>setDetails(d=>({...d,directory_sharing:e.target.checked}))}/> Show my photo in authorized people search. My personal reports stay private.</label>
+              <div className="profile-form-actions"><button className="primary-btn" disabled={busy}>Save my profile</button>{profile.details.full_name&&<button type="button" className="secondary-btn" disabled={busy} onClick={()=>{setDetails(d=>({...empty,...profile.details,books:d.books}));setEditingProfile(false);setNotice("");}}>Cancel editing</button>}</div>
             </form>
           )}
           {tab === "reports" && (

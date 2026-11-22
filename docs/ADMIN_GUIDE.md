@@ -13,7 +13,7 @@ Administrative rights are approved application grants, checked on every API requ
 | `THANA_ADMIN` | All official records; consented unlinked profile summaries | Structure, access requests, reviewer/member links and targets | Independent decisions; global aggregates and official personal-data XLSX export |
 | Master Admin owner | Thana Admin rights plus protected owner controls | Direct grants/replacement/removal, MFA exceptions, suspension and guarded workspace deletion | Direct pending-request decisions; owner remains MFA-protected |
 
-Multiple grants can coexist. An assigned report reviewer with an organizational role can read **submitted reports assigned to them**, independent of the official-record scope matrix. Merely being Thana/Master Admin does not open every private report or NID/passport number.
+Multiple grants can coexist. An assigned report reviewer with an organizational role can read **submitted reports assigned to them**, independent of the official-record scope matrix. Merely being Thana/Master Admin does not open every private report.
 
 The configured Master Admin uses direct controls described in [MASTER_ADMIN.md](MASTER_ADMIN.md). References below to a second reviewer apply to ordinary administrators; the owner can act directly after confirmation.
 
