@@ -1,70 +1,64 @@
-# Deployment and operations runbook
+# Operations, deployment and recovery
 
-Current live topology: Cloudflare Pages + Render Free Docker + Supabase Free. See [DEPLOYMENT_STATUS.md](DEPLOYMENT_STATUS.md) for source branch, actual provider configuration and the unfinished SMTP gate. The alternatives and production-recovery requirements below are planning guidance, not a claim that paid/private networking, PITR or separate staging has been provisioned. Keep all changes within the owner’s free-only instruction.
+Current architecture is [Cloudflare Pages + Render Free + Supabase Free](DEPLOYMENT_STATUS.md). This is a limited pilot, not a provisioned high-availability environment. Keep the owner-approved free-only configuration; do not attach a payment method, upgrade plans or enable paid overages without authorization.
 
-## Environments
+## Release procedure
 
-Use separate **development**, **staging**, **production** projects and separate Supabase/Auth and PostgreSQL resources. Each should have distinct signing keys, encryption keys, HMAC secrets, and allowed origins. Restrict production operator access.
+Use the exact configuration and ordering in [DEPLOYMENT_STATUS.md](DEPLOYMENT_STATUS.md). Production branch is `main`. Lock dependencies with `requirements.lock` and `package-lock.json`; run relevant checks plus CI. Keep migrations owner-controlled and separate from the restricted API runtime. No startup command auto-runs migrations. Avoid concurrent migration jobs.
 
-## Suggested deployment
+Frontend build values are public and embedded; server secrets stay in the backend/provider configuration. API Docker images install native PDF libraries and run as nonroot. Compose is a loopback local-development baseline, not a public production installation. Production CORS must be exact HTTPS origins. Check ingress/proxy behavior for the actual host rather than trusting arbitrary forwarded IP headers.
 
-- Web: private-access Next.js hosting (Vercel or Cloud Run) with HTTPS; do not allow search engine indexing.
-- API: container-based hosting with restricted service-to-database networking, TLS, read-only file system where supported, minimal IAM.
-- DB: managed PostgreSQL with private access, point-in-time backups, retention policy and audited administrative access.
-- Identity: dedicated Supabase Auth project, Google provider, asymmetrically signed JWT and MFA for privileged accounts.
-- Secrets: managed secret storage, not source control or runtime build logs.
+## Routine checks
 
-## First deployment
+| Check | Interpretation / action |
+| --- | --- |
+| `/health/live` | Process can answer, not proof of dependencies |
+| `/health/ready` | SQL round trip and exact `0005_personal_workspace`; 503 needs migration/connectivity investigation |
+| Provider deployment source | Compare actual frontend/API SHAs with release record; main branch alone is not deployment evidence |
+| Auth test with synthetic identity | Email/Google/session/TOTP behavior; readiness does not test it |
+| Database usage / egress | Watch free-plan headroom, profile photos, report history and audit growth |
+| SMTP / Auth logs | Check delivery errors and rate-limit events without recording codes or credentials |
+| Audit / role changes | Review authorized grants, exports, security exceptions, account suspension and history integrity |
 
-1. Create private deployment environments and assign owners.
-2. Configure OAuth callback origins and restrictive identity access.
-3. Configure production secrets and DB connectivity.
-4. Run `alembic upgrade head` once as a controlled migration job.
-5. Run `python -m app.bootstrap init-org` once to initialize Thana + 12 Ward placeholders. Add valid Units through the authenticated admin UI.
-6. Run separate audited admin provisioning with the exact Supabase `sub`; turn on MFA.
-7. Verify `/health/live`, `/health/ready`, JWT rejection, scope isolation, and independent approval.
-8. Verify encrypted backup and restore in staging before importing any real records.
-9. Enable alerting on authentication failures, export use, migration failures and backup failures.
+No on-call alert routes, SLO or monitored restore schedule are claimed as deployed. A responsible operator must establish these before relying on the pilot for critical availability. Configure ingress/body/export rate limits and anomaly detection after testing; there is no implemented application request limiter to claim as present. Record thresholds and contacts outside public source.
 
-## API endpoints
+## Upgrade and rollback
 
-- `GET /health/live`, `GET /health/ready`
-- `GET /api/v1/me`
-- `GET/POST /api/v1/organization/nodes`; `PATCH /api/v1/organization/nodes/{id}`
-- `GET/POST /api/v1/members`; `GET/PATCH /api/v1/members/{id}`
-- `GET /api/v1/approvals`; `POST /api/v1/approvals/members/{id}`
-- `POST /api/v1/approvals/{id}/decision`
-- `GET /api/v1/reports/dashboard`, `/export.xlsx`, `/export.pdf`
+1. Identify exact running API/frontend commits and database revision.
+2. Preserve a current backup and matching keys in separately controlled stores. Do not commit dumps.
+3. Restore/rehearse migrations in isolated staging, review legacy data reconciliation, run `alembic check` and privilege tests.
+4. Stop or coordinate writes during incompatible changes. Deploy compatible components in the reviewed order.
+5. If rollback is needed, choose an application version that understands the current schema and security-policy events. Do not downgrade migrations or remove owner/MFA audit state to make older code work.
+6. Verify official totals, sample synthetic scoped flows and readiness before reopening.
 
-## Backup and rollback
+The free deployment does not include paid PITR or a completed restore drill. A provider restore feature's existence does not prove a usable backup, retained encryption key or measured recovery time.
 
-Snapshots should be encrypted and tested for recovery. Application rollback must never automatically downgrade migrations containing user data. Freeze sensitive operations during schema changes, verify DB compatibility, and use a staged rollback plan. Never commit database dumps to GitHub.
+## Recovery drill to establish
 
+Assign a recovery operator, approved RPO/RTO and backup retention. Export backups through authorized tooling, encrypt them and keep Fernet/HMAC keys separately accessible to the recovery operator. Restore into an isolated environment with outbound integrations disabled and a separate Auth project. Do not leak restored personal data into test output.
 
-## Reproducible builds
+Verify schema/revision, decryption, phone digest matching, append-only history, official ledger conservation, security-policy state, scope isolation, independent approvals and PDF/XLSX output. Record backup timestamp, restore start/end and measured loss/window. Securely dispose of temporary restored data under the approved retention policy. This drill remains open; no recovery guarantee is supplied by these instructions.
 
-Use `pip install -r requirements.lock` and `npm ci`. `requirements.txt` is the maintained direct-dependency constraint input; regenerate the lock in a clean Python 3.12 Linux environment, then audit and test it. Python lock currently targets Linux containers. Both app containers run as nonroot users; build contexts exclude environment files. Node public environment values are embedded at build time and must contain only the Supabase publishable key, never a service-role key. Next.js remains on 15 with a tested patched PostCSS override; re-evaluate this override on upgrades.
+## Incident handling
 
-Compose now includes web, API and PostgreSQL. Export `LOCAL_DB_PASSWORD` and the three `NEXT_PUBLIC_*` values before any Compose command; keep API settings in `apps/api/.env`. For local host Python use `@localhost:5434`, and for containers use `@db:5432`. Bindings are loopback only. Compose is a local/staging baseline, not a complete public production deployment. Migrate with `docker compose run --rm api alembic upgrade head`, bootstrap with `docker compose run --rm api python -m app.bootstrap init-org`, then start `docker compose up -d`. Do not start multiple migration jobs. API readiness checks DB connectivity and exact Alembic revision; stale/missing schema returns 503. Uvicorn proxy headers trust loopback only by default; explicitly configure the actual trusted proxy network before placing containers behind a proxy.
+Restrict ingress and suspend affected accounts through authorized owner controls; revoke affected identity sessions in Supabase. Preserve evidence without copying private payloads into public tickets. Review audit and provider logs, determine affected scope and notify the designated incident owner through the organization's approved channel. Restore only verified backups.
 
-## Deployment security boundary
+Rotate compromised credentials through reviewed procedures. **Do not replace Fernet or HMAC keys in place**: that breaks decryption or exact phone matching. Key migration/rotation tooling and retention/erasure workflows are not yet implemented. The immutable audit table is both history and security configuration; clearing it can change owner/exception authority.
 
-Terminate TLS at the managed ingress. Enforce HTTPS redirects, HSTS and an application-specific CSP after staging validation. Configure per-client API rate limits, a stricter export limit, body-size limits and upstream timeouts at ingress; never key limits on an untrusted forwarded address. Restrict API/DB networking and deny public PostgreSQL access. Production settings reject non-HTTPS browser origins, wildcard CORS, missing MFA enforcement and non-PostgreSQL databases. This repository does not provision TLS certificates, cloud secrets, ingress, monitoring or managed database backups.
+## Troubleshooting
 
-Use a separate migration owner and runtime role. The runtime role should receive schema USAGE, SELECT/INSERT on audit/events/deltas, SELECT/INSERT/UPDATE on organization/users/members/requests, SELECT/INSERT/DELETE on role_grants, SELECT on alembic_version, and no CREATE/ALTER/DROP/TRUNCATE, superuser or owner privileges. Verify permissions and immutable triggers in staging. The migration owner can disable triggers; audit its access separately. Offline admin bootstrap is privileged and should not be exposed as a network route.
+| Symptom | Checks |
+| --- | --- |
+| Slow first screen | Render Free may be waking; distinguish cold start from ongoing latency |
+| Readiness 503 | DB connection, schema search path and exact Alembic head; preserve private errors in operator-only logs |
+| Signed-in 403 | Active account, grant, scope, AAL2/exception expiry; do not disable global MFA |
+| Directory empty | Saved name/consent, filters, member link and approved scope; unassigned personal summaries are Thana-Admin-only |
+| Approval disabled | Requester cannot self-approve; obtain a different qualified reviewer |
+| Approval 500 on runtime role | Check restricted-role regression; never grant audit UPDATE merely to permit row locking |
+| Browser Failed to fetch | Availability, CORS, correct compiled API URL and server error; this message alone is not proof of CORS root cause |
+| Email rejected | Matching sender/username, App Password, template Token, provider limits; owner enters credentials privately |
+| Blank/missing TOTP QR | Verified factors use a code challenge; only unfinished enrollment can be reset in that screen |
+| PDF render failure | Native libraries/fonts in API image and container smoke check |
+| 409 conflict | Reload and reconcile current version; avoid blind resubmission |
 
-## Recovery drill (required before launch)
-
-1. Define approved RPO, RTO, retention, recovery operator and incident owner in the release checklist. Enable managed PITR and encrypted snapshots.
-2. Keep database backups and encryption/HMAC keys in separately access-controlled stores. A DB backup without the matching keys cannot recover phone/address or stable phone matching.
-3. Restore a snapshot into an isolated staging DB with outbound integrations disabled. Use a separate staging identity project; do not log or export restored personal information.
-4. With writes stopped, migrate to the intended application revision. Verify `alembic current`, `alembic check`, encrypted-field round trip, ledger totals vs active members, scoped access and independent approval with authorized recovery operators.
-5. Record restoration start/end, backup timestamp, recovered revision, integrity checks and measured RPO/RTO in the deployment record. Destroy temporary restored data under the approved retention policy.
-
-## Incident response
-
-On suspected unauthorized access, restrict ingress and disable affected AppUser accounts through an authorized DB operator, revoke identity sessions in Supabase, preserve audit/ingress evidence without copying PII into tickets, and notify the assigned incident owner. Establish scope from audit actions and identity logs. Rotate compromised credentials through a reviewed procedure; **do not replace Fernet/HMAC keys in place**, which would break decryption/deduplication. Contain first, restore only verified backups, validate approvals/RBAC before reopening, and record required notifications and corrective work. Retention, erasure and key-rotation tooling remain release blockers.
-
-## Operational alerts to configure
-
-Alert on readiness failures, DB pool exhaustion, migration failure, sustained 401/403/5xx bursts, personal exports, unexpected access grants, immutable-history violations and overdue/failed backups. Keep authorization headers, request bodies, search text and personal fields out of HTTP/APM logs. Directory audit entries record only actor, result window and count; search input is omitted. Set alert thresholds, retention and on-call destination with the deployment owner.
+Use the [release checklist](RELEASE_CHECKLIST.md) to collect named signoffs without marking unverified work complete.

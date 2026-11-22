@@ -1,31 +1,36 @@
-# Release checklist
+# Release and production-readiness checklist
 
-Release is BLOCKED pending evidence below. This is a deployment handoff, not a production certification. Do not record a gate as passed without attaching actual evidence.
+Reviewed 2026-11-22. The pilot is deployed; this checklist distinguishes shipped evidence from readiness work that remains open. Do not mark a gate complete without current evidence and an accountable reviewer. No production certification is claimed.
 
-| Gate | Required evidence | Accountable owner | Current state |
-| --- | --- | --- | --- |
-| Requirements | Remaining text after truncated “Clearly”; agreed scope | Product owner (unassigned) | Missing |
-| PostgreSQL checks | New branch backend/migration/concurrency CI results | Engineering owner (unassigned) | Pending runner |
-| Browser acceptance | Google OAuth PKCE, approved/unapproved accounts, TOTP enrollment, MFA refresh, signout, mobile/tablet, keyboard and errors | QA owner (unassigned) | Pending staging |
-| Migration rehearsal | Snapshot restore, complete legacy backfill, scoped ledger reconciliation, alembic check | DB owner (unassigned) | Pending staging |
-| Deployment | HTTPS/ingress limits/CSP, private DB, least-privilege runtime, secrets, image build/smoke | Operations owner (unassigned) | Not provisioned |
-| Privacy | Lawful basis/notice, retention/erasure workflow, export policy, accountable controller | Privacy owner (unassigned) | Not supplied |
-| Key management | Rotation and recovery tooling for Fernet/HMAC without data loss | Security + DB owners (unassigned) | Not implemented |
-| Recovery | Encrypted backups and measured restore RPO/RTO | Operations owner (unassigned) | Not exercised |
-| Security | Threat model acceptance, independent penetration test, dependency review | Security owner (unassigned) | Local checks only |
-| Monitoring | Alert routes, audit retention and incident contact | Operations owner (unassigned) | Not configured |
-| Load | Large directory/export and root-lock throughput under expected load | Engineering owner (unassigned) | Not measured |
-| Official reporting | Read-only snapshot isolation and scoped reconciliation under concurrent writes | Reporting owner (unassigned) | Implemented; PostgreSQL validation pending |
+| Gate | Evidence / status | Next responsibility |
+| --- | --- | --- |
+| Source/release | PR #18 / `f33c8bc`, main; [deployment record](DEPLOYMENT_STATUS.md) | Release operator verifies every new frontend/API SHA |
+| Automated checks | Quality, dependency and container workflows passed for baseline | Engineering reviews current PR results |
+| PostgreSQL boundaries | CI covers migrations, immutable history, concurrent writes, runtime privileges and report snapshot semantics | Re-run for data/authorization changes |
+| Authentication | Google/email OTP owner-confirmed; password/recovery implementation tests present | QA verifies new/returning/recovery/expired-code and real-browser matrix |
+| Application acceptance | Live scoped partial-name result verified; automated profile/report/access regressions | QA completes synthetic user/admin/reviewer journeys and mobile/keyboard tests |
+| Schema upgrade | Deployed `0005_personal_workspace`; no PR #18 migration | DB operator rehearses future upgrades and reconciliation |
+| Deployment safeguards | Restricted runtime, explicit CORS, no-store/security headers and static CSP implemented | Operations validates ingress/proxy/body/export/abuse controls |
+| Privacy/retention | Sensitive-data boundaries documented; formal signoffs not recorded | Privacy owner approves notice, consent, retention and correction/erasure process |
+| Key lifecycle | Existing encryption/HMAC keys preserved; rotation tooling absent | Security/DB operator designs and tests lossless rotation |
+| Recovery | No completed restore/RPO/RTO evidence supplied | Operations performs encrypted backup/key recovery drill |
+| Independent security | Threat model and automated audits exist; penetration review not recorded | Security reviewer provides findings and closure evidence |
+| Monitoring | No configured on-call/alerting evidence supplied | Operations defines alerts, contacts, retention and incident drill |
+| Capacity | Read-only burst evidence only; 50 authenticated / 1,000 accounts untested | Engineering defines SLO/workload and runs staging test |
+| Editorial data | Geography and library are reviewed snapshots with coverage limits | Product/editor verifies syllabus editions and administrative updates |
 
-## Deployment record
+## New release record template
 
-- Source commit / image digests: pending
-- Environment / ingress origins: pending
-- Database revision: required `0004_invariants`
-- Migration and rollback operator: unassigned
-- Deployment time / maintenance window: pending
-- Backup snapshot / restore evidence: pending
-- Approved RPO / RTO: pending
-- Go/no-go decision and signatories: pending
+Copy into a private or sanitized release record, without secrets or personal data:
 
-Never paste production records, credentials, QR secrets or tokens into this document.
+- Source commit / PR / CI links:
+- Intended and actual frontend/API source SHAs and provider status:
+- Database revision (current baseline `0005_personal_workspace`):
+- Migration necessity, owner, backup and rehearsal evidence:
+- Compatibility and rollback plan:
+- Synthetic acceptance cases and results:
+- Known failures / open risks / limitations:
+- Operational and product go/no-go reviewers:
+- Deployment time (include timezone):
+
+Passing tests is not a substitute for backup, privacy, threat-model or capacity acceptance. Preserve the free-only resource constraint unless the owner explicitly authorizes a change.

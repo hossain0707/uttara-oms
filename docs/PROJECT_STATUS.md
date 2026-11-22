@@ -1,163 +1,20 @@
-# Project status
+# Current project status
 
-Current summary (2026-11-20): main release deployed on free Pages/Render/Supabase; owner-confirmed Google and six-digit email OTP sign-in. Operations follow-up fixes profile/book coupling, readable errors and report editing/save behavior. Historical notes below are superseded by the latest release/audit entries.
+Reviewed 2026-11-22, application baseline PR #18 / `f33c8bc`, schema `0005_personal_workspace`. Production branch: `main`. Old chronological progress notes are retained in Git history; they are not current deployment instructions.
 
-**Engineering hardening implemented locally; production release BLOCKED.** Reviewed and tested on 2026-11-20 Asia/Seoul. No live deployment, production credentials or real records were used.
+## Implemented and shipped
 
-## Repository baseline
+- Scoped official records, one-Thana hierarchy, independent member/access decisions and immutable ledger reporting.
+- Basic self-only signup, Google/email-code acceptance, password account/recovery UI and administrative authenticator gate.
+- Personal saved-card editing, private identification, processed photos, separate reading saves and monthly report review.
+- Bilingual address/vocabulary helpers with manual entry; source-linked syllabus/library snapshot.
+- Owner security panel with reviewed MFA exceptions and protected owner identity; runtime lock and confirmation UI fixes.
+- Unified authorized directory with partial saved-name matching and linked-profile deduplication.
 
-- Upstream main: `9baf58a3f2117eabc4db26801b906ee6418989d0`; only remote branch at inspection.
-- All 11 existing commits and tracked application/configuration/documentation modules inspected. No AGENTS.md found.
-- Baseline CI: [Quality checks run 44549149392](https://github.com/hossain0707/uttara-oms/actions/runs/44549149392), success for this SHA. This is **not** validation of the new local branch.
-- Work branch: `hardening/production-foundation`.
+## Evidence and limits
 
-## Delivered changes
+PR #18 release checks passed. Local baseline: 67 backend tests passed, four PostgreSQL-only skipped; 43 web tests passed, TypeScript and static export passed. CI supplies PostgreSQL for database-specific cases. Recorded live frontend/backend deployment success and partial-name lookup are in [DEPLOYMENT_STATUS.md](DEPLOYMENT_STATUS.md).
 
-| Area | Result |
-| --- | --- |
-| Historical reporting | New immutable membership delta ledger, validated legacy backfill, date ranges, as-of totals, preceding-period comparison, monthly history, ward/unit totals and scoped transfer accounting |
-| Data integrity | Lock-before-version-check routine edits; serialized structural/high-risk writes; inactive-ancestor/reactivation checks; database uniqueness barriers |
-| Access | Independent approval retained; scope revalidation at grant decision; serialized admin revocations count distinct active administrators |
-| Identity/security | Cached JWKS and algorithm gate; RSA adversarial tests; PKCE; administrator TOTP enrollment/challenge; deferred refresh callbacks; no-store and response headers; input-free validation errors |
-| Directory/organization | Normalized strict schemas; audited directory/detail reads; frontend pagination/status filters; existing-node rename/activation controls; self-review buttons disabled |
-| Exports | Date-filtered aggregate XLSX/PDF; personal sheet explicitly remains current records; formula/URL injection defenses retained |
-| Infrastructure | Nonroot standalone web Dockerfile, healthchecked Compose, schema-aware API readiness, environment exclusions, Python/Node dependency locks |
-| CI | PostgreSQL schemas for integration tests, migration drift check, two PostgreSQL-specific tests, frontend component tests and dependency-audit workflow |
-| Handoff | Updated architecture/security/operations/QA; threat model, release checklist and implementation plan |
+Read-only 50-request bursts are recorded in [CAPACITY.md](CAPACITY.md); they do not certify authenticated concurrency or a 1,000-account workload. The free service has no claimed uptime or measured recovery guarantee. End-to-end new-user/password-recovery, mobile, privacy/retention, key lifecycle, restore, monitoring and independent security acceptance remain separately tracked.
 
-## Actual local validation
-
-| Check | Result |
-| --- | --- |
-| Python 3.12 compile | Passed |
-| Backend suite from locked dependencies | 38 passed on PostgreSQL CI (including fresh SQL renderer); original local suite: 35 passed, 2 PostgreSQL-only skips |
-| Actual Alembic 0002→head backfill and schema drift | Passed on SQLite and PostgreSQL CI; included in backend suite |
-| Incomplete legacy history migration | Correctly rejected; included in backend suite |
-| Vitest/jsdom | 4 passed across 3 files |
-| TypeScript (`npm run lint`) | Passed; this command is a typecheck, not an ESLint run |
-| Next.js production build | Passed on Next 15.5.29 |
-| `npm audit --omit=dev` | 0 known vulnerabilities |
-| `pip-audit -r apps/api/requirements.lock` | No known vulnerabilities found |
-| `pip check` | No broken requirements |
-| Compose/workflow YAML and `git diff --check` | Passed |
-
-One Starlette/httpx test-client deprecation warning remains; tests pass. Dependency scans reflect the audit databases available during this run and are not security certification.
-
-## Environment limits and publishing
-
-This workspace has no Docker executable and blocks local socket creation. A temporary PostgreSQL start failed at socket creation; therefore PostgreSQL row-locking/snapshot/trigger checks and Docker image smoke tests were **not run locally**. CI now defines these checks against disposable PostgreSQL 16, but no new CI result is claimed.
-
-Source is published in [PR #1](https://github.com/hossain0707/uttara-oms/pull/1), code commit `245381e13a9394dc1d180ab4556636c8d2d930b8`. [Quality checks](https://github.com/hossain0707/uttara-oms/actions/runs/44556745119) passed, including all 37 backend tests against PostgreSQL 16, migration drift/backfill/immutable-history checks, concurrent edits, read-only report snapshots, frontend typecheck/tests/build. [Dependency security](https://github.com/hossain0707/uttara-oms/actions/runs/44556744735) also passed.
-
-Browser setup created a dedicated Google Cloud project `uttara-oms` and Free Supabase organization “Uttara OMS”. The user completed Supabase database project creation. Its separate OMS schema is initialized and verified (10 RLS-protected tables, migration 0004, 12 wards, no person records); Google policy/client setup is completed, Google provider enabled, email provider disabled and TOTP confirmed enabled. The user selected free-only hosting. Restricted runtime-role grants were approved, applied and verified. The Render Free backend is live; Cloud Run was not deployed. Frontend deployment and final auth/CORS origins remain pending. No unrelated apps were modified. See DEPLOYMENT_STATUS.md.
-
-## Remaining release blockers
-
-See [RELEASE_CHECKLIST.md](RELEASE_CHECKLIST.md) for owners and evidence. In particular: Google PKCE/MFA enrollment/recovery and mobile/browser acceptance in staging, TLS/CSP/ingress limits, least-privilege DB permissions, load/export limits, backup restore evidence, independent security review, approved privacy/retention/erasure policy and key-rotation tooling. Do not ingest real sensitive records until those gates are satisfied.
-
-The supplied command ends at “Clearly”. Requirements after that point were not received and are not claimed complete. Stable organizational codes and IDs are retained; names/activation are editable. No redesign of working architecture was performed.
-
-## Continue from this branch
-
-1. Read IMPLEMENTATION_PLAN.md, architecture.md and RELEASE_CHECKLIST.md.
-2. Review published PR #1 targeting main; the implementation commit has green CI.
-3. Keep the Quality checks and Dependency security workflows required. PostgreSQL tests ran without skips in the verified code CI run.
-4. Rehearse migration/backfill on an isolated restored staging database with writes stopped; do not bypass incomplete-history failures.
-5. Complete staging/manual/recovery/privacy gates, record accountable signoffs, then decide deployment.
-
-
-Latest code/container CI: commit `d685604692c98fac3a59e2f78657d3c0c52f3b88`, Quality checks run 44563457929, Dependency security run 44563457739, Container smoke checks run 44563457858 all passed. Both Docker images, runtime HTTP endpoints, native PDF support and nonroot execution are verified in CI. The Render Free backend was deployed at https://uttara-oms-api.onrender.com on 2026-11-20 (Asia/Seoul). The user selected free-only hosting; no payment method was added.
-
-Latest deployed code: `e9faeb670cbdc66208aa45c6c5bb89c8dfd48a5f`. Quality checks 44672870065, Dependency security 44672870036, and Container smoke checks 44672869967 all succeeded. Live `/health/ready` returned `{"status":"ready"}` and unauthenticated `/api/v1/members` returned `{"detail":"Not authenticated"}`. Frontend is not deployed; this is not a completed production release.
-
-## Live deployment and initial access — 2026-11-20 (Asia/Seoul)
-
-Cloudflare Pages frontend https://uttara-oms.pages.dev is deployed and its login page was verified live. The user saved the Cloudflare repository integration and final backend CORS origin. Render redeployment `dep-dbvt47ec6qcc73ah9ucg` reported Live with HTTP 200 readiness checks. Google OAuth initially failed with invalid_client/invalid client secret; the user created and saved a corrected secret. A fresh Google-authenticated session was verified afterward.
-
-After explicit owner approval, the first verified Google identity was provisioned as an active global THANA_ADMIN in a controlled owner transaction, with an INITIAL_ADMIN_BOOTSTRAP audit event. No identity identifiers or credentials are included here. The live app now correctly blocks entry at Administrator MFA required. Authenticator enrollment is pending direct user action. A second independent administrator and the remaining release gates are still required; production acceptance is not complete.
-
-## MFA enrollment recovery fix
-
-A page refresh during unfinished TOTP enrollment previously hid the one-time QR while showing a verification field for the unverified factor. The frontend now distinguishes verified and unfinished factors and offers an explicit Reset unfinished setup action. Reset rechecks factor status, removes only the selected still-unverified TOTP factor, and never starts a new enrollment automatically. Verified factors remain protected. Six frontend tests and TypeScript checks passed, including unfinished-enrollment recovery and a factor verified in another tab. Deployment validation is pending.
-
-## Normal-user automatic signup
-
-Implemented POST /api/v1/account/register for a verified Supabase JWT whose server-managed app_metadata identifies Google. First registration creates one active basic AppUser and ACCOUNT_REGISTERED audit event, with no RoleGrant or Member. Repeat registration is idempotent; concurrent insert conflicts resolve to the existing account; disabled accounts cannot reactivate. GET /me permits self-account identity without an organizational role; all organizational endpoints retain current_actor role requirements and administrator MFA. The frontend automatically registers new Google identities and displays a basic account home instead of the approval gate. Local verification: 43 backend tests passed, four PostgreSQL-only skips; seven frontend tests and TypeScript passed. CI PostgreSQL and deployment evidence pending. Google audience remains Testing; the Google console currently requires completed branding before publishing. Do not claim unrestricted Google production availability yet.
-
-Automatic signup release `5f6f7e91f9574ba6014162f1765ccea16ce02737`: Quality checks 44683537033 (PostgreSQL backend and frontend builds/tests), Dependency security 44683537340 and Container smoke checks 44683537012 all succeeded. Cloudflare production deployment 1d75c491 and Render deployment dep-dbvtvqajnfac738edlr0 are live. Existing administrator session was verified through the live dashboard after deployment; automatic fresh-account behavior is covered by integration tests but a separate normal Google identity was not exercised in this browser session. No organizational role was automatically granted.
-
-Correction to earlier audience notes: Google documents an exception allowing basic identity-only scopes (openid/email/profile) without a test-user allowlist even in Testing status. This app requests Google authentication without additional scopes. Branding publication/verification remains incomplete; it is distinct from OMS registration. Reference: https://developers.google.com/identity/protocols/oauth2/production-readiness/overview . Homepage and owned frontend domain were saved in Google Branding.
-
-## Personal workspace, email OTP and master approvals
-
-User approved implementing a usable personal profile/report/target workspace, email OTP signup/sign-in, and master-admin-controlled leader permissions. THANA_ADMIN is the existing master-administrator role; no role is automatically elevated. All organizational roles will require authenticator AAL2; basic users will not. Leader applications are self-submitted and reviewed by a master administrator, independent of the requester. Sensitive organizational changes keep existing independent approval. Personal report reviewers are explicitly assigned by the master; report data is encrypted and private to its owner and assigned reviewer. Goals have explicit units; no unconfirmed 140/300/90 target units or automatic promotion rules will be invented.
-
-Delivery gates: additive Alembic migration, runtime policies for the new tables, regression tests and CI; Supabase email provider and Token-based email templates; custom SMTP for real recipients. Supabase built-in mail is not production email delivery. Provider credentials and any credential enrollment must be entered by the user. Keep all services free-only.
-
-Implemented (not yet production-deployed): email OTP form, automatic email/Google basic registration, owner-only profile/reading list and monthly daily-entry reports, XLSX/PDF personal export, submitted/returned/reviewed states, explicit reviewer assignment, unit-labelled monthly targets, self-submitted responsible-person applications and master approval. All organizational role holders require AAL2; ordinary accounts have no MFA requirement. Goals are snapshotted into saved reports. No membership, count or privilege is created by a self-reported category or target completion.
-
-Live provider inspection on 2026-11-20: Email remains disabled; custom SMTP is off. Supabase's Templates screen explicitly requires custom SMTP to edit email bodies. Public OTP delivery cannot be completed without a configured sender. Existing Google sign-in remains the deployed route. Migration `infra/supabase/upgrade_0005.sql` adds two encrypted-data tables in the isolated `oms` schema and grants the server-only runtime SELECT/INSERT/UPDATE, with RLS and no public/anon/authenticated access. It must be applied before the new backend/frontend release. No new permission grant or live authentication setting was applied during implementation.
-
-## Release activation — 2026-11-20
-
-PR #2 merged to hardening/production-foundation at ee3bcef3b8f864a39f34348ca4292a2e910a25ae after 59 PostgreSQL backend tests, 10 frontend tests, production/static builds, dependency security and container checks passed. User approved the schema/runtime/auth changes. The live Supabase schema is now 0005_personal_workspace. Render deployment dep-dbvv11942hec7387ikug is Live with readiness 200; Cloudflare production 6f439d5b-49f1-4de7-8f1f-77981e10ecd5 published the same merge. Signed-in administrator dashboard and personal-profile API/UI were verified in the live browser. No profiles, consents, reports, reviewers or new leader grants were invented for verification.
-
-Email provider is enabled, email confirmation remains on, anonymous accounts remain off, Google remains enabled. OTP length remains 8 digits and expiry was reduced to 600 seconds. The current free built-in email template is a magic link, and editing it requires custom SMTP or a Send Email hook (the alternative is paid Pro, which was not selected). Custom SMTP is not configured. Therefore public email OTP delivery remains blocked. The frontend email-code form is gated by NEXT_PUBLIC_EMAIL_OTP_ENABLED, default false, until a free sender, both OTP templates and real delivery verification are ready. Google sign-in remains available for normal users and leaders. No paid services were enabled.
-
-## Remaining setup follow-up
-
-Rechecked active GitHub source: hardening/production-foundation at 2ca020f; default main remains the original foundation. A fresh live SMTP inspection still shows custom SMTP disabled, not a saved provider. The code form must remain off until owner credential entry, both Token templates and delivered-code tests finish. Added the missing NEXT_PUBLIC_EMAIL_OTP_ENABLED build argument/ENV to the frontend Dockerfile and Compose with false default; container CI now builds the explicit true variant. Added enabled-shell coverage alongside the disabled-delivery regression. Consolidated deployment status and corrected outdated README onboarding/deployment claims. No new role grants, key rotations or paid resources are part of this follow-up.
-
-## Email sender activation — 2026-11-20
-
-Owner completed private SMTP credential entry and saved the chosen Gmail sender. A fresh page reload confirmed custom SMTP enabled. Both Confirm sign up and Magic link or OTP templates were replaced with infra/supabase/email-otp.html (Token code, no magic-link-only body), saved successfully. Production Cloudflare NEXT_PUBLIC_EMAIL_OTP_ENABLED was set to true and a rebuild started from the previously validated source. Actual delivered-code verification and fresh-account/returning-user acceptance are still pending; saving SMTP is not proof of inbox delivery or successful verification. Google sign-in, Confirm email and leader MFA remain required/preserved. No private credential was read or recorded.
-
-
-### SMTP live-send diagnosis — 2026-11-20
-
-The OTP-enabled Pages build 75d16ad5 succeeded from deployment source 6a9ac19. An actual send to an existing owner-controlled basic account failed. Auth logs identify Gmail SMTP 534/5.7.9: Application-specific password required. Saved SMTP is not proof of valid credentials. The production flag was reset to false and fallback deployment d71753bc-94b0-4611-99a1-f1dcec8fc123 succeeded at 19:55 Asia/Seoul; the canonical login was reloaded and verified to show Google sign-in with email paused. Both Token templates remain saved. The owner must privately enter and submit a valid App Password for the configured sender; no password, received code or personal address is recorded here. Returning-user verification and new-user acceptance remain incomplete.
-
-
-### Six-digit email login configuration — 2026-11-20
-
-Owner requested six-digit passwordless email signup/sign-in. Supabase Email OTP length was changed to 6 and verified after a page reload; expiry remains 600 seconds. The existing frontend numeric-code validation supports this length. Gmail previously rejected the configured credential with SMTP 534/5.7.9 at 20:08 Asia/Seoul. No credential was changed by the agent; email delivery and inbox-code acceptance remain blocked. Canonical production email form remains gated off while Google sign-in is available.
-
-
-### Email acceptance and final release request — 2026-11-20
-
-After private sender credential correction, the email send succeeded. The owner confirmed receiving a six-digit code and signing into the personal workspace, and supplied a screenshot showing that workspace. Google sign-in is also owner-confirmed. The owner explicitly requested merging all release work and deploying for final checking. Fixed the selected personal tab CSS specificity: a later general button rule previously painted the background white while leaving white selected text. Email OTP remains subject to final canonical deployment verification; no new-user, abuse-control or production-certification claim is made.
-
-
-### Main release deployment — 2026-11-20
-
-PR #5 and full-release PR #1 were merged. Main application release is 1fca4f0b1cfdabbbf9b78fc5013c951a0df2c1e0. Render Free deployed that source successfully (Live, 21:33 Asia/Seoul). Cloudflare production branch was switched to main and the email-code form build flag enabled after owner-confirmed receipt and sign-in. The selected personal tab contrast is fixed in this release. Owner final acceptance remains requested; preserve free-only infrastructure and existing keys/data.
-
-
-### Operations audit in progress — 2026-11-20
-
-Owner reported profile save blocked by an empty reading-list title. Confirmed shared unsaved book state is included in profile requests; client exposes structured validation as JSON. Auditing report editor staging, month switching, reviewer assignment save races and retry behavior. Prior login/deployment success did not constitute end-to-end operation acceptance.
-
-
-### Operations fixes ready for CI — 2026-11-20
-
-Profile saves now use saved book data, so an unfinished reading row cannot block unrelated profile edits. Reading saves retain saved profile fields, omit completely empty new rows and validate titles/page counts. Pending daily editor values cannot silently be omitted from report saves; staging clears the editor, rows can be explicitly edited, and month changes warn before discarding unsaved report edits. Added readable field validation, phone guidance, prerequisite/empty-unit messaging, reload/retry controls, target month selection, and account switching is disabled during assignment saves. Applying for access refreshes only requests instead of overwriting unsaved personal work. Local frontend: 16 tests pass; TypeScript passes. Backend: 55 tests pass, four PostgreSQL-only tests skipped locally; PostgreSQL/container verification remains CI. No live personal data/consent or organizational grants were created during these tests.
-
-
-### Guided bilingual entry in progress — 2026-11-20
-
-Implementing locally bundled bilingual geography and category-based book/occupation/responsibility suggestions. Existing encrypted profile/member field contracts remain unchanged. Structured helpers apply a formatted address only when requested, preserving saved/manual text. Suggestions do not create role grants or official categories. Geographic dataset is a versioned third-party snapshot, not a guarantee of current street/building coverage.
-
-
-### Bilingual catalog checks — 2026-11-21
-
-Implemented bilingual searchable lists, direct-place/cascading address helpers, 83 provisional topic-grouped syllabus titles, generic occupations and descriptive responsibilities in personal and official member forms. No schema/auth changes. Frontend 20 tests and TypeScript pass locally. Coverage/provenance/manual-entry limits and unverified photo editions are documented in BILINGUAL_CATALOGS.md. Deployment pending CI.
-
-
-### Guided catalog release verified — 2026-11-21
-
-PR #8 merged to main at 9390a298d8144c8279faf09411bed86c660aeb78. Cloudflare production dd8959e2-f30b-4184-95fe-4556b441eae5 succeeded at 01:06 Asia/Seoul. Quality, dependency-security and container CI passed. Live own-profile checks confirmed Uttara search and hierarchy selection, Bengali/English occupation suggestions and Namaz book search under Worship. Temporary UI values were discarded; no user profile, consent or permission was saved. Book transcription/edition and missing street-level coverage limitations remain as documented.
-
-
-### Wording cleanup in progress — 2026-11-21
-
-Replacing language-name placeholders with examples such as Dhaka, Uttara and Teacher; simplifying repeated field labels and translated headings. Suggestions still match both languages. Address assembly uses a single name per place; manual values are preserved. No schema or permission change.
+Use [HANDOVER.md](HANDOVER.md) for prioritized continuation, [RELEASE_CHECKLIST.md](RELEASE_CHECKLIST.md) for named signoffs and [CHANGELOG.md](../CHANGELOG.md) for release history. No private user/permission inventory belongs in this document.
