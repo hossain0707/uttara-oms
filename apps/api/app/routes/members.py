@@ -96,9 +96,8 @@ def get_member(member_id: UUID, actor: Actor = Depends(current_actor), db: Sessi
     return result
 
 
-@router.post("", status_code=201)
-def add_member(payload: MemberCreate, actor: Actor = Depends(current_actor), db: Session = Depends(get_db)):
-    lock_organization(db)
+def create_member_record(db: Session, actor: Actor, payload: MemberCreate):
+    """Caller holds the organization lock; no commit so account confirmation is atomic."""
     require_scope(db, actor, payload.org_node_id, write=True)
     if not active_unit(db, payload.org_node_id):
         raise HTTPException(422, "Choose an active unit")
@@ -115,14 +114,21 @@ def add_member(payload: MemberCreate, actor: Actor = Depends(current_actor), db:
         consent_at=datetime.now(timezone.utc), consent_version=payload.consent_version,
         status="ACTIVE",
     )
+    db.add(member)
+    db.flush()
+    event = MemberEvent(member_id=member.id, action="CREATED", after="ACTIVE", actor_id=actor.id,
+                        created_at=member.created_at)
+    db.add(event); db.flush()
+    record_movement(db, event, None, (member.org_node_id, member.category, member.status))
+    db.add(AuditLog(actor_id=actor.id, action="MEMBER_CREATED", target_id=str(member.id)))
+    return member
+
+
+@router.post("", status_code=201)
+def add_member(payload: MemberCreate, actor: Actor = Depends(current_actor), db: Session = Depends(get_db)):
+    lock_organization(db)
     try:
-        db.add(member)
-        db.flush()
-        event = MemberEvent(member_id=member.id, action="CREATED", after="ACTIVE", actor_id=actor.id,
-                            created_at=member.created_at)
-        db.add(event); db.flush()
-        record_movement(db, event, None, (member.org_node_id, member.category, member.status))
-        db.add(AuditLog(actor_id=actor.id, action="MEMBER_CREATED", target_id=str(member.id)))
+        member = create_member_record(db, actor, payload)
         db.commit()
     except IntegrityError as exc:
         db.rollback()

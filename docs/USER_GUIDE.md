@@ -77,3 +77,7 @@ Thana Admins can discover saved consented profile summaries; ward/unit officials
 | Wrong authenticator code | Check the phone's automatic time and use the current code for the correct OMS entry. |
 
 Sign out when finished on a shared device. Do not put identity numbers, private reports, codes or credentials into GitHub issues.
+
+## Why dashboard totals can differ
+
+Registered people reflects current saved profiles and their self-reported categories. Official membership reflects confirmed organizational records, assigned units and historical reporting dates. Saving a profile does not automatically confirm official membership or grant permissions. The Master Admin reviews and links/creates an official member; the dashboard shows how many saved profiles await this confirmation.

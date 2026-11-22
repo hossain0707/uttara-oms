@@ -3,6 +3,7 @@ import {cleanup,render,screen,waitFor,fireEvent} from "@testing-library/react";
 import type {ReactNode} from "react";
 import Home from "@/app/page";
 import {api,type Dashboard} from "@/lib/api";
+vi.mock("@/components/RegisteredOverview",()=>({default:()=>null}));
 vi.mock("@/components/Shell",()=>({default:({children}:{children:ReactNode})=><main>{children}</main>}));
 vi.mock("@/lib/api",()=>({api:vi.fn()}));
 const report:Dashboard={total_active:4,by_category:{RUKON:1,WORKER:1,ASSOCIATE:1,SUPPORTER:1},by_unit:[],by_ward:[],this_month:{increase:4,decrease:0,net:4},period:{start_date:"2020-01-01",end_date:"2020-01-31",increase:2,decrease:1,net:1},comparison:{start_date:"2019-12-01",end_date:"2019-12-31",total_active:3,increase:3,decrease:0,net:3},monthly_history:[{month:"2020-01",start_date:"2020-01-01",end_date:"2020-01-31",increase:2,decrease:1,net:1}],timezone:"Asia/Dhaka",as_of:"2020-01-31",generated_at:"2020-02-01T00:00:00Z"};

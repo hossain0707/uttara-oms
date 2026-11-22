@@ -56,3 +56,20 @@ Guarded workspace deletion is separate from suspension and retains Auth identity
 ## Exports and accountability
 
 Use **Reports** for date-filtered aggregate totals and XLSX/PDF. The date window is inclusive in Asia/Dhaka, up to 367 days, without future end dates. Official personal-data XLSX is Thana-Admin-only and always current state, even when aggregate dates are historical. Export only for an approved purpose and keep downloaded files access-controlled. Audit history is append-only; it must not be cleared to repair a UI problem.
+
+## Registered profiles and official membership
+
+The dashboard shows two separate sources. **Registered people** counts current active accounts and saved, consented profiles by their self-reported category, including Not specified. **Official membership** uses confirmed member records and historical ledger events. These populations overlap; do not add their totals. Date filters affect official membership only. Suspended/deleted accounts and incomplete or nonconsented profiles do not contribute to saved-profile totals.
+
+If no active unit exists, use **Organization → create a unit under an active ward**. Do not create placeholder members to make dashboard totals nonzero.
+
+The Master Admin can use **Master Admin → Membership confirmation** (or Review official membership inside Manage account):
+
+1. Find an awaiting profile by name or email and select Review membership. A single saved name in either language is sufficient for searching.
+2. Review possible duplicates. Exact phone matches require linking the existing official record; identical names are a warning, not proof of identity.
+3. Choose Create and link, then select an approved category and active unit. The member number can be generated automatically. Alternatively, select Link existing and verify the official member.
+4. Attest valid consent and duplicate review, then review and apply the final confirmation. No second administrator is required for this owner action.
+
+Creation copies only saved name, phone, occupation and responsibility, creates one active official member and links the profile atomically. Private identity documents, addresses, reports and reading lists are not copied; photos retain their separate sharing setting. The saved self-reported category remains unchanged. Linking preserves the existing member's category, unit and ledger totals. Neither action grants an administrative role.
+
+A joining date is descriptive; it does not backdate ledger totals. Stale versions, duplicate member numbers/phones, already-linked accounts/members, inactive units or inactive ancestors block confirmation. Refresh and review instead of retrying blindly.

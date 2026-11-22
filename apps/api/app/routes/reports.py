@@ -13,6 +13,20 @@ from ..policies import allowed_nodes, is_thana_admin
 router = APIRouter(prefix="/reports", tags=["reports"])
 
 
+@router.get("/registered-summary")
+def registered_profiles(actor: Actor = Depends(current_actor), db: Session = Depends(get_db)):
+    from ..profile_counts import registered_summary
+    # This is a current profile snapshot, never a historical official-ledger count.
+    bind = db.get_bind()
+    if bind.dialect.name == "postgresql":
+        from sqlalchemy import text
+        with bind.connect().execution_options(isolation_level="REPEATABLE READ") as connection:
+            connection.execute(text("SET TRANSACTION READ ONLY"))
+            with Session(bind=connection) as snapshot:
+                return registered_summary(snapshot, actor)
+    return registered_summary(db, actor)
+
+
 @router.get("/dashboard")
 def dashboard(start_date: date | None = None, end_date: date | None = None,
               actor: Actor = Depends(current_actor), db: Session = Depends(get_db)):

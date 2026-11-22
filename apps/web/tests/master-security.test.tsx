@@ -12,6 +12,7 @@ function fixture(owner=true){
   if(path==='/me')return {id:owner?'owner':'reviewer',roles:[{role:'THANA_ADMIN'}],mfa:true,is_master_admin:owner};
   if(path==='/master/security')return {is_owner:owner,items:[],pending:[{id:'req',user_id:'target',email:'target@example.invalid',requested_by:'owner',reason:'Phone replacement',until:null}],history:[]};
   if(path.startsWith('/master/accounts?'))return {items:accounts,total:1001,stats:{registered:1001,active:1001,suspended:0,deleted:0}};
+  if(path.startsWith('/master/confirmation-queue?'))return {items:[],total:0};
   if(path.startsWith('/master/requests?')||path.startsWith('/master/activity?'))return {items:[],total:0};
   if(path.endsWith('/deletion-preview'))return {id:'target',email:'target@example.invalid',revision:'c'.repeat(64),profile:true,reports:2,permissions:1};
   if(path.startsWith('/access/personal/'))return {version:1,reviewer_id:null,member_id:null,goals:[]};
