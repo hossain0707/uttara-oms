@@ -524,7 +524,6 @@ def export_own_report(
     db: Session = Depends(get_db),
 ):
     from io import BytesIO
-    from html import escape
     from fastapi.responses import Response
 
     row = db.get(PersonalReport, report_id)
@@ -563,23 +562,10 @@ def export_own_report(
     else:
         from weasyprint import HTML
 
-        table = "<tr>" + "".join("<th>" + escape(h) + "</th>" for h in header) + "</tr>"
-        table += "".join(
-            "<tr>" + "".join("<td>" + escape(str(v)) + "</td>" for v in value) + "</tr>"
-            for value in values
-        )
-        html = (
-            "<style>@page{size:A4 landscape;margin:15mm}body{font:11px sans-serif}table{border-collapse:collapse;width:100%}td,th{border:1px solid #aaa;padding:6px;overflow-wrap:anywhere}</style>"
-            + "<h1>Uttara OMS — Personal report</h1><p>"
-            + escape(data["month"] + " · " + data["status"])
-            + "</p><table>"
-            + table
-            + "</table><p>"
-            + escape(data.get("summary", ""))
-            + "</p><p>"
-            + escape(data.get("review_note") or "")
-            + "</p>"
-        )
+        from ..report_book import reporting_book_html
+        profile = db.get(PersonalProfile, actor.id)
+        name = unpack(profile.details_encrypted).get("full_name", "") if profile else ""
+        html = reporting_book_html(data, name)
         result = HTML(string=html).write_pdf()
         media = "application/pdf"
     audit(db, actor, "SELF_REPORT_EXPORTED", row.id)

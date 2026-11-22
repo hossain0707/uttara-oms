@@ -149,3 +149,7 @@ The next maintainer's prioritized backlog and acceptance criteria are in [HANDOV
 ## Profile confirmation implementation
 
 Current-profile aggregates live in `apps/api/app/profile_counts.py`; owner confirmation routes live in `apps/api/app/routes/confirmation.py`. `create_member_record` is a noncommitting helper shared with the original member route, so a newly created official member and its profile link cannot partially commit. No schema migration is required. Keep self-reported profile data separate from ledger membership, retain scope checks for staff, and never infer official status or permissions from the saved category/requested unit. Regression coverage includes synthetic creation, duplicate-phone linking, rollback, stale versions, inactive ancestors, scoped aggregates, consent and UI confirmation/cancellation.
+
+## Reporting-book presentation
+
+`ReportingBook.tsx` and its scoped CSS render the responsive Bengali daily/monthly notebook; `lib/report-book.ts` owns the real metric labels, units, date formatting and local aggregate helper. `PersonalWorkspace` retains versioned report persistence and distinguishes loaded daily values from unsaved edits. Submission uses explicit in-page confirmation and existing backend reviewer/state guards. `apps/api/app/report_book.py` renders escaped, self-contained Bengali PDF HTML with local Noto fonts supplied by the container. PDF/Excel export authorization and no-store headers remain unchanged. No report schema migration or permission change is required.
