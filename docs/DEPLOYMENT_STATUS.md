@@ -16,6 +16,10 @@ Reviewed **2026-11-22 (Asia/Seoul)**. This supersedes old branches, SMTP-pending
 
 These identifiers are operational references, not secrets. Account lists, MFA exceptions and private identity subjects are deliberately not reproduced in source documentation. Check current provider dashboards for newer deployment status and current grants.
 
+## Direct owner follow-up
+
+The direct-owner-controls change adds owner-only direct actions and paginated account/request/activity endpoints without schema or credential changes. See MASTER_ADMIN.md. The table above is retained as previous release evidence; verify the new PR source and both providers before calling this follow-up live. Deploy the matching API before accepting frontend owner actions.
+
 ## Actual free topology
 
 Cloudflare Pages serves a static Next.js export. Render runs the FastAPI Docker service. Supabase hosts Auth and PostgreSQL. Supabase sends authentication emails through the owner-configured Gmail SMTP sender. No Render Postgres, Cloud Run service, paid disk, paid PITR, Cloudflare backend function or object-storage photo pipeline is part of this topology.

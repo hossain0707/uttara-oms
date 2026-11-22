@@ -34,7 +34,7 @@ No secrets are intentionally supplied by this documentation. Do not request cred
 | P1 capacity | Real authenticated 50-user staging test near 1,000-account dataset | Agreed workload/SLO, sanitized metrics, bottleneck analysis; no extrapolation from readiness alone |
 | P1 auth acceptance | New email/password signup, OTP, password recovery, lost-factor procedure and browser matrix | Synthetic real-browser evidence for success/error/expiry/role isolation and recovery |
 | P1 controls | Upstream abuse/body/export limits and security alerts | Thresholds, trusted-client identification and tests; no wildcard CORS or global MFA bypass |
-| P1 management pagination | Access/Master account lists currently stop at 500 rows; request queues are capped | Add authorized pagination/search and test accounts beyond row 500 without widening scope |
+| Shipped follow-up | Owner accounts, pending requests and activity now use paginated endpoints | Legacy ordinary-admin lists remain bounded; assess their pagination separately |
 | P1 indexing/storage | Profile search and photo scaling | Measured authorized scan/storage cost; reviewed privacy-preserving index/object-storage design if needed |
 | P1 key lifecycle | Fernet/HMAC rotation without data loss | Reversible/recoverable migration, key-version plan, backups and digest reconciliation |
 | P2 workflow | Historical month-specific target assignment | Explicit versioned data model and migration; distinguish current goals from report snapshots |

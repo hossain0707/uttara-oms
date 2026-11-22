@@ -29,35 +29,22 @@ def login_as(context, monkeypatch, name, aal='aal1'):
         return account_actor(SimpleNamespace(credentials='synthetic'),db)
 
 
-def test_owner_exceptions_independent_approval_revocation(context,monkeypatch):
-    c,h,w,unit=setup_owner(context)
-    assert c.get('/api/v1/master/security').json()['is_owner'] is True
+def test_owner_exceptions_apply_directly_revocation_and_protection(context,monkeypatch):
+    c,h,w,_=setup_owner(context)
     body={'user_id':str(w['editor'].id),'reason':'Temporary phone replacement','until':(datetime.now(timezone.utc)+timedelta(days=1)).isoformat()}
-    own=c.post('/api/v1/master/exceptions',json={**body,'user_id':str(w['admin'].id)})
-    assert own.status_code==403
+    assert c.get('/api/v1/master/security').json()['is_owner']
+    assert c.post('/api/v1/master/exceptions',json={**body,'user_id':str(w['admin'].id)}).status_code==403
     h['actor']=w['admin2']
     assert c.post('/api/v1/master/exceptions',json=body).status_code==403
-    assert c.get('/api/v1/master/security').json()['items']==[]
     h['actor']=w['admin']
-    request=c.post('/api/v1/master/exceptions',json=body)
-    assert request.status_code==201,request.text
-    rid=request.json()['id']
+    response=c.post('/api/v1/master/exceptions',json=body)
+    assert response.status_code==201 and response.json()['status']=='APPLIED'
+    assert c.get('/api/v1/master/security').json()['pending']==[]
     assert c.post('/api/v1/master/exceptions',json=body).status_code==409
-    assert c.post(f'/api/v1/master/exceptions/{rid}/decision',json={'approve':True}).status_code==403
-    with pytest.raises(HTTPException,match='Administrator MFA required'):
-        login_as(context,monkeypatch,'editor')
-    h['actor']=w['admin2']
-    approved=c.post(f'/api/v1/master/exceptions/{rid}/decision',json={'approve':True})
-    assert approved.status_code==200,approved.text
-    assert c.post(f'/api/v1/master/exceptions/{rid}/decision',json={'approve':True}).status_code==409
     assert login_as(context,monkeypatch,'editor').mfa is False
     with pytest.raises(HTTPException,match='Administrator MFA required'):
         login_as(context,monkeypatch,'admin')
-    h['actor']=w['admin']
-    data=c.get('/api/v1/master/security').json()
-    target=next(a for a in data['items'] if a['id']==str(w['editor'].id))
-    assert target['policy']['exempt'] is True
-    pid=target['policy']['id']
+    pid=response.json()['id']
     assert c.post(f'/api/v1/master/exceptions/{w["editor"].id}/revoke',json={'expected_policy_id':str(w['admin'].id)}).status_code==409
     assert c.post(f'/api/v1/master/exceptions/{w["editor"].id}/revoke',json={'expected_policy_id':pid}).status_code==200
     with pytest.raises(HTTPException,match='Administrator MFA required'):
@@ -70,48 +57,46 @@ def test_expired_exceptions_owner_protection_and_account_status(context,monkeypa
         for who in ['editor','admin']:
             policy.event(db,w['admin2'],policy.POLICY_EVENT,w[who].id,{'exempt':True,'until':(datetime.now(timezone.utc)-timedelta(seconds=1)).isoformat(),'reason':'Expired synthetic rule'})
         db.commit()
-    with pytest.raises(HTTPException,match='Administrator MFA required'):
-        login_as(context,monkeypatch,'editor')
-    with pytest.raises(HTTPException,match='Administrator MFA required'):
-        login_as(context,monkeypatch,'admin')
+    for who in ['editor','admin']:
+        with pytest.raises(HTTPException,match='Administrator MFA required'):
+            login_as(context,monkeypatch,who)
     assert c.post(f'/api/v1/master/accounts/{w["admin"].id}/status',json={'expected_active':True,'active':False}).status_code==403
-    # Maintain two independent Thana administrators.
-    assert c.post(f'/api/v1/master/accounts/{w["admin2"].id}/status',json={'expected_active':True,'active':False}).status_code==409
-    suspended=c.post(f'/api/v1/master/accounts/{w["editor"].id}/status',json={'expected_active':True,'active':False})
-    assert suspended.status_code==200,suspended.text
+    assert c.post(f'/api/v1/master/accounts/{w["admin2"].id}/status',json={'expected_active':True,'active':False}).status_code==200
+    assert c.post(f'/api/v1/master/accounts/{w["admin2"].id}/status',json={'expected_active':False,'active':True}).status_code==200
+    assert c.post(f'/api/v1/master/accounts/{w["editor"].id}/status',json={'expected_active':True,'active':False}).status_code==200
     with pytest.raises(HTTPException,match='Account has not been approved'):
         login_as(context,monkeypatch,'editor','aal2')
     assert c.post(f'/api/v1/master/accounts/{w["editor"].id}/status',json={'expected_active':True,'active':True}).status_code==409
     assert c.post(f'/api/v1/master/accounts/{w["editor"].id}/status',json={'expected_active':False,'active':True}).status_code==200
-    assert login_as(context,monkeypatch,'admin','aal2').is_master_admin is True
-    assert login_as(context,monkeypatch,'admin2','aal2').is_master_admin is False
+    assert login_as(context,monkeypatch,'admin','aal2').is_master_admin
+    assert not login_as(context,monkeypatch,'admin2','aal2').is_master_admin
 
 
-def test_target_admin_cannot_approve_own_exception_and_expiry_validation(context):
+def test_legacy_pending_exception_and_ordinary_self_approval(context):
     c,h,w,_=setup_owner(context)
-    body={'user_id':str(w['admin2'].id),'reason':'Temporary replacement'}
-    assert c.post('/api/v1/master/exceptions',json={**body,'until':'2020-01-01T00:00:00Z'}).status_code==422
-    response=c.post('/api/v1/master/exceptions',json=body)
-    assert response.status_code==201,response.text
+    assert c.post('/api/v1/master/exceptions',json={'user_id':str(w['admin2'].id),'reason':'Temporary replacement','until':'2020-01-01T00:00:00Z'}).status_code==422
+    with h['session_factory']() as db:
+        request=policy.event(db,w['admin'],policy.REQUEST_EVENT,w['admin2'].id,{'until':None,'reason':'Legacy synthetic request','previous':None})
+        db.commit();rid=str(request.id)
     h['actor']=w['admin2']
-    rid=response.json()['id']
     assert c.post(f'/api/v1/master/exceptions/{rid}/decision',json={'approve':True}).status_code==403
-    assert c.post(f'/api/v1/master/exceptions/{rid}/decision',json={'approve':False}).status_code==200
-    assert c.get('/api/v1/master/security').json()['pending']==[]
+    h['actor']=w['admin']
+    assert c.post(f'/api/v1/master/exceptions/{rid}/decision',json={'approve':True}).status_code==200
+    assert c.post(f'/api/v1/master/exceptions/{rid}/decision',json={'approve':True}).status_code==409
 
 
 def test_protected_owner_role_and_suspended_account_cannot_be_reenabled_by_grant(context):
     c,h,w,_=setup_owner(context)
     h['actor']=w['admin2']
     request=c.post('/api/v1/access/requests',json={'auth_sub':str(w['admin'].id),'email':w['admin'].email,'role':'THANA_ADMIN','operation':'REVOKE'})
-    assert request.status_code==201,request.text
     h['actor']=w['admin']
     result=c.post('/api/v1/access/requests/'+request.json()['id']+'/decision',json={'approve':True})
     assert result.status_code==403 and 'protected' in result.text
     c.post(f'/api/v1/master/accounts/{w["editor"].id}/status',json={'expected_active':True,'active':False})
-    request=c.post('/api/v1/access/requests',json={'auth_sub':str(w['editor'].id),'email':w['editor'].email,'role':'THANA_ADMIN','operation':'GRANT'})
-    assert request.status_code==201,request.text
     h['actor']=w['admin2']
+    request=c.post('/api/v1/access/requests',json={'auth_sub':str(w['editor'].id),'email':w['editor'].email,'role':'THANA_ADMIN','operation':'GRANT'})
+    assert request.status_code==201 and request.json()['status']=='PENDING'
+    h['actor']=w['admin']
     result=c.post('/api/v1/access/requests/'+request.json()['id']+'/decision',json={'approve':True})
     assert result.status_code==409 and 'reactivate' in result.text
 

@@ -18,3 +18,7 @@ PR #18 release checks passed. Local baseline: 67 backend tests passed, four Post
 Read-only 50-request bursts are recorded in [CAPACITY.md](CAPACITY.md); they do not certify authenticated concurrency or a 1,000-account workload. The free service has no claimed uptime or measured recovery guarantee. End-to-end new-user/password-recovery, mobile, privacy/retention, key lifecycle, restore, monitoring and independent security acceptance remain separately tracked.
 
 Use [HANDOVER.md](HANDOVER.md) for prioritized continuation, [RELEASE_CHECKLIST.md](RELEASE_CHECKLIST.md) for named signoffs and [CHANGELOG.md](../CHANGELOG.md) for release history. No private user/permission inventory belongs in this document.
+
+## Direct owner control follow-up
+
+Implemented owner-only direct role/scope changes, immediate MFA exceptions, direct request/member decisions, paginated account/queue/activity search and guarded OMS workspace erasure. Other administrators retain their existing approval rules. No schema change or new database privilege is required. Current UI distinguishes suspension from deleting workspace payloads; Auth identity and official/audit history remain. See MASTER_ADMIN.md for exact boundaries and tests. Deployment evidence for this follow-up is recorded in its release PR; the PR #18 record above remains historical baseline evidence.

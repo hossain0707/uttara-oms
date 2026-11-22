@@ -31,7 +31,7 @@ Personal workspaces. Scoped records. Independent approvals.
 | Personal workspace | One Bengali **or** English name, saved profile card, editable addresses, photo, private NID/passport number, reading list and monthly reports |
 | Directory | Partial-name search across consented profile summaries and official records; linked people deduplicated; authorized scopes enforced |
 | Organization | One Thana → Ward → Unit hierarchy; four official categories; routine edits and independently reviewed sensitive changes |
-| Access | Scoped grants/removals, basic-user applications, TOTP gate and protected Master Admin security controls |
+| Access | Scoped grants/removals, basic-user applications, TOTP gate and protected Master Admin direct account/role/security controls |
 | Reports | Personal drafts/submissions/review; assigned targets; historical official counts, movements and authorized PDF/XLSX exports |
 | Library | Source-linked BJILibrary syllabus tracks and book covers; explicit reading-list staging, no copied full books |
 | Safeguards | Server-side JWT/RBAC, encrypted sensitive fields, version conflicts, append-only history, restricted database runtime role |

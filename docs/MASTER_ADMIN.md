@@ -1,29 +1,42 @@
-# Master Admin security panel
+# Master Admin direct control panel
 
-The owner is a separately provisioned account, not another assignable role in the ordinary Thana Admin dropdown. Provisioning binds the existing app_users UUID, preserving the account's verified Auth subject; it does not use an email from a client request or editable user metadata. The selected deployment owner is bound privately to a verified existing app-user UUID. The public repository does not list owner/exception recipient identities. No account becomes owner automatically.
+The configured owner is bound to a verified existing app-user UUID through durable `MASTER_OWNER_CONFIGURED` audit state. This is not an assignable dropdown role and cannot be created by editing a profile/email/browser flag. Owner routes require a global Thana Admin grant and actual authenticator AAL2. The owner cannot suspend/delete themselves, remove their protected global permission or exempt themselves from MFA.
 
-## Interface
+## Direct authority
 
-- Owner-only sidebar: Master Admin (/master/), using the approved OMS emblem.
-- Owner sees registered accounts, actual role/scope names, account status, authenticator policy and security activity.
-- Request a 1/7/30/90-day exception, or until revoked, with a short reason. No exception is automatically created by installation.
-- Security approvals and rejections use an explicit in-page confirmation with the target account and duration; cancel submits nothing.
-- A different authenticator-verified Thana Admin approves or rejects requests in Access control. Requesters and exception recipients cannot approve their own request. Exempt administrators must still verify an authenticator to participate in security decisions.
-- Owner can revoke an exception immediately. Expiry/revocation is checked server-side on every authenticated API request; no cron, frontend-only flag or new deployment is needed.
-- Owner can suspend/reactivate other accounts with a current-state guard. Suspension blocks subsequent API requests. Keep two active Thana Admins. A routine permission grant cannot reactivate a suspended account.
-- Existing role/scope grants and removals retain their independent approval workflow. Owner role removal and owner suspension/exemption are blocked.
-- Basic personal accounts retain the existing normal sign-in policy. Administrative accounts require MFA by default. Password recovery retains its existing authenticator checks for enrolled users.
+The owner opens **Master Admin** (also shown when the owner opens Access control). Owner actions apply after an explicit in-page confirmation, without a second administrator's approval. Other administrators retain their existing independent-review and scope rules.
 
-## Persistence and authority
+| Control | Behavior |
+| --- | --- |
+| Registered OMS accounts | Search name/email, filter active/suspended/deleted state, page through all matching accounts; no 500-row UI window |
+| Permissions | Grant, replace role/scope atomically, or remove a precise grant; stale permission fingerprints return 409 |
+| Authenticator policy | Apply 1/7/30/90-day or until-revoked exception directly; restore requirement immediately; ordinary sign-in and existing scopes remain |
+| Pending requests | Paginated permission, official membership and legacy security queues; owner can approve their own proposal while ordinary admins cannot |
+| Official membership | Owner proposals from People & records apply category/transfer/status changes directly with ledger/audit transactions |
+| Account status | Suspend/reactivate immediately; permission grants cannot silently reactivate an account |
+| Assignments | Search reviewers and official members, set the current reviewer/member link/targets directly; private report payloads remain hidden |
+| Activity | Paginated administrative audit metadata; immutable events remain authoritative |
 
-Security configuration is event-sourced in the existing durable, append-only audit_logs table. MASTER_OWNER_CONFIGURED identifies the owner; MASTER_MFA_REQUEST stores pending requests; MASTER_MFA_APPROVED/REJECTED resolve them; MASTER_MFA_POLICY records the effective per-account policy; MASTER_ACCOUNT_STATUS records account changes. Version guards use the prior policy event UUID. Policy events are never updated/deleted by the application. Review/mutation transactions serialize on the organization root and lock mutable account rows. Immutable request events are read without FOR UPDATE because audit history is intentionally SELECT/INSERT-only for the runtime. New audit details fit the existing 250-character limit. No schema migration is needed; revision 0005 remains current.
+Direct actions supersede conflicting pending access/security requests where applicable. Expiry/revocation is checked server-side on authenticated requests; no cron or redeployment is needed. Owner can act even when no second administrator is available, while other administrators' minimum-review protections remain.
 
-These audit records are authoritative security state and must be backed up and retained, not purged as disposable telemetry. Removing owner configuration makes MFA exceptions fail closed. Application routes never accept arbitrary audit actions or owner transfer requests. Owner provisioning/transfer is an out-of-band controlled operation, not a public API.
+## Workspace deletion is distinct from suspension
 
-## Initial activation
+**Delete workspace data** first retrieves a preview and revision. The owner must type the exact target email, read the consequences and confirm. A changed profile/report/permission state invalidates the preview. No actual account is deleted during automated or live read-only acceptance.
 
-Publish and deploy both API and frontend. Verify the existing owner account UUID, verified Auth subject, active global THANA_ADMIN grant and absence of another owner binding. After explicit authorization, append exactly one MASTER_OWNER_CONFIGURED audit event targeting that app user, recording the current owner as actor and the authorized owner setup as detail. Do not change any role grant, MFA factor, global MFA setting or existing request. Refresh /me and the workspace; only that account receives is_master_admin=true.
+The operation clears the target's encrypted personal profile, photo, NID/passport, reading list, current goals, report payloads and review-note content; removes their grants; anonymizes their OMS email (including target-email fields in access requests); blocks the OMS account permanently; and resolves pending target permission/security requests. Deleted workspaces cannot be reactivated or granted permissions by normal application controls.
 
-## Validation
+It **retains** the minimal account/Auth-subject tombstone, immutable audit/security history, official membership records/history, other users' data and provider backups. It does **not** delete the separate Supabase Auth identity, Google/Gmail account or backup copies. The UI explicitly states this boundary. A provider identity purge or official-record erasure requires its own authorized operator process; no service-role Auth key is added to the app. Do not claim this is blanket legal erasure of all organizational/provider records.
 
-Synthetic API tests cover owner-only requests, independent approvals, requester/target self-approval denial, duplicate/stale requests, live AAL1 exception checks, expiry, immediate revocation, owner MFA and role protection, suspension, minimum administrators and fail-closed missing configuration. Frontend tests cover owner-only controls and separate reviewer controls. These regression tests use synthetic identities; the public documentation does not reproduce the live exception inventory.
+## Persistence and compatibility
+
+No schema migration or expanded DB grants are required; revision remains `0005_personal_workspace`. Mutable workspace rows are cleared using existing UPDATE permissions, grants use existing DELETE permission, and audit history remains SELECT/INSERT only. New `MASTER_ACCOUNT_DELETED` audit events are durable tombstones, not disposable logs. Existing owner configuration and MFA exceptions remain valid; no real grants or exceptions are changed simply by installing the feature.
+
+Role mutations serialize on the organization root, lock the target account and check the current grant fingerprint. Membership changes reuse the existing ledger decision implementation. Workspace erasure locks the account against normal profile/report writes and checks its preview revision. Never add `FOR UPDATE` to immutable audit rows: that requires UPDATE privilege and broke restricted-runtime approvals previously.
+
+## Initial activation and transfer
+
+A new environment still needs controlled first-admin provisioning and an authorized out-of-band owner binding. Verify the exact existing app UUID/Auth subject/global grant and existing owner state; append the authorized owner event through a trusted operator process. There is no public owner-transfer endpoint. Application deployment does not create or replace the owner identity.
+
+## Verification
+
+Synthetic tests cover direct owner changes, forged owner flags, missing MFA, ordinary-admin self-approval denial, role replacement/stale state, active scope validation, owner protection, legacy decisions, expired/revoked exceptions, >1,000-account pagination, Bengali matching/minimal summaries, typed deletion confirmation, stale deletion previews, post-deletion access denial and retained official history. PostgreSQL CI exercises direct policy and workspace deletion under restricted runtime privileges. UI tests cover confirmation/cancel, owner controls, pagination/search and ordinary review.

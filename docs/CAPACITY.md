@@ -34,7 +34,7 @@ Observed completions divided by burst wall time were 6.38/s for successful readi
 
 The deployment answered these successful 50-request bursts. This is encouraging for a small pilot, but it is not a 50-authenticated-user certification. It does not test JWT verification under load, concurrent profile writes, report saves, directory scans, root-lock contention, SMTP or exports. Fifty open browsers can produce very different request rates depending on activity.
 
-The current Access control and Master Admin account listings each return at most 500 rows; this is a management-list limitation, not a signup cap. Request queues and report lists also have bounded results. Pagination/search beyond these caps needs a separate implementation before claiming complete management of 1,000 accounts.
+The owner panel now pages/searches all registered OMS accounts and pending queues, tested against more than 1,000 synthetic accounts. Legacy ordinary-admin Access control listings remain capped at 500, and report lists have bounded results. Pagination correctness is not an authenticated load or 1,000-active-user capacity certification.
 
 A 1,000-account target is not blocked by the published Auth monthly-user allowance alone. It was **not tested by creating 1,000 users**. Database/photo/report/audit growth, email delivery and concurrent workload must still be measured. Photo data currently consumes database space, including base64/encryption overhead; the unused object-storage allowance cannot be counted as database headroom.
 

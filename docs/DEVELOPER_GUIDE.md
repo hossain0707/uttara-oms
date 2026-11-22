@@ -142,6 +142,6 @@ The container workflow verifies nonroot images, HTTP startup and native PDF outp
 
 ## Working rules
 
-Use synthetic fixtures and a feature branch; preserve strict validation and version guards. A display-only change must not expand API visibility. Add a migration for a schema change and update readiness plus upgrade/recovery documentation coherently. Never weaken independent approvals to work around a missing second administrator. Keep history `SELECT/INSERT` only: locking immutable `audit_logs` with `FOR UPDATE` caused an actual restricted-runtime failure and must not be reintroduced.
+Use synthetic fixtures and a feature branch; preserve strict validation and version guards. A display-only change must not expand API visibility. Add a migration for a schema change and update readiness plus upgrade/recovery documentation coherently. Keep ordinary-administrator independent approval intact; the configured AAL2 owner alone has explicit direct controls described in MASTER_ADMIN.md. Keep history `SELECT/INSERT` only: locking immutable `audit_logs` with `FOR UPDATE` caused an actual restricted-runtime failure and must not be reintroduced.
 
 The next maintainer's prioritized backlog and acceptance criteria are in [HANDOVER.md](HANDOVER.md). Application source remains rights-restricted; obtain permission before redistribution.

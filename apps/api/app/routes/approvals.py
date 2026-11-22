@@ -9,6 +9,7 @@ from ..policies import CATEGORIES, active_unit, lock_organization, can_approve, 
 from ..schemas import ChangeDecision, ChangePropose
 from .members import visible
 from ..analytics import record_movement
+from ..owner_controls import direct_owner
 
 router = APIRouter(prefix="/approvals", tags=["approvals"])
 
@@ -65,30 +66,24 @@ def propose(member_id: UUID, body: ChangePropose, actor: Actor = Depends(current
     db.add(r)
     db.flush()
     db.add(AuditLog(actor_id=actor.id, action="CHANGE_PROPOSED", target_id=str(r.id), detail=body.kind))
+    if direct_owner(db, actor):
+        apply_member_decision(db, actor, r, True, "Direct Master Admin action")
     db.commit()
     db.refresh(r)
     return record(r)
 
 
-@router.post("/{request_id}/decision")
-def decide(request_id: UUID, body: ChangeDecision, actor: Actor = Depends(current_actor),
-           db: Session = Depends(get_db)):
+def apply_member_decision(db, actor, r, approve, note=""):
     from ..models import Member
-    lock_organization(db)
-    r = db.query(ChangeRequest).filter(ChangeRequest.id == request_id).with_for_update().one_or_none()
-    if not r:
-        raise HTTPException(404, "Request not found")
-    if r.status != "PENDING":
-        raise HTTPException(409, "Request already reviewed")
     m = db.query(Member).filter(Member.id == r.member_id).with_for_update().one()
-    if r.requested_by == actor.id:
+    if r.requested_by == actor.id and not direct_owner(db, actor):
         raise HTTPException(403, "Self approval is prohibited")
     destination = UUID(r.proposed_value) if r.kind == "TRANSFER" else None
     if not can_approve(db, actor, m.org_node_id, destination):
         raise HTTPException(403, "Approver lacks required scope")
-    if m.version != r.original_version and body.approve:
+    if m.version != r.original_version and approve:
         raise HTTPException(409, "Member changed after submission; reject and resubmit")
-    if body.approve:
+    if approve:
         prior = (m.org_node_id, m.category, m.status)
         if r.kind == "REACTIVATE" and not active_unit(db, m.org_node_id):
             raise HTTPException(409, "Reactivate the unit and its ancestors first")
@@ -112,12 +107,26 @@ def decide(request_id: UUID, body: ChangeDecision, actor: Actor = Depends(curren
                             before=before, after=after, actor_id=actor.id)
         db.add(event); db.flush()
         record_movement(db, event, prior, (m.org_node_id, m.category, m.status))
-    r.status = "APPROVED" if body.approve else "REJECTED"
+    r.status = "APPROVED" if approve else "REJECTED"
     r.reviewed_by = actor.id
-    r.review_note = body.note
+    r.review_note = note
     r.reviewed_at = datetime.now(timezone.utc)
     db.add(AuditLog(actor_id=actor.id, action="CHANGE_" + r.status, target_id=str(r.id),
                     detail=r.kind))
+    db.flush()
+
+
+@router.post("/{request_id}/decision")
+def decide(request_id: UUID, body: ChangeDecision, actor: Actor = Depends(current_actor),
+           db: Session = Depends(get_db)):
+    from ..models import Member
+    lock_organization(db)
+    r = db.query(ChangeRequest).filter(ChangeRequest.id == request_id).with_for_update().one_or_none()
+    if not r:
+        raise HTTPException(404, "Request not found")
+    if r.status != "PENDING":
+        raise HTTPException(409, "Request already reviewed")
+    apply_member_decision(db, actor, r, body.approve, body.note)
     db.commit()
     db.refresh(r)
     return record(r)

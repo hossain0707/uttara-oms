@@ -55,7 +55,7 @@ stateDiagram-v2
   Rejected --> [*]: No proposed change applied
 ```
 
-This state diagram describes ordinary member/access requests. Role changes created by an administrator need a different Thana Admin for approval. Ward member decisions stay inside their ward; cross-ward transfers need global authority. All decisions recheck scope, current state and version. Security-exception requests are separately event-sourced: owner requests; a different AAL2 Thana Admin who is not the target approves. Owner can revoke immediately. Rejection permissions differ by request type; use [the admin guide](ADMIN_GUIDE.md) and actual route checks rather than assuming every requester can reject every queue.
+This state diagram describes ordinary member/access requests. The configured AAL2 owner can apply or decide changes directly in the same transaction. Role changes created by an administrator need a different Thana Admin for approval. Ward member decisions stay inside their ward; cross-ward transfers need global authority. All decisions recheck scope, current state and version. Security-exception requests are separately event-sourced: the owner now applies them directly; ordinary AAL2 reviewers retain independent legacy-request checks. Owner can revoke immediately. Rejection permissions differ by request type; use [the admin guide](ADMIN_GUIDE.md) and actual route checks rather than assuming every requester can reject every queue.
 
 ## Personal report workflow
 

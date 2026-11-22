@@ -9,6 +9,10 @@ This is a source-based summary, not a claim that every historical deployment had
 - Preserved failed and successful burst-test attempts and production-readiness limitations.
 - Documentation/visual assets only; no role, security setting, application behavior or database migration change.
 
+## Direct owner controls — 2026-11-22
+
+Owner-only direct roles/scopes, MFA policy, pending decisions, suspension and guarded workspace deletion; paginated account/name/email search, queues and administrative activity. Ordinary admins retain independent review. No migration or global MFA relaxation. Auth identity, official membership and audit records remain outside workspace deletion.
+
 ## Application releases
 
 | PR | Result |
