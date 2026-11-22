@@ -174,8 +174,24 @@ def test_runtime_permissions_enforce_database_boundary():
                     owner = Actor(owner_id, str(owner_id)+'@example.invalid', [("THANA_ADMIN", None)], True)
                     reviewer = Actor(reviewer_id, str(reviewer_id)+'@example.invalid', [("THANA_ADMIN", None)], True)
                     request = request_exception(ExceptionRequest(user_id=target_id, reason="Synthetic phone replacement"), owner, db)
-                    assert decide(uuid.UUID(request["id"]), Decision(approve=True), reviewer, db)["status"] == "APPROVED"
+                    assert request["status"] == "APPLIED"
+                    legacy = policy.event(db, owner, policy.REQUEST_EVENT, reviewer_id,
+                                          {"until": None, "reason": "Legacy synthetic request", "previous": None})
+                    db.commit()
+                    assert decide(legacy.id, Decision(approve=True), owner, db)["status"] == "APPROVED"
                     assert policy.mfa_exempt(db, target_id) is True
+                    from app.routes.master import deletion_preview, delete_workspace, DeleteWorkspace
+                    from app.models import PersonalProfile, PersonalReport
+                    from app.routes.personal import pack
+                    from datetime import date
+                    db.add(PersonalProfile(user_id=target_id, details_encrypted=pack({'full_name': 'Synthetic runtime profile', 'consent': True})))
+                    db.add(PersonalReport(user_id=target_id, month=date(2020, 1, 1), content_encrypted=pack({'entries': []})))
+                    db.commit()
+                    preview = deletion_preview(target_id, owner, db)
+                    assert delete_workspace(target_id, DeleteWorkspace(
+                        confirmation_email=str(target_id)+'@example.invalid', expected_revision=preview['revision']), owner, db)['status'] == 'DELETED'
+                    assert db.get(AppUser, target_id).active is False
+                    assert policy.mfa_exempt(db, target_id) is False
             finally:
                 c.rollback()
                 c.exec_driver_sql('RESET ROLE')

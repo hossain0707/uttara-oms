@@ -8,6 +8,7 @@ import {
   XCircle,
 } from "lucide-react";
 import { authClient } from "@/lib/supabase";
+import MasterConsole from "@/components/MasterConsole";
 import MasterSecurity from "@/components/MasterSecurity";
 import PersonalAssignments from "@/components/PersonalAssignments";
 import Shell from "@/components/Shell";
@@ -145,6 +146,7 @@ export default function AccessPage() {
       try {await load();} catch {setMessage("Removal request saved. Reload to refresh the directory.");}
     } catch(err){setMessage(err instanceof Error?err.message:String(err));}finally{setBusy(false);}
   };
+  if(identity?.is_master_admin)return <Shell title="Master Admin" subtitle="Direct account and permission controls."><MasterConsole/></Shell>;
   return (
     <Shell
       title="Access control"

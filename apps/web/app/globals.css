@@ -34,3 +34,6 @@
 .security-confirm{border:2px solid #28775a!important;background:#f0f8f3!important;box-shadow:0 12px 32px #174d3312}.security-confirm p{overflow-wrap:anywhere}.security-confirm .form-actions{justify-content:flex-start}
 
 .directory-source{display:block;margin-top:6px;font-size:12px;color:#607c6e}
+
+/* Owner controls keep destructive and reversible actions visibly distinct. */
+.master-console .panel{margin-top:22px}.master-search{flex:1;min-width:230px}.master-pagination{margin-top:20px}.master-grant{display:flex;flex-wrap:wrap;align-items:center;gap:12px;padding:12px 0;border-bottom:1px solid #e3ece7}.master-grant span{flex:1;min-width:200px}.master-account-detail h3{margin-top:22px}.master-console form{margin-top:18px}.danger-btn{background:#9d302d;color:#fff;border:1px solid #9d302d;border-radius:9px;padding:10px 16px;font-weight:600;cursor:pointer}.danger-btn:disabled{opacity:.5;cursor:not-allowed}.security-confirm{border:2px solid #83b49e;box-shadow:0 8px 30px #164b3818}.master-console .master-actions{display:flex;gap:12px;flex-wrap:wrap}

@@ -7,8 +7,8 @@
 1. **Default deny:** All protected business routes require a verified Supabase JWT with expected issuer, audience, asymmetric signature and authenticated role; health endpoints are public.
 2. **Independent authorization:** An active local account is required after sign-in; basic users have owner-only workspace access. Organizational routes additionally require approved grants and scope.
 3. **Least privilege:** role checks happen on the API, with Thana-wide aggregate-only viewer access, Ward-descendant or Unit-only personal-data scopes.
-4. **Critical change review:** category transfers, unit transfers and activation-state changes are not written directly. A different qualified reviewer must approve.
-5. **Admin authentication:** MFA level `aal2` is required for organizational grants by default. Reviewed non-owner exceptions are server-enforced; owner and security decision reviewers always require AAL2.
+4. **Critical change review:** category transfers, unit transfers and activation-state changes are not written directly. A different qualified reviewer must approve ordinary-administrator changes. The configured MFA-verified owner can apply changes directly; owner authority is derived from durable DB configuration, not a client flag.
+5. **Admin authentication:** MFA level `aal2` is required for organizational grants by default. Owner-applied non-owner exceptions are server-enforced; owner and security decision reviewers always require AAL2.
 6. **Sensitive field encryption:** phone and address use Fernet; exact phone uniqueness uses a separate keyed HMAC. Data provider should additionally encrypt disks and backups.
 7. **Audit:** logs contain action, target, timestamp and actor, without plain phone/address and without automatic request logging of HTTP bodies.
 8. **Data export:** profiles are exported only by Thana Admin; the action is audit logged. All file responses request no browser caching.

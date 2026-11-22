@@ -49,8 +49,8 @@ API responses use `Cache-Control: no-store`. Never log Authorization, request bo
 | GET | `/reviews` | Submitted reports assigned to current independent reviewer |
 | POST | `/reviews/{report_id}` | Assigned reviewer marks REVIEWED or RETURNED |
 | GET | `/master/security` | AAL2 Thana Admin security view; owner gets additional management fields |
-| POST | `/master/exceptions` | Owner requests another administrative account's MFA exception |
-| POST | `/master/exceptions/{request_id}/decision` | AAL2 independent Thana Admin decision |
+| POST | `/master/exceptions` | Owner applies another administrative account's MFA exception directly |
+| POST | `/master/exceptions/{request_id}/decision` | Owner direct or ordinary AAL2 independent legacy-request decision |
 | POST | `/master/exceptions/{user_id}/revoke` | Owner revokes effective exception immediately |
 | POST | `/master/accounts/{user_id}/status` | Owner guarded suspend/reactivate; owner protected |
 | GET | `/reports/dashboard` | Scope-authorized historical aggregate report |
@@ -59,9 +59,22 @@ API responses use `Cache-Control: no-store`. Never log Authorization, request bo
 
 All paths in the table except health are relative to `/api/v1`.
 
-## Bounded management lists
+## Owner account controls
 
-`/access/users` and the owner account list in `/master/security` each cap results at 500 accounts. Access requests and pending security request scanning cap at 200; own report listing caps at 120 and review queue at 200. They do not expose general pagination parameters. These are result-window limits, not signup limits; do not claim full 1,000-account administration until pagination/search is implemented and tested.
+| Method | Path | Behavior |
+| --- | --- | --- |
+| GET | `/master/accounts` | Owner-only name/email search, state, limit and offset; minimal profile summary/grants/policy |
+| POST | `/master/accounts/{user_id}/roles` | Direct GRANT/REVOKE/REPLACE with expected_roles_version; replace/remove uses exact grant_id |
+| GET | `/master/requests` | Paginated owner queue: kind access/member/security |
+| GET | `/master/activity` | Paginated administrative audit metadata |
+| GET | `/master/accounts/{user_id}/deletion-preview` | Owner-only counts, retained boundaries and revision |
+| POST | `/master/accounts/{user_id}/delete-workspace` | Exact confirmation_email + expected_revision; permanent OMS payload erasure, not Auth/official/history deletion |
+
+The owner exception applies to existing access/member proposal and decision routes too; owner proposals can return APPROVED immediately. Other admins retain their prior independent-review rules. The owner always requires AAL2.
+
+## Legacy bounded management lists
+
+`/access/users` and the owner account list in `/master/security` each cap results at 500 accounts. Access requests and pending security request scanning cap at 200; own report listing caps at 120 and review queue at 200. These legacy endpoints do not expose general pagination parameters. The current owner panel instead uses the paginated /master/accounts, /master/requests and /master/activity endpoints. These are result windows, not signup limits.
 
 ## Important contracts
 
@@ -77,7 +90,7 @@ All paths in the table except health are relative to `/api/v1`.
 
 **Reporting dates:** optional `start_date`, `end_date` (inclusive Asia/Dhaka). Up to 367 days; no future end or reversed interval. Official personal XLSX is current-state information, not a historical person listing.
 
-**Security decisions:** `{approve:true|false}` plus exact path request UUID. Effective policy uses append-only audit events and guarded prior event IDs; read the owner/security models for request, revoke and account-status bodies. No public endpoint can write arbitrary audit events or transfer ownership.
+**Security decisions:** `{approve:true|false}` plus exact path request UUID. Owner policy changes apply directly; ordinary administrators retain independent legacy-request checks. Effective policy uses append-only audit events and guarded prior event IDs; read the owner/security models for request, revoke and account-status bodies. No public endpoint can write arbitrary audit events or transfer ownership.
 
 ## Safe read-only smoke check
 

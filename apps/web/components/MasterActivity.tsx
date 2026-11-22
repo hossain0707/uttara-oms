@@ -1,0 +1,9 @@
+'use client';
+import {useEffect,useState} from 'react';
+import {api} from '@/lib/api';
+type Entry={id:string;action:string;target_id:string;actor:string;at:string};
+export default function MasterActivity({revision}:{revision:number}){
+ const [offset,setOffset]=useState(0),[items,setItems]=useState<Entry[]>([]),[total,setTotal]=useState(0),[error,setError]=useState(''),[loading,setLoading]=useState(true);
+ useEffect(()=>{let active=true;setLoading(true);void api<{items:Entry[];total:number}>('/master/activity?'+new URLSearchParams({limit:'20',offset:String(offset)})).then(r=>{if(active){setItems(r.items);setTotal(r.total);setError('');}}).catch(e=>{if(active)setError(String(e));}).finally(()=>{if(active)setLoading(false);});return()=>{active=false;};},[offset,revision]);
+ return <div className="panel"><h2>Administrative activity</h2><p>Durable audit records remain preserved. Private payloads and identity documents are excluded.</p>{error&&<p role="alert">{error}</p>}{loading?<p>Loading activity…</p>:!items.length?<p>No administrative changes recorded.</p>:<div className="table-wrap"><table className="data-table"><thead><tr><th>Time</th><th>Action</th><th>Reference</th><th>Recorded by</th></tr></thead><tbody>{items.map(r=><tr key={r.id}><td>{new Date(r.at).toLocaleString()}</td><td>{r.action.replaceAll('_',' ')}</td><td>{r.target_id}</td><td>{r.actor}</td></tr>)}</tbody></table></div>}<div className="toolbar master-pagination"><button className="secondary-btn" disabled={loading||offset===0} onClick={()=>setOffset(Math.max(0,offset-20))}>Previous activity</button><span>{total?`${offset+1}–${Math.min(offset+20,total)} of ${total}`:'0 activity records'}</span><button className="secondary-btn" disabled={loading||offset+20>=total} onClick={()=>setOffset(offset+20)}>Next activity</button></div></div>;
+}

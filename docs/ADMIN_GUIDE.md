@@ -11,9 +11,11 @@ Administrative rights are approved application grants, checked on every API requ
 | `WARD_ADMIN` | Read/routine write in its ward and descendant units | No global access administration | Independent member-change approval within ward; scoped aggregates |
 | `THANA_VIEWER` | Aggregate reporting only from this grant; no personal directory | No role administration | Global aggregate reporting; no personal-data export |
 | `THANA_ADMIN` | All official records; consented unlinked profile summaries | Structure, access requests, reviewer/member links and targets | Independent decisions; global aggregates and official personal-data XLSX export |
-| Master Admin owner | Thana Admin rights plus protected owner controls | Request/revoke MFA exceptions; suspend/reactivate other accounts | Owner remains MFA-protected; separate qualified administrator decides exception requests |
+| Master Admin owner | Thana Admin rights plus protected owner controls | Direct grants/replacement/removal, MFA exceptions, suspension and guarded workspace deletion | Direct pending-request decisions; owner remains MFA-protected |
 
 Multiple grants can coexist. An assigned report reviewer with an organizational role can read **submitted reports assigned to them**, independent of the official-record scope matrix. Merely being Thana/Master Admin does not open every private report or NID/passport number.
+
+The configured Master Admin uses direct controls described in [MASTER_ADMIN.md](MASTER_ADMIN.md). References below to a second reviewer apply to ordinary administrators; the owner can act directly after confirmation.
 
 ## Configure the hierarchy
 
@@ -23,7 +25,7 @@ Use **Organization** to edit names or add real wards/units with stable codes. In
 
 In **People & records**, choose **Add person**, enter a unique member number, name and valid normalized Bangladesh phone, select an active unit/category and attest the required consent. Routine name/contact/address/occupation/position changes save directly with a version guard. Category changes, transfers, deactivation and reactivation create requests in **Approvals**.
 
-A different qualified reviewer checks the request, scope and expected version before approving. A ward reviewer cannot approve a transfer out of their ward. If a conflict occurs, reload and review current facts rather than retrying stale values. Changing category does not add a second person to the total; transfers preserve global totals.
+For ordinary administrators, a different qualified reviewer checks the request, scope and expected version before approving. A ward reviewer cannot approve a transfer out of their ward. If a conflict occurs, reload and review current facts rather than retrying stale values. Changing category does not add a second person to the total; transfers preserve global totals.
 
 ## Grant or remove permissions
 
@@ -33,7 +35,7 @@ A different qualified reviewer checks the request, scope and expected version be
 4. The independent reviewer uses the pending list to approve/reject.
 5. After approval, inspect **Accounts and approved permissions**. Assigned grants display **Remove**; removal creates its own independently reviewed request.
 
-A basic user's own role application can be decided by a Thana Admin other than that user. Maintain two active Thana Admins for independent approval. Ordinary removal cannot strip the protected owner role; grants cannot reactivate a suspended account. Historic owner-authorized bootstrap interventions were exceptional operations, not a recurring self-approval feature.
+A basic user's own role application can be decided by a Thana Admin other than that user. Ordinary administrator workflows retain the two-active-admin safeguard; the protected owner can act directly without a second administrator. Ordinary removal cannot strip the protected owner role; grants cannot reactivate a suspended account. Historic owner-authorized bootstrap interventions were exceptional operations, not a recurring self-approval feature.
 
 ## Link a personal account and assign a reviewer
 
@@ -47,9 +49,9 @@ Open **Personal report reviews**. Only assigned submitted reports appear. Read t
 
 ## Use Master Admin security controls
 
-See [Master Admin reference](MASTER_ADMIN.md). The owner opens **Master Admin**, selects an active administrative account, gives an exception duration (1/7/30/90 days or until revoked) and a short reason. Another authenticator-verified Thana Admin, who is neither requester nor recipient, confirms the decision in Access control. An MFA-exempt administrator must still reach AAL2 to review security requests.
+See [Master Admin reference](MASTER_ADMIN.md). The owner selects an account and confirms direct role, scope, authenticator or status changes. Exceptions support 1/7/30/90 days or until revoked with a short reason. No second approval is needed for the owner. Ordinary administrators still need AAL2 and independent review for any legacy security queue decisions.
 
-Exceptions remove only the administrative MFA gate while active; they do not remove ordinary sign-in or add a role. The owner can revoke an exception immediately. Owner suspension/exemption is blocked; suspension of other users takes effect on subsequent API authorization. A permanent owner transfer or first-owner binding is a controlled offline operator procedure, not a dropdown permission.
+Guarded workspace deletion is separate from suspension and retains Auth identity/official/audit records; read the deletion preview. Exceptions remove only the administrative MFA gate while active; they do not remove ordinary sign-in or add a role. The owner can revoke an exception immediately. Owner suspension/exemption is blocked; suspension of other users takes effect on subsequent API authorization. A permanent owner transfer or first-owner binding is a controlled offline operator procedure, not a dropdown permission.
 
 ## Exports and accountability
 
