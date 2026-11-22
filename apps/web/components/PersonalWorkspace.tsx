@@ -6,14 +6,10 @@ import catalogs from '@/data/catalogs.json';
 import ProfileCard from './ProfileCard';
 import {prepareProfilePhoto} from '@/lib/profile-photo';
 import Library from './Library';
+import ReportingBook from './ReportingBook';
+import {reportMetrics, type PersonalReport as Report, type ReportEntry as Entry} from '@/lib/report-book';
 import { api, downloadPersonalReport } from "@/lib/api";
-export const metrics = [
-  { key: "prayers", label: "Prayers", unit: "prayers" },
-  { key: "literature", label: "Literature", unit: "pages" },
-  { key: "organization", label: "Organizational work", unit: "minutes" },
-  { key: "quran", label: "Quran study", unit: "pages" },
-  { key: "hadith", label: "Hadith study", unit: "items" },
-] as const;
+export const metrics = reportMetrics;
 type Book = { title: string; total_pages: number; completed_pages: number };
 type Details = {
   photo: string;
@@ -39,21 +35,6 @@ type Profile = {
   details: Partial<Details>;
   goals: { metric: string; target: number }[];
   reviewer_assigned: boolean;
-};
-type Entry = { day: string; notes: string } & Record<
-  "prayers" | "literature" | "organization" | "quran" | "hadith",
-  number | null
->;
-type Report = {
-  id: string;
-  month: string;
-  version: number;
-  status: string;
-  entries: Entry[];
-  summary: string;
-  totals: Record<string, number>;
-  review_note: string | null;
-  entered_days: number;
 };
 type Node = {
   id: string;
@@ -103,6 +84,7 @@ export default function PersonalWorkspace() {
     [day, setDay] = useState(today()),
     [values, setValues] = useState<Record<string, string>>({}),
     [notes, setNotes] = useState("");
+  const [entryDirty, setEntryDirty] = useState(false);
   const [role, setRole] = useState("UNIT_EDITOR"),
     [scope, setScope] = useState(""),
     [notice, setNotice] = useState(""),
@@ -147,10 +129,22 @@ export default function PersonalWorkspace() {
     const r = reports.find((r) => r.month === month + "-01");
     setEntries(r?.entries || []);
     setSummary(r?.summary || "");
-    setDay(month === today().slice(0, 7) ? today() : month + "-01");
-    setValues({});
-    setNotes("");
+    const selectedDay = month === today().slice(0, 7) ? today() : month + "-01";
+    setDay(selectedDay);
+    const existing = r?.entries.find(e=>e.day===selectedDay);
+    setValues(Object.fromEntries(metrics.map(m=>[m.key,existing?.[m.key]==null?'':String(existing[m.key])])));
+    setNotes(existing?.notes || "");
+    setEntryDirty(false);
+    setConsent(false);
   }, [reports, month]);
+  const reportDirty = JSON.stringify(entries)!==JSON.stringify(selected?.entries||[]) || summary!==(selected?.summary||"") || entryDirty;
+  function chooseDay(value:string) {
+    setDay(value);
+    const old=entries.find(e=>e.day===value);
+    setValues(Object.fromEntries(metrics.map(m=>[m.key,old?.[m.key]==null?"":String(old[m.key])])));
+    setNotes(old?.notes||"");setEntryDirty(false);
+  }
+  useEffect(()=>{if(!reportDirty)return;const warn=(event:BeforeUnloadEvent)=>{event.preventDefault();};window.addEventListener('beforeunload',warn);return()=>window.removeEventListener('beforeunload',warn);},[reportDirty]);
   async function act(work: () => Promise<void>) {
     setBusy(true);
     setNotice("");
@@ -193,7 +187,7 @@ export default function PersonalWorkspace() {
   }
   async function saveReport(submit: boolean) {
     await act(async () => {
-      if (Object.values(values).some((v) => v !== "") || notes) throw new Error("Click Add / update day before saving this report so your daily entry is included.");
+      if (entryDirty) throw new Error("Click Add / update day before saving this report so your daily entry is included.");
       const r = await api<Report>("/self/reports", {
         method: "PUT",
         body: JSON.stringify({
@@ -213,6 +207,10 @@ export default function PersonalWorkspace() {
   }
   function addDay(e: FormEvent) {
     e.preventDefault();
+    if (!editable || busy) return;
+    if (!day || day.slice(0,7)!==month || day>today()) {setNotice("Choose a valid date in this reporting month.");return;}
+    if (!Object.values(values).some(v=>v!=="") && !notes.trim()) {setNotice("Enter at least one daily value or a note.");return;}
+    for (const m of metrics) {const v=values[m.key];if(v!==undefined&&v!==""&&(!Number.isInteger(Number(v))||Number(v)<0||Number(v)>m.max)){setNotice(`${m.label}: enter a whole number from 0 to ${m.max}.`);return;}}
     const entry = {
       day,
       notes,
@@ -230,7 +228,8 @@ export default function PersonalWorkspace() {
     );
     setValues({});
     setNotes("");
-    setNotice("Day added to the form. Save your draft to keep it.");
+    setEntryDirty(false);
+    setNotice("দিন যোগ করা হয়েছে। স্থায়ীভাবে রাখতে খসড়া সংরক্ষণ করুন।");
   }
   const field = (key: keyof Details, label: string, type = "text") => key === "occupation" || key === "position" ? <SearchSelect key={key} label={label} placeholder={key === "occupation" ? "e.g. Teacher" : "e.g. Ward secretary"} value={String(details[key] || "")} maxLength={160} items={key === "occupation" ? catalogs.occupations : catalogs.positions} onChange={value=>setDetails(d=>({...d,[key]:value}))} /> : key === "current_address" || key === "permanent_address" ? <AddressFields key={key} label={label} value={String(details[key] || "")} onChange={value=>setDetails(d=>({...d,[key]:value}))} /> : (
     <div className="form-field" key={key}>
@@ -389,226 +388,18 @@ export default function PersonalWorkspace() {
               <div className="profile-form-actions"><button className="primary-btn" disabled={busy}>Save my profile</button>{profile.details.full_name&&<button type="button" className="secondary-btn" disabled={busy} onClick={()=>{setDetails(d=>({...empty,...profile.details,books:d.books}));setEditingProfile(false);setNotice("");}}>Cancel editing</button>}</div>
             </form>
           )}
-          {tab === "reports" && (
-            <div className="panel">
-              <h2>Daily entries and monthly report</h2>
-              <label htmlFor="report-month">Reporting month</label>
-              <input
-                id="report-month"
-                className="input"
-                type="month"
-                max={today().slice(0, 7)}
-                value={month}
-                onChange={(e) => {
-                  if (!e.target.value) return;
-                  const dirty = JSON.stringify(entries) !== JSON.stringify(selected?.entries || []) || summary !== (selected?.summary || "") || Object.values(values).some((v) => v !== "") || Boolean(notes);
-                  if (!dirty || window.confirm("Discard unsaved report changes and switch month?")) { setMonth(e.target.value); setNotice(""); }
-                }}
-              />
-              <p>
-                Status: <strong>{selected?.status || "New draft"}</strong> ·{" "}
-                {entries.length} days entered. Blank means not reported; zero
-                means none.
-              </p>
-              {selected && (
-                <div className="form-actions">
-                  {(["pdf", "xlsx"] as const).map((ext) => (
-                    <button
-                      key={ext}
-                      disabled={busy}
-                      onClick={() =>
-                        void act(() => downloadPersonalReport(selected.id, ext))
-                      }
-                    >
-                      Download {ext.toUpperCase()}
-                    </button>
-                  ))}
-                </div>
-              )}
-              {selected?.review_note && (
-                <div className="alert">Reviewer: {selected.review_note}</div>
-              )}
-              {editable && (
-                <form onSubmit={addDay}>
-                  <div className="form-grid">
-                    <div className="form-field">
-                      <label htmlFor="entry-day">Date</label>
-                      <input
-                        id="entry-day"
-                        className="input"
-                        required
-                        type="date"
-                        min={month + "-01"}
-                        max={
-                          month === today().slice(0, 7)
-                            ? today()
-                            : month +
-                              "-" +
-                              new Date(
-                                Number(month.slice(0, 4)),
-                                Number(month.slice(5, 7)),
-                                0,
-                              ).getDate()
-                        }
-                        value={day}
-                        onChange={(e) => {
-                          setDay(e.target.value);
-                          const old = entries.find(
-                            (x) => x.day === e.target.value,
-                          );
-                          setValues(
-                            Object.fromEntries(
-                              metrics.map((m) => [
-                                m.key,
-                                old?.[m.key] == null ? "" : String(old[m.key]),
-                              ]),
-                            ),
-                          );
-                          setNotes(old?.notes || "");
-                        }}
-                      />
-                    </div>
-                    {metrics.map((m) => (
-                      <div className="form-field" key={m.key}>
-                        <label htmlFor={"entry-" + m.key}>
-                          {m.label} ({m.unit})
-                        </label>
-                        <input
-                          id={"entry-" + m.key}
-                          className="input"
-                          type="number"
-                          min={0}
-                          step={1}
-                          max={
-                            m.key === "prayers"
-                              ? 100
-                              : m.key === "organization"
-                                ? 1440
-                                : 100000
-                          }
-                          value={values[m.key] || ""}
-                          onChange={(e) =>
-                            setValues((v) => ({
-                              ...v,
-                              [m.key]: e.target.value,
-                            }))
-                          }
-                        />
-                      </div>
-                    ))}
-                    <div className="form-field full">
-                      <label htmlFor="day-notes">Daily notes</label>
-                      <input
-                        id="day-notes"
-                        className="input"
-                        maxLength={1000}
-                        value={notes}
-                        onChange={(e) => setNotes(e.target.value)}
-                      />
-                    </div>
-                  </div>
-                  <button>Add / update day</button>
-                </form>
-              )}
-              <div className="table-wrap">
-                <table className="data-table">
-                  <thead>
-                    <tr>
-                      <th>Date</th>
-                      {metrics.map((m) => (
-                        <th key={m.key}>{m.label}</th>
-                      ))}
-                      <th>Notes</th>
-                      {editable && <th>Actions</th>}
-                    </tr>
-                  </thead>
-                  <tbody>
-                    {entries.map((e) => (
-                      <tr key={e.day}>
-                        <td>{e.day}</td>
-                        {metrics.map((m) => (
-                          <td key={m.key}>{e[m.key] ?? "—"}</td>
-                        ))}
-                        <td>{e.notes}</td>
-                        {editable && (
-                          <td>
-                            <button aria-label={"Edit " + e.day} onClick={() => {setDay(e.day); setNotes(e.notes); setValues(Object.fromEntries(metrics.map((m) => [m.key, e[m.key] == null ? "" : String(e[m.key])]))); setNotice("Editing " + e.day + ". Click Add / update day, then save your draft.");}}>Edit</button>
-                            <button
-                              aria-label={"Remove " + e.day}
-                              onClick={() =>
-                                setEntries((old) =>
-                                  old.filter((x) => x.day !== e.day),
-                                )
-                              }
-                            >
-                              Remove
-                            </button>
-                          </td>
-                        )}
-                      </tr>
-                    ))}
-                  </tbody>
-                </table>
-              </div>
-              <div className="form-field">
-                <label htmlFor="month-summary">Monthly summary</label>
-                <textarea
-                  id="month-summary"
-                  className="input"
-                  maxLength={2000}
-                  disabled={!editable}
-                  value={summary}
-                  onChange={(e) => setSummary(e.target.value)}
-                />
-              </div>
-              {editable && (
-                <>
-                  <label className="consent">
-                    <input
-                      type="checkbox"
-                      checked={consent}
-                      onChange={(e) => setConsent(e.target.checked)}
-                    />{" "}
-                    I consent to storing this report and sharing it with my
-                    assigned reviewer when submitted.
-                  </label>
-                  <div className="form-actions">
-                    <button
-                      disabled={busy || !consent || !profile.details.consent}
-                      onClick={() => void saveReport(false)}
-                    >
-                      Save draft
-                    </button>
-                    <button
-                      className="primary-btn"
-                      disabled={
-                        busy ||
-                        !consent ||
-                        !profile.details.consent ||
-                        !profile.reviewer_assigned ||
-                        !entries.length
-                      }
-                      onClick={() => void saveReport(true)}
-                    >
-                      Submit for review
-                    </button>
-                  </div>
-                  {!profile.details.consent && <p>Save your personal profile and consent before saving a report.</p>}
-                  {!profile.reviewer_assigned && (
-                    <p>
-                      Drafts are available now. Ask the main administrator to
-                      assign your reviewer before submitting.
-                    </p>
-                  )}
-                </>
-              )}
-            </div>
-          )}
+          {tab === "reports" && <ReportingBook month={month} onMonth={setMonth} day={day} onDay={chooseDay} entries={entries} values={values}
+              onValue={(key,value)=>{setValues(v=>({...v,[key]:value}));setEntryDirty(true);}} notes={notes} onNotes={value=>{setNotes(value);setEntryDirty(true);}}
+              summary={summary} onSummary={setSummary} selected={selected} goals={selected?.goals ?? profile.goals}
+              editable={editable} busy={busy} consent={consent} onConsent={setConsent} profileConsented={!!profile.details.consent}
+              reviewerAssigned={profile.reviewer_assigned} entryDirty={entryDirty} dirty={reportDirty}
+              onAdd={addDay} onRemove={date=>{setEntries(old=>old.filter(e=>e.day!==date));if(day===date){setValues({});setNotes("");setEntryDirty(false);}}}
+              onSave={submit=>void saveReport(submit)} onDownload={ext=>{if(selected)void act(()=>downloadPersonalReport(selected.id,ext));}}/>}
           {tab === "targets" && (
             <div className="panel">
               <h2>Monthly targets</h2>
               <label htmlFor="target-month">Target reporting month</label>
-              <input id="target-month" className="input" type="month" max={today().slice(0,7)} value={month} onChange={(e) => {if(e.target.value && (JSON.stringify(entries) === JSON.stringify(selected?.entries || []) && summary === (selected?.summary || "") && !Object.values(values).some(Boolean) && !notes || window.confirm("Discard unsaved report changes and switch month?"))) setMonth(e.target.value);}} />
+              <input id="target-month" className="input" type="month" max={today().slice(0,7)} value={month} onChange={(e) => {if(e.target.value && (!reportDirty || window.confirm("Discard unsaved report changes and switch month?"))) setMonth(e.target.value);}} />
               <p>
                 Targets are assigned by the main administrator. Reaching them
                 never automatically changes your category.

@@ -81,3 +81,15 @@ Sign out when finished on a shared device. Do not put identity numbers, private 
 ## Why dashboard totals can differ
 
 Registered people reflects current saved profiles and their self-reported categories. Official membership reflects confirmed organizational records, assigned units and historical reporting dates. Saving a profile does not automatically confirm official membership or grant permissions. The Master Admin reviews and links/creates an official member; the dashboard shows how many saved profiles await this confirmation.
+
+## Reporting book
+
+Open **My workspace → Daily & monthly reports**. The reporting book has a daily page, monthly summary and day-by-day ledger. On phones, pages stack vertically.
+
+1. Choose the reporting month and date. Calendar checkmarks identify recorded dates; choosing one loads its values.
+2. Enter daily values and notes, then choose **দিন যোগ / হালনাগাদ করুন**. This updates the local monthly form; it is not saved yet. Blank means unreported; zero means none.
+3. Check monthly totals and assigned targets, write the monthly evaluation/next-month plan, consent, then choose **খসড়া সংরক্ষণ**.
+4. When a reviewer is assigned, use **মাসিক রিপোর্ট জমা দিন** and confirm. Submitted/reviewed reports are locked; returned reports can be corrected.
+5. PDF and Excel download the latest saved report, excluding unsaved changes. The PDF uses the green-and-gold reporting-book layout with monthly totals and a daily ledger.
+
+Measurements retain their original meaning: prayers (count), Quran/literature (pages), Hadith (items), organizational work (minutes). No sample values are inserted automatically. Month/day switches warn before discarding unsaved edits; closing/reloading warns while report edits remain unsaved. Targets never grant membership or administrative permissions.
