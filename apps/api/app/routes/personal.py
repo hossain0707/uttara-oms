@@ -29,14 +29,10 @@ from ..schemas import InputModel
 from ..security import decrypt, encrypt, normalize_phone
 from ..policies import is_thana_admin, active_unit
 
+from ..report_fields import METRICS, EXTRA, REFLECTIONS, aggregate
+
 router = APIRouter(tags=["personal workspace"])
-METRICS = {
-    "prayers": "prayers",
-    "literature": "pages",
-    "organization": "minutes",
-    "quran": "pages",
-    "hadith": "items",
-}
+
 
 
 def unpack(value):
@@ -147,7 +143,26 @@ class Entry(InputModel):
     organization: int | None = Field(default=None, ge=0, le=1440)
     quran: int | None = Field(default=None, ge=0, le=100000)
     hadith: int | None = Field(default=None, ge=0, le=100000)
+    congregational_prayers: int | None = Field(default=None, ge=0, le=5)
+    quran_studied: bool | None = Field(default=None, strict=True)
+    dawah_meetings: int | None = Field(default=None, ge=0, le=100000)
+    worker_meetings: int | None = Field(default=None, ge=0, le=100000)
+    member_meetings: int | None = Field(default=None, ge=0, le=100000)
+    worker_contacts: int | None = Field(default=None, ge=0, le=100000)
+    books_distributed: int | None = Field(default=None, ge=0, le=100000)
+    family_meeting: bool | None = Field(default=None, strict=True)
+    social_work: bool | None = Field(default=None, strict=True)
+    donated_hours: float | None = Field(default=None, ge=0, le=24, multiple_of=0.01)
+    visits: int | None = Field(default=None, ge=0, le=100000)
+    report_kept: bool | None = Field(default=None, strict=True)
+    self_evaluation: bool | None = Field(default=None, strict=True)
     notes: str = Field(default="", max_length=1000)
+
+    @model_validator(mode="after")
+    def congregation(self):
+        if self.congregational_prayers is not None and (self.prayers is None or self.congregational_prayers > self.prayers):
+            raise ValueError("Enter total Salah first; congregational Salah cannot exceed total Salah")
+        return self
 
 
 class ReportSave(InputModel):
@@ -155,6 +170,9 @@ class ReportSave(InputModel):
     expected_version: int = Field(ge=0)
     entries: list[Entry] = Field(default_factory=list, max_length=31)
     summary: str = Field(default="", max_length=2000)
+    achievements: str = Field(default="", max_length=2000)
+    incomplete_work: str = Field(default="", max_length=2000)
+    next_plan: str = Field(default="", max_length=2000)
     submit: bool = False
     consent: Literal[True]
 
@@ -204,7 +222,7 @@ def reviewer_profile(row):
 def report_view(row, profile):
     content = unpack(row.content_encrypted)
     entries = content.get("entries", [])
-    totals = {key: sum(e.get(key) or 0 for e in entries) for key in METRICS}
+    totals, reported_days = aggregate(entries)
     goals = content.get(
         "goals", unpack(profile.goals_encrypted).get("items", []) if profile else []
     )
@@ -215,6 +233,8 @@ def report_view(row, profile):
         "version": row.version,
         **content,
         "totals": totals,
+        "reported_days": reported_days,
+        **{key: content.get(key, "") for key in REFLECTIONS},
         "entered_days": len(entries),
         "calendar_days": calendar.monthrange(row.month.year, row.month.month)[1],
         "progress": [
@@ -349,14 +369,27 @@ def save_report(
     if row is None:
         row = PersonalReport(user_id=actor.id, month=body.month, version=0)
         db.add(row)
-    row.content_encrypted = pack(
-        {
-            "entries": [e.model_dump(mode="json") for e in body.entries],
-            "summary": body.summary,
-            "consent_version": "personal-v1",
-            "goals": unpack(profile.goals_encrypted).get("items", []),
-        }
-    )
+    previous = unpack(row.content_encrypted) if row.content_encrypted else {}
+    previous_days = {e['day']:e for e in previous.get('entries', [])}
+    saved_entries=[]
+    for entry in body.entries:
+        value=entry.model_dump(mode="json")
+        old=previous_days.get(value['day'],{})
+        # Older clients must not erase new activity fields when updating core values.
+        for key in EXTRA:
+            if key not in entry.model_fields_set and key in old:
+                value[key]=old[key]
+        # Recheck the merged record too, including fields preserved from older clients.
+        try:
+            Entry.model_validate(value)
+        except ValueError as exc:
+            raise HTTPException(422, "Correct Salah totals or congregational Salah in the existing day before saving") from exc
+        saved_entries.append(value)
+    row.content_encrypted = pack({
+        "entries": saved_entries, "summary": body.summary,
+        **{key:getattr(body,key) if key in body.model_fields_set else previous.get(key,"") for key in REFLECTIONS},
+        "consent_version":"personal-report-v2", "goals":unpack(profile.goals_encrypted).get("items", []),
+    })
     row.status = "SUBMITTED" if body.submit else "DRAFT"
     row.version += 1
     row.updated_at = datetime.now(timezone.utc)
@@ -523,50 +556,15 @@ def export_own_report(
     actor: Actor = Depends(account_actor),
     db: Session = Depends(get_db),
 ):
-    from io import BytesIO
     from fastapi.responses import Response
 
     row = db.get(PersonalReport, report_id)
     if not row or row.user_id != actor.id:
         raise HTTPException(404, "Personal report not found")
     data = report_view(row, db.get(PersonalProfile, actor.id))
-    header = ["Date", *[f"{k.title()} ({v})" for k, v in METRICS.items()], "Notes"]
-    values = [
-        [
-            e["day"],
-            *[e.get(k) if e.get(k) is not None else "" for k in METRICS],
-            e.get("notes", ""),
-        ]
-        for e in data["entries"]
-    ]
-    values.append(["Total", *[data["totals"][k] for k in METRICS], ""])
     if extension == "xlsx":
-        import xlsxwriter
-
-        output = BytesIO()
-        book = xlsxwriter.Workbook(
-            output,
-            {"in_memory": True, "strings_to_formulas": False, "strings_to_urls": False},
-        )
-        sheet = book.add_worksheet("Personal report")
-        sheet.set_column(0, 6, 22)
-        sheet.write_row(0, 0, ["Uttara OMS", data["month"], data["status"]])
-        sheet.write_row(2, 0, header)
-        for i, value in enumerate(values, 3):
-            sheet.write_row(i, 0, value)
-        sheet.write_string(len(values) + 5, 0, data.get("summary", ""))
-        sheet.write_string(len(values) + 6, 0, data.get("review_note") or "")
-        from ..report_book import salah_summary
-        salah = salah_summary(data)
-        for offset, (label, value) in enumerate([
-            ("Daily Salah maximum", 5), ("Calendar days", salah["days"]),
-            ("Monthly Salah calendar maximum", salah["maximum"]), ("Salah reported days", salah["reported_days"]),
-            ("Salah unreported days", salah["unreported_days"]), ("Reported Salah total", salah["total"]),
-            ("Legacy Salah outside 0-5", "Yes - review required" if salah["invalid"] else "No"),
-        ], len(values) + 9):
-            sheet.write_row(offset, 0, [label, value])
-        book.close()
-        result = output.getvalue()
+        from ..report_book import reporting_book_xlsx
+        result = reporting_book_xlsx(data)
         media = "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
     else:
         from weasyprint import HTML

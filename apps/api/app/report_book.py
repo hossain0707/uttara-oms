@@ -1,39 +1,57 @@
-"""Personal reporting-book PDF. All user text is escaped; no remote resources."""
+"""Offline, escaped PDF and formula-safe Excel personal report exports."""
 from html import escape
 from datetime import date
-import calendar
-
-METRICS=[('prayers','সালাত','ওয়াক্ত'),('quran','কুরআন অধ্যয়ন','পৃষ্ঠা'),('hadith','হাদিস অধ্যয়ন','টি'),('literature','সাহিত্য অধ্যয়ন','পৃষ্ঠা'),('organization','সাংগঠনিক কাজ','মিনিট')]
+from io import BytesIO
+from .report_fields import CHECKS, aggregate
+METRICS=[('prayers','সালাত','ওয়াক্ত'),('quran','কুরআন অধ্যয়ন (পরিমাণ)','পৃষ্ঠা'),('hadith','হাদিস অধ্যয়ন','টি'),('literature','সাহিত্য অধ্যয়ন','পৃষ্ঠা'),('organization','সাংগঠনিক কাজ','মিনিট'),('congregational_prayers','জামাতে সালাত','ওয়াক্ত'),('quran_studied','কুরআন অধ্যয়ন','দিন'),('dawah_meetings','দাওয়াতি সাক্ষাৎ','বার'),('worker_meetings','কর্মী সাক্ষাৎ','বার'),('member_meetings','সদস্য সাক্ষাৎ','বার'),('worker_contacts','কর্মী যোগাযোগ','বার'),('books_distributed','বই বিতরণ','টি'),('family_meeting','পারিবারিক বৈঠক','দিন'),('social_work','সামাজিক কাজ','দিন'),('donated_hours','সময় দান','ঘণ্টা'),('visits','সফর','বার'),('report_kept','রিপোর্ট রাখা','দিন'),('self_evaluation','আত্মসমালোচনা','দিন')]
+REFLECTION_LABELS=[('achievements','মাসের অর্জন'),('incomplete_work','অসম্পূর্ণ কাজ'),('next_plan','আগামী মাসের পরিকল্পনা'),('summary','অতিরিক্ত মাসিক মন্তব্য'),('review_note','দায়িত্বশীলের মন্তব্য')]
 STATUS={'DRAFT':'খসড়া','RETURNED':'সংশোধনের জন্য ফেরত','SUBMITTED':'পর্যালোচনাধীন','REVIEWED':'পর্যালোচিত'}
-MONTHS=['জানুয়ারি','ফেব্রুয়ারি','মার্চ','এপ্রিল','মে','জুন','জুলাই','আগস্ট','সেপ্টেম্বর','অক্টোবর','নভেম্বর','ডিসেম্বর']
 def bn(value):
     return str(value).translate(str.maketrans('0123456789','০১২৩৪৫৬৭৮৯'))
-
-
-def salah_summary(data):
-    month=date.fromisoformat(data['month'])
-    days=calendar.monthrange(month.year,month.month)[1]
-    reported=[e for e in data['entries'] if e.get('prayers') is not None]
-    return dict(days=days,maximum=days*5,reported_days=len(reported),unreported_days=days-len(reported),total=sum(e['prayers'] for e in reported),invalid=any(not isinstance(e['prayers'],int) or not 0<=e['prayers']<=5 for e in reported))
-
+def cell(entry,key):
+    value=entry.get(key)
+    return '—' if value is None else ('হ্যাঁ' if value else 'না') if key in CHECKS else bn(value)
 def reporting_book_html(data, full_name=''):
     month=date.fromisoformat(data['month'])
-    caption=MONTHS[month.month-1]+' '+bn(month.year)
-    goals={g['metric']:g['target'] for g in data.get('goals',[])}
-    totals=data['totals']
-    salah=salah_summary(data)
-    rows=''
-    for key,label,unit in METRICS:
-        goal=goals.get(key)
-        rows+=f'<tr><th>{label}<small>{unit}</small></th><td>{bn(goal) if goal is not None else "—"}</td><td>{bn(totals.get(key,0))}</td><td>{bn(max(0,goal-totals.get(key,0))) if goal is not None else "—"}</td></tr>'
+    months=['জানুয়ারি','ফেব্রুয়ারি','মার্চ','এপ্রিল','মে','জুন','জুলাই','আগস্ট','সেপ্টেম্বর','অক্টোবর','নভেম্বর','ডিসেম্বর']
+    caption=months[month.month-1]+' '+bn(month.year)
+    totals,reported=aggregate(data['entries'])
+    rows=''.join(f'<tr><th>{label}<small>{unit}</small></th><td>{bn(totals[key])}</td><td>{bn(reported[key])}</td></tr>' for key,label,unit in METRICS)
+    reflections=''.join(f'<h2>{label}</h2><div class="summary">{escape(data.get(key) or "কোনো মন্তব্য লেখা হয়নি।")}</div>' for key,label in REFLECTION_LABELS)
+    goals={g['metric']:g['target'] for g in data.get('goals',[]) if g['metric']!='prayers'}
+    goal_rows=''.join(f'<tr><th>{label} ({unit})</th><td>{bn(goals[key])}</td><td>{bn(totals[key])}</td></tr>' for key,label,unit in METRICS if key in goals)
+    goal_section=f'<h2>নির্ধারিত অধ্যয়নের লক্ষ্য</h2><table><thead><tr><th>কার্যক্রম</th><th>লক্ষ্য</th><th>অর্জন</th></tr></thead><tbody>{goal_rows}</tbody></table>' if goal_rows else ''
     ledger=''
-    for entry in sorted(data['entries'],key=lambda e:e['day']):
-        ledger+='<tr><th>'+escape(bn(entry['day']))+'</th>'+''.join('<td>'+(bn(entry.get(k)) if entry.get(k) is not None else '—')+'</td>' for k,_,_ in METRICS)+'<td class="notes">'+escape(entry.get('notes',''))+'</td></tr>'
-    css='''@page{size:A4;margin:15mm;@bottom-left{content:"Uttara OMS • ব্যক্তিগত রিপোর্ট";font-family:"Noto Sans Bengali",sans-serif;font-size:8pt;color:#60745d}@bottom-right{content:counter(page);font-size:8pt;color:#60745d}}body{font-family:"Noto Sans Bengali",sans-serif;color:#193e2e;font-size:9.5pt;line-height:1.5}*{box-sizing:border-box}h1{font-size:23pt;margin:5px 0}h2{font-size:15pt;margin:13px 0 8px}h3{font-size:11pt;margin:0 0 7px}p{margin:5px 0}.hero{background:#173f2d;color:#fff9e7;padding:15px;border-bottom:3px solid #bea354;border-radius:10px}.brand{font-size:9pt;letter-spacing:2px;color:#e5ce8b}.meta{display:flex;justify-content:space-between;gap:15px}.stats{display:flex;gap:10px;margin:12px 0}.stats>div{width:33%;background:#faf4df;border:1px solid #d9d3b1;border-radius:7px;padding:9px}.stats span{font-size:9pt;display:block}.stats strong{font-size:18pt}.stats small{font-size:9pt}.muted{color:#62735c;font-size:8pt}.book-table{width:100%;border-collapse:collapse;margin:10px 0 18px}th,td{border:1px solid #d5d8c4;padding:6px 9px;text-align:left;vertical-align:top;overflow-wrap:anywhere}thead th{background:#ece6c6;font-weight:600}tbody th{font-weight:400}th small{display:block;font-size:8pt;color:#62735c}thead{display:table-header-group}tr{break-inside:avoid}.summary{white-space:pre-wrap;overflow-wrap:anywhere;border:1px solid #d1d6bd;background:#fffdf2;padding:14px;min-height:55px;line-height:1.8}.review{border-left:3px solid #bd9f45;padding:10px 15px;background:#f8f3df;margin-top:15px;white-space:pre-wrap;overflow-wrap:anywhere}.ledger{font-size:8pt}.ledger th,.ledger td{padding:4px 5px}.ledger .notes{white-space:pre-wrap;max-width:150px}.ledger-section{break-before:page}.footnote{font-size:8pt;color:#62735c;margin-top:14px}'''
-    cards=f'<div class="stats"><div><span>লেখা হয়েছে</span><strong>{bn(len(data["entries"]))}</strong> <small>দিন</small></div><div><span>সাহিত্য অধ্যয়ন</span><strong>{bn(totals.get("literature",0))}</strong> <small>পৃষ্ঠা</small></div><div><span>সাংগঠনিক কাজ</span><strong>{bn(totals.get("organization",0))}</strong> <small>মিনিট</small></div></div>'
-    salah_card=f'<h2>মাসিক সালাতের হিসাব</h2><table class="book-table"><tr><th>দৈনিক সর্বোচ্চ</th><td>৫ ওয়াক্ত</td><th>মাসের দিন</th><td>{bn(salah["days"])} দিন</td></tr><tr><th>মাসিক সর্বোচ্চ</th><td>{bn(salah["maximum"])} ওয়াক্ত</td><th>তথ্য দেওয়া হয়েছে</th><td>{bn(salah["reported_days"])} দিন</td></tr><tr><th>রিপোর্ট করা মোট</th><td>{bn(salah["total"])} ওয়াক্ত</td><th>তথ্য দেওয়া হয়নি</th><td>{bn(salah["unreported_days"])} দিন</td></tr></table><p class="muted">মাসিক সর্বোচ্চ = মাসের দিন × ৫; এটি নির্ধারিত লক্ষ্য নয়। ফাঁকা ঘর শূন্য নয়।</p>'
-    if salah['invalid']:
-        salah_card+='<p class="review">পুরোনো কোনো দিনের সালাতের সংখ্যা ০–৫-এর বাইরে। মূল তথ্য অপরিবর্তিত আছে; সংশোধন প্রয়োজন।</p>'
-    header='<tr><th>তারিখ</th>'+''.join('<th>'+label+'<small>'+unit+'</small></th>' for _,label,unit in METRICS)+'<th>মন্তব্য</th></tr>'
-    review='<div class="review"><h3>দায়িত্বশীলের মন্তব্য</h3>'+escape(data['review_note'])+'</div>' if data.get('review_note') else ''
-    return f'''<!doctype html><html lang="bn"><meta charset="utf-8"><title>Uttara OMS - ব্যক্তিগত রিপোর্ট</title><style>{css}</style><body><header class="hero"><div class="brand">UTTARA OMS / PERSONAL REPORT BOOK</div><h1>আমার রিপোর্ট বই</h1><div class="meta"><span>{escape(full_name)}</span><span>{caption} · {escape(STATUS.get(data['status'],data['status']))}</span></div></header>{cards}{salah_card}<h2>মাসিক হিসাব ও লক্ষ্য</h2><table class="book-table"><thead><tr><th>কার্যক্রম</th><th>লক্ষ্য</th><th>অর্জন</th><th>বাকি</th></tr></thead><tbody>{rows}</tbody></table><p class="muted">লক্ষ্য দায়িত্বশীল প্রশাসক নির্ধারণ করেন। লক্ষ্য অর্জন স্বয়ংক্রিয়ভাবে সদস্যের শ্রেণি বা অনুমতি পরিবর্তন করে না।</p><h2>মাসের মূল্যায়ন ও আগামী মাসের পরিকল্পনা</h2><div class="summary">{escape(data.get('summary','')) or 'কোনো মন্তব্য লেখা হয়নি।'}</div>{review}<p class="footnote">এটি সর্বশেষ সংরক্ষিত রিপোর্ট। খসড়া ও পর্যালোচিত রিপোর্টের অবস্থা আলাদাভাবে দেখানো হয়েছে।</p><section class="ledger-section"><h2>দিনভিত্তিক হিসাব · {caption}</h2><p class="muted">ফাঁকা = তথ্য দেওয়া হয়নি; ০ = পরিমাণ শূন্য। কেবল সংরক্ষিত দিনের তথ্য এখানে রয়েছে।</p><table class="book-table ledger"><thead>{header}</thead><tbody>{ledger or '<tr><td colspan="7">কোনো দিন লেখা হয়নি।</td></tr>'}</tbody></table></section></body></html>'''
+    for start in range(0,len(METRICS),5):
+        group=METRICS[start:start+5]
+        header='<tr><th>তারিখ</th>'+''.join(f'<th>{label}<small>{unit}</small></th>' for _,label,unit in group)+'</tr>'
+        days=''.join('<tr><th>'+escape(bn(e['day']))+'</th>'+''.join('<td>'+cell(e,k)+'</td>' for k,_,_ in group)+'</tr>' for e in sorted(data['entries'],key=lambda e:e['day']))
+        ledger+=f'<section class="ledger-section"><h2>দিনভিত্তিক হিসাব · {caption}</h2><table><thead>{header}</thead><tbody>{days}</tbody></table></section>'
+    notes=''.join(f'<tr><th>{escape(bn(e["day"]))}</th><td class="summary">{escape(e.get("notes", ""))}</td></tr>' for e in data['entries'] if e.get('notes'))
+    css='''@page{size:A4;margin:15mm;@bottom-left{content:"Uttara OMS • ব্যক্তিগত রিপোর্ট";font-family:"Noto Sans Bengali",sans-serif;font-size:8pt}@bottom-right{content:counter(page);font-size:8pt}}body{font-family:"Noto Sans Bengali",sans-serif;color:#193e2e;font-size:9pt;line-height:1.6}h1{font-size:23pt;margin:6px 0}h2{font-size:13pt;margin:18px 0 8px}.hero{background:#173f2d;color:#fff9e7;padding:18px;border-bottom:3px solid #bea354;border-radius:10px}.brand{font-size:9pt;letter-spacing:2px;color:#e5ce8b}table{width:100%;border-collapse:collapse;margin:12px 0}th,td{border:1px solid #d5d8c4;padding:6px;text-align:left;vertical-align:top;overflow-wrap:anywhere}thead th{background:#ece6c6}tbody th{font-weight:400}small{display:block;color:#62735c;font-size:8pt}thead{display:table-header-group}tr{break-inside:avoid}.summary{white-space:pre-wrap;overflow-wrap:anywhere;border:1px solid #d1d6bd;background:#fffdf2;padding:12px;min-height:30px}.ledger-section{break-before:page}.ledger-section table{font-size:8pt}.ledger-section th,.ledger-section td{padding:3px 5px}.muted{font-size:8pt;color:#62735c}'''
+    return f'''<!doctype html><html lang="bn"><meta charset="utf-8"><title>Uttara OMS - ব্যক্তিগত রিপোর্ট</title><style>{css}</style><body><header class="hero"><div class="brand">UTTARA OMS / PERSONAL REPORT BOOK</div><h1>আমার রিপোর্ট বই</h1><p>{escape(full_name)} · {caption} · {escape(STATUS.get(data['status'],data['status']))}</p></header><h2>মাসিক হিসাব</h2><p class="muted">ফাঁকা = তথ্য দেওয়া হয়নি; ০ / না = তথ্য দেওয়া হয়েছে। টিক চিহ্নের মোট = কাজটি করা দিনের সংখ্যা।</p><table><thead><tr><th>কার্যক্রম</th><th>মোট</th><th>তথ্য দেওয়া দিন</th></tr></thead><tbody>{rows}</tbody></table>{goal_section}{reflections}{ledger}<h2>দিনের মন্তব্য</h2><table>{notes}</table><p class="muted">এটি সর্বশেষ সংরক্ষিত রিপোর্ট। কেবল নির্ধারিত দায়িত্বশীল জমা দেওয়া রিপোর্ট পর্যালোচনা করেন।</p></body></html>'''
+def reporting_book_xlsx(data):
+    import xlsxwriter
+    out=BytesIO()
+    workbook=xlsxwriter.Workbook(out,{'in_memory':True,'strings_to_formulas':False,'strings_to_urls':False})
+    heading=workbook.add_format({'bold':True,'bg_color':'#194C35','font_color':'white','text_wrap':True})
+    wrap=workbook.add_format({'text_wrap':True,'valign':'top'})
+    ledger=workbook.add_worksheet('Daily report')
+    columns=[('day','Date')]+[(k,f'{label} ({unit})') for k,label,unit in sorted(METRICS[:5],key=lambda m:['prayers','literature','organization','quran','hadith'].index(m[0]))]+[('notes','Notes')]+[(k,f'{label} ({unit})') for k,label,unit in METRICS[5:]]
+    ledger.write_row(0,0,[label for _,label in columns],heading)
+    for row,entry in enumerate(data['entries'],1):
+        ledger.write_row(row,0,[('Yes' if entry[k] else 'No') if k in CHECKS and entry.get(k) is not None else entry.get(k) for k,_ in columns],wrap)
+    ledger.freeze_panes(1,1);ledger.autofilter(0,0,len(data['entries']),len(columns)-1)
+    ledger.set_column(0,0,14);ledger.set_column(1,len(columns)-1,22);ledger.set_column(6,6,50);ledger.set_row(0,42)
+    summary=workbook.add_worksheet('Monthly summary')
+    summary.write_row(0,0,['Month',data['month'],'Status',data['status']],heading)
+    summary.write_row(2,0,['Activity','Unit','Total','Reported days'],heading)
+    totals,reported=aggregate(data['entries'])
+    for row,(key,label,unit) in enumerate(METRICS,3):
+        summary.write_row(row,0,[label,unit,totals[key],reported[key]])
+    row=len(METRICS)+5
+    for key,label in REFLECTION_LABELS:
+        summary.write(row,0,label,heading);summary.merge_range(row,1,row+2,3,data.get(key) or '',wrap);row+=4
+    summary.set_column(0,0,34);summary.set_column(1,3,23);summary.freeze_panes(3,0)
+    workbook.close()
+    return out.getvalue()

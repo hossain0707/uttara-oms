@@ -2,7 +2,7 @@
 import { useEffect, useState } from "react";
 import Shell from "@/components/Shell";
 import { api } from "@/lib/api";
-import { metrics } from "@/components/PersonalWorkspace";
+import { dailyReportFields as metrics, reflectionFields } from "@/lib/report-book";
 type Report = {
   id: string;
   email: string;
@@ -10,9 +10,10 @@ type Report = {
   version: number;
   profile: { full_name?: string };
   summary: string;
+  achievements?:string; incomplete_work?:string; next_plan?:string;
   entries: ({ day: string; notes: string } & Record<
     string,
-    string | number | null
+    string | number | boolean | null
   >)[];
   totals: Record<string, number>;
 };
@@ -71,6 +72,7 @@ export default function Reviews() {
           </h2>
           <p>{r.email}</p>
           <p>{r.summary}</p>
+          {reflectionFields.map(f=><section key={f.key}><h3>{f.label}</h3><p style={{whiteSpace:"pre-wrap"}}>{r[f.key]||"—"}</p></section>)}
           <div className="table-wrap">
             <table className="data-table">
               <thead>
@@ -89,7 +91,7 @@ export default function Reviews() {
                   <tr key={e.day}>
                     <td>{e.day}</td>
                     {metrics.map((m) => (
-                      <td key={m.key}>{e[m.key] ?? "—"}</td>
+                      <td key={m.key}>{e[m.key]==null?"—":m.kind==="check"?(e[m.key]?"Yes":"No"):String(e[m.key])}</td>
                     ))}
                     <td>{e.notes}</td>
                   </tr>

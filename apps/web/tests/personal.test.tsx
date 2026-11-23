@@ -88,7 +88,7 @@ it('blocks report saving until pending daily values are included', async () => {
   mockWorkspace(); render(<PersonalWorkspace />); fireEvent.click(await screen.findByRole('button',{name:'Edit profile'})); await screen.findByLabelText('Full name');
   fireEvent.click(screen.getByRole('tab', {name:'Daily & monthly reports'}));
   fireEvent.change(screen.getByLabelText('Prayers (prayers)'), {target:{value:'5'}});
-  fireEvent.click(screen.getByRole('checkbox'));
+  fireEvent.click(screen.getByRole('checkbox',{name:'Report consent'}));
   fireEvent.click(screen.getByRole('button', {name:'Save draft'}));
   await screen.findByText('Click Add / update day before saving this report so your daily entry is included.');
   expect(vi.mocked(api).mock.calls.filter(([p,o])=>p==='/self/reports' && o?.method==='PUT')).toHaveLength(0);

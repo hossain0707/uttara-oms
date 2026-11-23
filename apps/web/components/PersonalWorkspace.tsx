@@ -7,7 +7,7 @@ import ProfileCard from './ProfileCard';
 import {prepareProfilePhoto} from '@/lib/profile-photo';
 import Library from './Library';
 import ReportingBook from './ReportingBook';
-import {reportMetrics, type PersonalReport as Report, type ReportEntry as Entry} from '@/lib/report-book';
+import {reportMetrics,dailyReportFields,type Reflections, type PersonalReport as Report, type ReportEntry as Entry} from '@/lib/report-book';
 import { api, downloadPersonalReport } from "@/lib/api";
 export const metrics = reportMetrics;
 type Book = { title: string; total_pages: number; completed_pages: number };
@@ -84,6 +84,7 @@ export default function PersonalWorkspace() {
     [day, setDay] = useState(today()),
     [values, setValues] = useState<Record<string, string>>({}),
     [notes, setNotes] = useState("");
+  const [reflection,setReflection]=useState<Reflections>({achievements:"",incomplete_work:"",next_plan:""});
   const [entryDirty, setEntryDirty] = useState(false);
   const [role, setRole] = useState("UNIT_EDITOR"),
     [scope, setScope] = useState(""),
@@ -129,19 +130,20 @@ export default function PersonalWorkspace() {
     const r = reports.find((r) => r.month === month + "-01");
     setEntries(r?.entries || []);
     setSummary(r?.summary || "");
+    setReflection({achievements:r?.achievements||"",incomplete_work:r?.incomplete_work||"",next_plan:r?.next_plan||""});
     const selectedDay = month === today().slice(0, 7) ? today() : month + "-01";
     setDay(selectedDay);
     const existing = r?.entries.find(e=>e.day===selectedDay);
-    setValues(Object.fromEntries(metrics.map(m=>[m.key,existing?.[m.key]==null?'':String(existing[m.key])])));
+    setValues(Object.fromEntries(dailyReportFields.map(m=>[m.key,existing?.[m.key]==null?'':String(existing[m.key])])));
     setNotes(existing?.notes || "");
     setEntryDirty(false);
     setConsent(false);
   }, [reports, month]);
-  const reportDirty = JSON.stringify(entries)!==JSON.stringify(selected?.entries||[]) || summary!==(selected?.summary||"") || entryDirty;
+  const reportDirty = JSON.stringify(entries)!==JSON.stringify(selected?.entries||[]) || summary!==(selected?.summary||"") || entryDirty || Object.entries(reflection).some(([key,value])=>value!==(selected?.[key as keyof Reflections]||""));
   function chooseDay(value:string) {
     setDay(value);
     const old=entries.find(e=>e.day===value);
-    setValues(Object.fromEntries(metrics.map(m=>[m.key,old?.[m.key]==null?"":String(old[m.key])])));
+    setValues(Object.fromEntries(dailyReportFields.map(m=>[m.key,old?.[m.key]==null?"":String(old[m.key])])));
     setNotes(old?.notes||"");setEntryDirty(false);
   }
   useEffect(()=>{if(!reportDirty)return;const warn=(event:BeforeUnloadEvent)=>{event.preventDefault();};window.addEventListener('beforeunload',warn);return()=>window.removeEventListener('beforeunload',warn);},[reportDirty]);
@@ -195,6 +197,7 @@ export default function PersonalWorkspace() {
           expected_version: selected?.version || 0,
           entries,
           summary,
+          ...reflection,
           submit,
           consent,
         }),
@@ -210,14 +213,15 @@ export default function PersonalWorkspace() {
     if (!editable || busy) return;
     if (!day || day.slice(0,7)!==month || day>today()) {setNotice("Choose a valid date in this reporting month.");return;}
     if (!Object.values(values).some(v=>v!=="") && !notes.trim()) {setNotice("Enter at least one daily value or a note.");return;}
-    for (const m of metrics) {const v=values[m.key];if(v!==undefined&&v!==""&&(!Number.isInteger(Number(v))||Number(v)<0||Number(v)>m.max)){setNotice(`${m.label}: enter a whole number from 0 to ${m.max}.`);return;}}
+    for (const m of dailyReportFields) {const v=values[m.key];if(m.kind==='number'&&v!==undefined&&v!==""&&((m.step===1?!Number.isInteger(Number(v)):!Number.isFinite(Number(v))||Math.abs(Number(v)*100-Math.round(Number(v)*100))>1e-7)||Number(v)<0||Number(v)>m.max)){setNotice(`${m.label}: enter a valid amount from 0 to ${m.max}.`);return;}}
+    if(values.congregational_prayers!==undefined&&values.congregational_prayers!==""&&(!values.prayers||Number(values.congregational_prayers)>Number(values.prayers))){setNotice("মোট সালাত আগে লিখুন; জামাতে সালাত মোট সালাতের বেশি হতে পারবে না।");return;}
     const entry = {
       day,
       notes,
       ...Object.fromEntries(
-        metrics.map((m) => [
+        dailyReportFields.map((m) => [
           m.key,
-          values[m.key] ? Number(values[m.key]) : null,
+          values[m.key]===undefined||values[m.key]===""?null:m.kind==='check'?values[m.key]==='true':Number(values[m.key]),
         ]),
       ),
     } as Entry;
@@ -390,7 +394,7 @@ export default function PersonalWorkspace() {
           )}
           {tab === "reports" && <ReportingBook month={month} onMonth={setMonth} day={day} onDay={chooseDay} entries={entries} values={values}
               onValue={(key,value)=>{setValues(v=>({...v,[key]:value}));setEntryDirty(true);}} notes={notes} onNotes={value=>{setNotes(value);setEntryDirty(true);}}
-              summary={summary} onSummary={setSummary} selected={selected} goals={selected?.goals ?? profile.goals}
+              summary={summary} onSummary={setSummary} reflection={reflection} onReflection={(key,value)=>setReflection(old=>({...old,[key]:value}))} selected={selected} goals={selected?.goals ?? profile.goals}
               editable={editable} busy={busy} consent={consent} onConsent={setConsent} profileConsented={!!profile.details.consent}
               reviewerAssigned={profile.reviewer_assigned} entryDirty={entryDirty} dirty={reportDirty}
               onAdd={addDay} onRemove={date=>{setEntries(old=>old.filter(e=>e.day!==date));if(day===date){setValues({});setNotes("");setEntryDirty(false);}}}

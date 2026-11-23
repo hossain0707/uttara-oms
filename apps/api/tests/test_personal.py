@@ -341,3 +341,36 @@ def test_daily_salah_limit_is_enforced_on_the_server(context):
         r=c.put('/api/v1/self/reports',json={**base,'expected_version':version,'entries':[{'day':'2020-01-01','prayers':value}]})
         assert r.status_code==200,r.text
         assert r.json()['entries'][0]['prayers']==value
+
+
+def test_extended_book_roundtrip_and_older_client_preservation(context):
+    c,h,w,_,_=context
+    assert c.put('/api/v1/self/profile',json={'expected_version':0,'details':{'full_name':'Synthetic','consent':True}}).status_code==200
+    entry={'day':'2020-02-01','prayers':5,'congregational_prayers':4,'quran_studied':True,'family_meeting':False,'social_work':None,'dawah_meetings':2,'worker_meetings':1,'member_meetings':0,'worker_contacts':3,'books_distributed':1,'donated_hours':1.25,'visits':2,'report_kept':True,'self_evaluation':False,'quran':7,'organization':90}
+    body={'month':'2020-02-01','expected_version':0,'entries':[entry],'achievements':'Consistent study','incomplete_work':'Reading','next_plan':'Continue','consent':True}
+    saved=c.put('/api/v1/self/reports',json=body)
+    assert saved.status_code==200,saved.text
+    data=saved.json()
+    assert data['entries'][0].items()>=entry.items()
+    assert data['totals']['quran_studied']==1 and data['totals']['family_meeting']==0
+    assert data['reported_days']['family_meeting']==1 and data['reported_days']['social_work']==0
+    assert data['totals']['donated_hours']==1.25 and data['totals']['organization']==90
+    older={k:v for k,v in body.items() if k not in {'achievements','incomplete_work','next_plan'}}
+    older.update(expected_version=1,entries=[{'day':'2020-02-01','prayers':5,'quran':9}])
+    preserved=c.put('/api/v1/self/reports',json=older)
+    assert preserved.status_code==200,preserved.text
+    assert preserved.json()['entries'][0]['congregational_prayers']==4
+    assert preserved.json()['entries'][0]['family_meeting'] is False
+    assert preserved.json()['achievements']=='Consistent study'
+    # A legacy client cannot lower the total beneath a preserved congregation count.
+    older.update(expected_version=2,entries=[{'day':'2020-02-01','prayers':3}])
+    assert c.put('/api/v1/self/reports',json=older).status_code==422
+    assert c.get('/api/v1/self/reports').json()['items'][0]['version']==2
+
+
+@pytest.mark.parametrize('values',[{'congregational_prayers':6,'prayers':5},{'congregational_prayers':3,'prayers':2},{'congregational_prayers':0},{'donated_hours':24.01},{'donated_hours':0.001},{'family_meeting':'yes'},{'quran_studied':1},{'visits':-1}])
+def test_extended_daily_validation(values):
+    from app.routes.personal import Entry
+    from pydantic import ValidationError
+    with pytest.raises(ValidationError):
+        Entry(day='2020-02-01',**values)
