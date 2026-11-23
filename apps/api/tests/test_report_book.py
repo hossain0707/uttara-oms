@@ -9,3 +9,12 @@ def test_book_escapes_private_text_and_keeps_real_units():
     assert 'পৃষ্ঠা' in html and 'মিনিট' in html and 'আমার রিপোর্ট বই' in html
     assert 'data:image' not in html and '@import' not in html
     assert '২০' in html and '৪৫' in html and 'নভেম্বর ২০২৬' in html
+
+
+def test_salah_month_lengths_and_unreported_days():
+    from app.report_book import salah_summary
+    for month,days in [('2026-11-01',30),('2026-01-01',31),('2025-02-01',28),('2024-02-01',29)]:
+        s=salah_summary({'month':month,'entries':[{'prayers':5},{'prayers':0},{'prayers':None}]})
+        assert s==dict(days=days,maximum=days*5,reported_days=2,unreported_days=days-2,total=5,invalid=False)
+    s=salah_summary({'month':'2026-11-01','entries':[{'prayers':6}]})
+    assert s['invalid'] and s['total']==6  # never silently alter old saved data
