@@ -153,3 +153,9 @@ Current-profile aggregates live in `apps/api/app/profile_counts.py`; owner confi
 ## Reporting-book presentation
 
 `ReportingBook.tsx` and its scoped CSS render the responsive Bengali daily/monthly notebook; `lib/report-book.ts` owns the real metric labels, units, date formatting and local aggregate helper. `PersonalWorkspace` retains versioned report persistence and distinguishes loaded daily values from unsaved edits. Submission uses explicit in-page confirmation and existing backend reviewer/state guards. `apps/api/app/report_book.py` renders escaped, self-contained Bengali PDF HTML with local Noto fonts supplied by the container. PDF/Excel export authorization and no-store headers remain unchanged. No report schema migration or permission change is required.
+
+## Extended personal reporting book
+
+`app/report_fields.py` defines numeric and tri-state checkbox fields and monthly aggregation. New values and three reflection strings live inside the existing encrypted report JSON; no schema migration or backfill is needed. `null`/omission is unknown, `false` is explicit No, and `0` is explicit zero. Checkbox totals count True days; `reported_days` counts non-null values. Decimal hours accept hundredths, without converting original organizational minutes. Older clients updating a retained day omit new fields; the API preserves them and revalidates the merged day. Explicit null clears a new field. Omitted reflection strings are preserved; explicit empty strings clear them. Day removal remains intentional full-list replacement.
+
+Submitted/reviewed reports retain existing optimistic locking and independent assigned-reviewer restrictions. Test fixtures cover expanded round trips, legacy updates, invalid totals and privacy. `report_book.py` shares the aggregation contract for offline PDF and formula-safe Excel. No new named contact/target list is collected.
