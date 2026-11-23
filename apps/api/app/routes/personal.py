@@ -142,7 +142,7 @@ class Assignment(InputModel):
 
 class Entry(InputModel):
     day: date
-    prayers: int | None = Field(default=None, ge=0, le=100)
+    prayers: int | None = Field(default=None, ge=0, le=5)
     literature: int | None = Field(default=None, ge=0, le=100000)
     organization: int | None = Field(default=None, ge=0, le=1440)
     quran: int | None = Field(default=None, ge=0, le=100000)
@@ -556,6 +556,15 @@ def export_own_report(
             sheet.write_row(i, 0, value)
         sheet.write_string(len(values) + 5, 0, data.get("summary", ""))
         sheet.write_string(len(values) + 6, 0, data.get("review_note") or "")
+        from ..report_book import salah_summary
+        salah = salah_summary(data)
+        for offset, (label, value) in enumerate([
+            ("Daily Salah maximum", 5), ("Calendar days", salah["days"]),
+            ("Monthly Salah calendar maximum", salah["maximum"]), ("Salah reported days", salah["reported_days"]),
+            ("Salah unreported days", salah["unreported_days"]), ("Reported Salah total", salah["total"]),
+            ("Legacy Salah outside 0-5", "Yes - review required" if salah["invalid"] else "No"),
+        ], len(values) + 9):
+            sheet.write_row(offset, 0, [label, value])
         book.close()
         result = output.getvalue()
         media = "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"

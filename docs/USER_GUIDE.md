@@ -93,3 +93,5 @@ Open **My workspace → Daily & monthly reports**. The reporting book has a dail
 5. PDF and Excel download the latest saved report, excluding unsaved changes. The PDF uses the green-and-gold reporting-book layout with monthly totals and a daily ledger.
 
 Measurements retain their original meaning: prayers (count), Quran/literature (pages), Hadith (items), organizational work (minutes). No sample values are inserted automatically. Month/day switches warn before discarding unsaved edits; closing/reloading warns while report edits remain unsaved. Targets never grant membership or administrative permissions.
+
+Daily Salah accepts only whole numbers from 0 to 5. Monthly Salah totals add the reported daily values; the displayed calendar maximum is days in the selected month × 5 (140/145/150/155). Blank Salah fields remain unreported even when another metric was entered for that day; an explicit zero is reported. The ceiling is not an assigned target. Legacy out-of-range entries are flagged, not silently changed.

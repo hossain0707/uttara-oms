@@ -329,3 +329,15 @@ def test_name_only_profile_saves_and_legacy_identity_is_not_returned(context):
     assert reading.status_code==200,reading.text
     with h['session_factory']() as db:
         assert 'identity_number' not in unpack(db.get(PersonalProfile,w['editor'].id).details_encrypted)
+
+
+def test_daily_salah_limit_is_enforced_on_the_server(context):
+    c,h,w,unit,_=context
+    assert c.put('/api/v1/self/profile',json={'expected_version':0,'details':{'full_name':'Synthetic Salah boundary','consent':True}}).status_code==200
+    base={'month':'2020-01-01','expected_version':0,'consent':True,'entries':[{'day':'2020-01-01','prayers':6}]}
+    for invalid in [6,-1,1.5,100]:
+        assert c.put('/api/v1/self/reports',json={**base,'entries':[{'day':'2020-01-01','prayers':invalid}]}).status_code==422
+    for version,value in enumerate([None,0,5]):
+        r=c.put('/api/v1/self/reports',json={**base,'expected_version':version,'entries':[{'day':'2020-01-01','prayers':value}]})
+        assert r.status_code==200,r.text
+        assert r.json()['entries'][0]['prayers']==value
